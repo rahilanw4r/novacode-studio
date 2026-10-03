@@ -41,6 +41,7 @@ captures/
 # Keystore files (signing keys)
 *.jks
 *.keystore
+!app/debug.keystore
 
 # External native build folder
 .externalNativeBuild

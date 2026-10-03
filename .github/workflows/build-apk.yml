@@ -9,6 +9,8 @@ jobs:
   build:
     name: Build & Release Custom APK
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout Repository
@@ -42,3 +44,11 @@ jobs:
         with:
           name: NovaCode-Studio-Debug-APK
           path: app/build/outputs/apk/online/debug/*.apk
+
+      - name: Publish to GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          APK_FILE=$(ls app/build/outputs/apk/online/debug/*.apk | head -n 1)
+          cp "$APK_FILE" NovaCode-Studio-v1.0.5.apk
+          gh release create v1.0.5 NovaCode-Studio-v1.0.5.apk --title "NovaCode Studio v1.0.5" --notes "NovaCode Studio v1.0.5 update with standalone runtime hosting, persistent keystore, updated launcher icons, and custom monogram UI." || gh release upload v1.0.5 NovaCode-Studio-v1.0.5.apk --clobber

@@ -5471,7 +5471,7 @@ private fun EmptyState(icon: ImageVector, title: String, body: String) {
 @Composable
 private fun BrandMark(modifier: Modifier = Modifier, compact: Boolean = false) {
     val size = if (compact) 34.dp else 52.dp
-    val fontSize = if (compact) 16.sp else 24.sp
+    val fontSize = if (compact) 16.sp else 26.sp
     val cornerRadius = if (compact) 10.dp else 16.dp
 
     Box(
@@ -5493,8 +5493,11 @@ private fun BrandMark(modifier: Modifier = Modifier, compact: Boolean = false) {
         contentAlignment = Alignment.Center,
     ) {
         Text(
-            text = "⚡",
-            fontSize = fontSize
+            text = "N",
+            fontSize = fontSize,
+            fontWeight = FontWeight.Black,
+            color = androidx.compose.ui.graphics.Color(0xFF00E5FF),
+            fontFamily = FontFamily.Monospace,
         )
     }
 }
