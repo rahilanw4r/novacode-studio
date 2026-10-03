@@ -1,0 +1,31 @@
+Categories:
+  - Development
+  - System
+License: MIT
+AuthorName: NovaCode
+SourceCode: https://github.com/rahilanw4r/novacode-studio
+IssueTracker: https://github.com/rahilanw4r/novacode-studio/issues
+Changelog: https://github.com/rahilanw4r/novacode-studio/releases
+
+AutoName: NovaCode Studio
+
+RepoType: git
+Repo: https://github.com/rahilanw4r/novacode-studio.git
+
+AntiFeatures:
+  - NonFreeNet
+
+Builds:
+  - versionName: 1.0.2
+    versionCode: 3
+    commit: v1.0.2
+    subdir: app
+    ndk: r26b
+    submodules: true
+    gradle:
+      - yes
+
+AutoUpdateMode: Version v%v
+UpdateCheckMode: Tags
+CurrentVersion: 1.0.2
+CurrentVersionCode: 3
