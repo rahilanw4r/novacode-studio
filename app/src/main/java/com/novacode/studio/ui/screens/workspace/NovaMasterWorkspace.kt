@@ -214,11 +214,11 @@ fun NovaMasterWorkspace(
                         messages = state.messages,
                         liveProcess = state.liveProcess,
                         liveThinking = state.liveThinking,
-                        liveThinkingSummary = state.liveThinkingSummary,
-                        liveThinkingTokens = state.liveThinkingEstimatedTokens,
+                        liveThinkingSummary = "Reasoning active",
+                        liveThinkingTokens = 0,
                         isRunning = state.isRunning,
                         pendingApproval = state.pendingApproval,
-                        attachments = state.attachments,
+                        attachments = state.pendingAttachments,
                         onSend = onSend,
                         onStop = onStop,
                         onApproval = onApproval,
@@ -228,7 +228,7 @@ fun NovaMasterWorkspace(
                 }
                 NovaWorkspaceTab.CODE_STUDIO -> {
                     NovaCodeStudioScreen(
-                        files = state.projectFiles,
+                        files = state.workspaceFiles,
                         changes = state.changes,
                         openedFilePath = state.openedFilePath,
                         openedFileContent = state.openedFileContent,
@@ -245,9 +245,9 @@ fun NovaMasterWorkspace(
                 }
                 NovaWorkspaceTab.TERMINAL -> {
                     NovaTerminalScreen(
-                        outputLines = state.terminalLines,
-                        activeCommand = state.terminalRunningCommand,
-                        isProcessRunning = state.terminalProcessActive,
+                        outputLines = state.projectTerminalLines,
+                        activeCommand = state.projectTerminalCommand,
+                        isProcessRunning = state.projectTerminalRunning,
                         onRunCommand = onTerminalRun,
                         onSendInput = onTerminalInput,
                         onInterrupt = onTerminalInterrupt,

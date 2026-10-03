@@ -420,8 +420,7 @@ private fun ChatMessageItem(message: ChatMessage) {
                 } else {
                     MarkdownText(
                         markdown = message.text,
-                        color = NovaTextPrimary,
-                        fontSize = 13.sp
+                        color = NovaTextPrimary
                     )
                 }
 

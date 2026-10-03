@@ -63,16 +63,7 @@ import com.novacode.studio.model.DiffLineType
 import com.novacode.studio.model.WorkspaceEntry
 import com.novacode.studio.ui.components.NovaGlassCard
 import com.novacode.studio.ui.components.NovaStatusPill
-import com.novacode.studio.ui.theme.NovaBorder
-import com.novacode.studio.ui.theme.NovaCyan
-import com.novacode.studio.ui.theme.NovaEmerald
-import com.novacode.studio.ui.theme.NovaIndigo
-import com.novacode.studio.ui.theme.NovaObsidian
-import com.novacode.studio.ui.theme.NovaRose
-import com.novacode.studio.ui.theme.NovaSurface
-import com.novacode.studio.ui.theme.NovaSurfaceElevated
-import com.novacode.studio.ui.theme.NovaTextMuted
-import com.novacode.studio.ui.theme.NovaTextPrimary
+import com.novacode.studio.ui.theme.*
 import com.novacode.studio.ui.theme.NovaTextSecondary
 
 enum class CodeStudioTab { FILES, DIFFS, EDITOR }
