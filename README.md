@@ -20,7 +20,7 @@
 
   <br /><br />
 
-  <a href="https://github.com/rahilanw4r/novacode-studio/actions">
+  <a href="https://github.com/rahilanw4r/novacode-studio/releases/download/v1.0.0/NovaCode-Studio-v1.0.0-debug.apk">
     <img src="https://img.shields.io/badge/Download-NovaCode_Studio_APK-6366F1?style=for-the-badge&logo=android&logoColor=white" height="42" />
   </a>
 
