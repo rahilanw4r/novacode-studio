@@ -645,7 +645,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             ?: return ProjectTerminalResult("Project is no longer available.", 1, cwd)
         val workspace = projectWorkspaceRoot(project)
         val guestWorkspacePath = projectGuestRoot(project)
-        val marker = "__POCKETDEV_CWD_${UUID.randomUUID()}__"
+        val marker = "__NOVACODE_CWD_${UUID.randomUUID()}__"
         val preparedCommand = prepareInteractiveShellCommand(command)
         val script = """
             cd -- ${shellQuote(cwd)} || exit 1
@@ -1389,7 +1389,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 }
             }
             result.onSuccess {
-                if (kind == AgentKind.DEEPSEEK_HARNESS) preferences.dshVersion = installer.dshVersion
+                if (kind == AgentKind.DEEPSEEK_CODER) preferences.dshVersion = installer.dshVersion
                 selectAgent(kind)
             }
             _state.update { current ->
@@ -2175,7 +2175,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             val safeArchiveName = sanitizeAttachmentName(archiveName).let { name ->
                 if (name.endsWith(".zip", ignoreCase = true)) name else "$name.zip"
             }
-            val archiveFolder = File(projectRoot, ".pocketdev/imports").apply { mkdirs() }
+            val archiveFolder = File(projectRoot, ".novacode/imports").apply { mkdirs() }
             val archivedSource = File(archiveFolder, safeArchiveName)
             var sourceBytes = 0L
             resolver.openInputStream(uri)?.buffered()?.use { input ->
@@ -2528,7 +2528,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         "GH_PROMPT_DISABLED" to "1",
         "GH_NO_UPDATE_NOTIFIER" to "1",
         // Android PRoot has no Secret Service. This keeps the official gh-owned
-        // credential in PocketDev's private Linux home instead of exporting it.
+        // credential in NovaCode's private Linux home instead of exporting it.
         "BROWSER" to "/bin/false",
     )
 
@@ -3015,8 +3015,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             _state.update { it.copy(toastMessage = "Sign in to Antigravity from Settings before starting a task.") }
             return
         }
-        if (_state.value.agentKind == AgentKind.DEEPSEEK_HARNESS && _state.value.provider.kind == ProviderKind.CLAUDE) {
-            _state.update { it.copy(toastMessage = "Claude subscription login is not supported by DeepSeek Harness — pick a key-based provider in Settings.") }
+        if (_state.value.agentKind == AgentKind.DEEPSEEK_CODER && _state.value.provider.kind == ProviderKind.CLAUDE) {
+            _state.update { it.copy(toastMessage = "Claude subscription login is not supported by DeepSeek Coder — pick a key-based provider in Settings.") }
             return
         }
         val attachments = state.value.pendingAttachments

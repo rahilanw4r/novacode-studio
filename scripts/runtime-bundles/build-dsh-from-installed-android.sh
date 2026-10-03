@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Package the pinned DeepSeek Harness installation from PocketDev's private
+# Package the pinned DeepSeek Coder installation from NovaCode's private
 # Ubuntu runtime. Only the npm payload, launcher symlink, and version marker are
 # exported; provider settings, API keys, sessions, chats, and workspaces are not.
 ADB_SERIAL="${ADB_SERIAL:-}"
@@ -20,7 +20,7 @@ adb_cmd wait-for-device
 adb_cmd shell run-as "$PACKAGE" test -f files/runtime/ubuntu/usr/local/lib/dsh/node_modules/.bin/dsh
 actual_version="$(adb_cmd exec-out run-as "$PACKAGE" cat files/runtime/ubuntu/.pocket-dsh-version | tr -d '\r\n')"
 [[ "$actual_version" == "$DSH_VERSION" ]] || {
-  echo "Expected DeepSeek Harness $DSH_VERSION, found $actual_version" >&2
+  echo "Expected DeepSeek Coder $DSH_VERSION, found $actual_version" >&2
   exit 1
 }
 
@@ -41,4 +41,4 @@ zstd -19 -T0 -f "$temp_dir/payload.tar" -o "dist/runtime-bundles/$ARCHIVE"
 
 shasum -a 256 "dist/runtime-bundles/$ARCHIVE"
 wc -c "dist/runtime-bundles/$ARCHIVE" "$temp_dir/payload.tar"
-echo "DeepSeek Harness bundle created: dist/runtime-bundles/$ARCHIVE"
+echo "DeepSeek Coder bundle created: dist/runtime-bundles/$ARCHIVE"

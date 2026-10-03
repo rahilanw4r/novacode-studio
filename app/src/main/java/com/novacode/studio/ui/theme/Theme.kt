@@ -11,22 +11,22 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
-val PocketOrange = Color(0xFFF28C52)
-val PocketBlue = Color(0xFF8EA8FF)
-val PocketGreen = Color(0xFF69D69E)
+val NovaIndigo = Color(0xFFF28C52)
+val NovaCyan = Color(0xFF8EA8FF)
+val NovaEmerald = Color(0xFF69D69E)
 val PocketBackground = Color(0xFF0B0E14)
 val PocketSurface = Color(0xFF131821)
 val PocketSurfaceVariant = Color(0xFF1B222D)
 val PocketOutline = Color(0xFF2A3240)
 
 private val DarkColors = darkColorScheme(
-    primary = PocketOrange,
+    primary = NovaIndigo,
     onPrimary = Color(0xFF241107),
     primaryContainer = Color(0xFF42281D),
     onPrimaryContainer = Color(0xFFFFDDCC),
-    secondary = PocketBlue,
+    secondary = NovaCyan,
     onSecondary = Color(0xFF001F58),
-    tertiary = PocketGreen,
+    tertiary = NovaEmerald,
     onTertiary = Color(0xFF00391E),
     background = PocketBackground,
     onBackground = Color(0xFFE6EDF3),

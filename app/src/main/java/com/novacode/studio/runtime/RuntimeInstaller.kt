@@ -141,7 +141,7 @@ class RuntimeInstaller(private val context: Context) {
         )
     }
 
-    /** Removes only scaffolding written automatically by earlier PocketDev alpha builds. */
+    /** Removes only scaffolding written automatically by earlier NovaCode alpha builds. */
     fun cleanupLegacyWorkspaceScaffolding() {
         val workspaces = File(context.filesDir, "workspaces")
         workspaces.listFiles { file -> file.isDirectory }.orEmpty().forEach { workspace ->
@@ -238,7 +238,7 @@ class RuntimeInstaller(private val context: Context) {
 
         when (agent) {
             com.novacode.studio.model.AgentKind.CLAUDE_CODE -> ensureClaudeInstalled(proot, 0.985f, onProgress)
-            com.novacode.studio.model.AgentKind.DEEPSEEK_HARNESS -> ensureDshInstalled(proot, 0.985f, onProgress)
+            com.novacode.studio.model.AgentKind.DEEPSEEK_CODER -> ensureDshInstalled(proot, 0.985f, onProgress)
             com.novacode.studio.model.AgentKind.ANTIGRAVITY -> ensureAgyInstalled(proot, 0.985f, onProgress)
         }
         onProgress(RuntimeInstallProgress("Setup complete", 1f))
@@ -257,7 +257,7 @@ class RuntimeInstaller(private val context: Context) {
         val runtime = installedRuntime()
         when (agent) {
             com.novacode.studio.model.AgentKind.CLAUDE_CODE -> ensureClaudeInstalled(runtime.proot, 0.05f, onProgress)
-            com.novacode.studio.model.AgentKind.DEEPSEEK_HARNESS -> ensureDshInstalled(runtime.proot, 0.05f, onProgress)
+            com.novacode.studio.model.AgentKind.DEEPSEEK_CODER -> ensureDshInstalled(runtime.proot, 0.05f, onProgress)
             com.novacode.studio.model.AgentKind.ANTIGRAVITY -> ensureAgyInstalled(runtime.proot, 0.05f, onProgress)
         }
         onProgress(RuntimeInstallProgress("${agent.title} is ready", 1f))
@@ -270,7 +270,7 @@ class RuntimeInstaller(private val context: Context) {
                 isInstalled() && File(rootfs, CLAUDE_GUEST_PATH.removePrefix("/")).canExecute() &&
                     !claudeMarker.readTextOrNull().isNullOrBlank()
             }
-            com.novacode.studio.model.AgentKind.DEEPSEEK_HARNESS -> isInstalled() &&
+            com.novacode.studio.model.AgentKind.DEEPSEEK_CODER -> isInstalled() &&
                 // /usr/local/bin/dsh is an absolute guest symlink. File.exists() follows it
                 // against Android's host root and therefore reports false outside PRoot.
                 File(rootfs, "usr/local/lib/dsh/node_modules/.bin/dsh").isFile &&
@@ -300,7 +300,7 @@ class RuntimeInstaller(private val context: Context) {
     suspend fun ensureGitHubCliInstalled(onProgress: suspend (RuntimeInstallProgress) -> Unit) {
         if (isGitHubCliInstalled()) return
         check(!BuildConfig.OFFLINE_RUNTIME_BUNDLES) {
-            "GitHub sign-in needs the PocketDev online APK."
+            "GitHub sign-in needs the NovaCode online APK."
         }
         writeResolver()
         downloads.mkdirs()
@@ -359,7 +359,7 @@ class RuntimeInstaller(private val context: Context) {
         dshMarker.readTextOrNull()
             ?.trim()
             ?.takeIf { it.isNotEmpty() && File(rootfs, "usr/local/lib/dsh/node_modules/.bin/dsh").isFile }
-            ?.let { put(com.novacode.studio.model.AgentKind.DEEPSEEK_HARNESS, it) }
+            ?.let { put(com.novacode.studio.model.AgentKind.DEEPSEEK_CODER, it) }
 
         agyMarker.readTextOrNull()
             ?.trim()
@@ -378,11 +378,11 @@ class RuntimeInstaller(private val context: Context) {
                     put(com.novacode.studio.model.AgentKind.CLAUDE_CODE, AgentUpdateInfo(current, latest))
                 }
             }
-            installed[com.novacode.studio.model.AgentKind.DEEPSEEK_HARNESS]?.let { current ->
+            installed[com.novacode.studio.model.AgentKind.DEEPSEEK_CODER]?.let { current ->
                 runCatching {
                     JSONObject(fetchText("https://registry.npmjs.org/@deepseek-ai/dsh/latest")).getString("version")
                 }.getOrNull()?.takeIf { isVersionNewer(it, current) }?.let { latest ->
-                    put(com.novacode.studio.model.AgentKind.DEEPSEEK_HARNESS, AgentUpdateInfo(current, latest))
+                    put(com.novacode.studio.model.AgentKind.DEEPSEEK_CODER, AgentUpdateInfo(current, latest))
                 }
             }
             installed[com.novacode.studio.model.AgentKind.ANTIGRAVITY]?.let { current ->
@@ -402,7 +402,7 @@ class RuntimeInstaller(private val context: Context) {
         val runtime = installedRuntime()
         when (agent) {
             com.novacode.studio.model.AgentKind.CLAUDE_CODE -> updateClaude(runtime, expectedVersion, onProgress)
-            com.novacode.studio.model.AgentKind.DEEPSEEK_HARNESS -> updateDsh(runtime, expectedVersion, onProgress)
+            com.novacode.studio.model.AgentKind.DEEPSEEK_CODER -> updateDsh(runtime, expectedVersion, onProgress)
             com.novacode.studio.model.AgentKind.ANTIGRAVITY -> updateAgy(runtime, expectedVersion, onProgress)
         }
         onProgress(RuntimeInstallProgress("${agent.title} $expectedVersion is ready", 1f, event = RuntimeInstallEvent.COMPLETED))
@@ -475,9 +475,9 @@ class RuntimeInstaller(private val context: Context) {
         onProgress: suspend (RuntimeInstallProgress) -> Unit,
     ) {
         val latest = JSONObject(fetchText("https://registry.npmjs.org/@deepseek-ai/dsh/latest")).getString("version")
-        check(latest == expectedVersion) { "A newer DeepSeek Harness release appeared. Check again before updating." }
+        check(latest == expectedVersion) { "A newer DeepSeek Coder release appeared. Check again before updating." }
         val quotedVersion = latest.replace(Regex("[^0-9A-Za-z.+-]"), "")
-        check(quotedVersion == latest) { "Invalid DeepSeek Harness version" }
+        check(quotedVersion == latest) { "Invalid DeepSeek Coder version" }
         runGuestCommand(
             proot = runtime.proot,
             command = "set -e; next=/usr/local/lib/dsh.updating; old=/usr/local/lib/dsh.previous; " +
@@ -491,12 +491,12 @@ class RuntimeInstaller(private val context: Context) {
             fraction = 0.55f,
             timeoutMs = 20 * 60 * 1_000L,
             onProgress = onProgress,
-            failureMessage = "DeepSeek Harness update failed; the installed version was preserved",
+            failureMessage = "DeepSeek Coder update failed; the installed version was preserved",
         )
         dshMarker.writeText(latest)
         dshAndroidCompatibilityMarker.delete()
         ensureDshAndroidCompatibility()
-        verifyGuest(runtime.proot, "/usr/local/bin/dsh --profile headless --help", "DeepSeek Harness update verification failed")
+        verifyGuest(runtime.proot, "/usr/local/bin/dsh --profile headless --help", "DeepSeek Coder update verification failed")
     }
 
     private fun fetchAgyManifest(): JSONObject = JSONObject(
@@ -581,21 +581,21 @@ class RuntimeInstaller(private val context: Context) {
         fraction: Float,
         onProgress: suspend (RuntimeInstallProgress) -> Unit,
     ) {
-        if (isAgentInstalled(com.novacode.studio.model.AgentKind.DEEPSEEK_HARNESS)) {
+        if (isAgentInstalled(com.novacode.studio.model.AgentKind.DEEPSEEK_CODER)) {
             ensureDshAndroidCompatibility()
             return
         }
         installRuntimeOverlay(
             bundle = DSH_BUNDLE,
-            message = "Installing DeepSeek Harness $DSH_VERSION",
+            message = "Installing DeepSeek Coder $DSH_VERSION",
             from = fraction,
             to = 0.995f,
             onProgress = onProgress,
         )
         ensureDshAndroidCompatibility()
-        verifyGuest(proot, "/usr/local/bin/dsh --profile headless --help", "DeepSeek Harness verification failed")
-        require(isAgentInstalled(com.novacode.studio.model.AgentKind.DEEPSEEK_HARNESS)) {
-            "The DeepSeek Harness runtime bundle is incomplete"
+        verifyGuest(proot, "/usr/local/bin/dsh --profile headless --help", "DeepSeek Coder verification failed")
+        require(isAgentInstalled(com.novacode.studio.model.AgentKind.DEEPSEEK_CODER)) {
+            "The DeepSeek Coder runtime bundle is incomplete"
         }
     }
 
@@ -609,7 +609,7 @@ class RuntimeInstaller(private val context: Context) {
      * no-clobber guarantee. Existing-file edits continue to use atomic rename.
      */
     fun ensureDshAndroidCompatibility() {
-        if (!isAgentInstalled(com.novacode.studio.model.AgentKind.DEEPSEEK_HARNESS)) return
+        if (!isAgentInstalled(com.novacode.studio.model.AgentKind.DEEPSEEK_CODER)) return
         val persistence = File(
             rootfs,
             "usr/local/lib/dsh/node_modules/@deepseek-ai/dsh-session-persistence-jsonl/lib/index.js",
@@ -642,11 +642,11 @@ class RuntimeInstaller(private val context: Context) {
         callBefore: String,
         callAfter: String,
     ) {
-        check(file.isFile) { "DeepSeek Harness compatibility file is missing: ${file.name}" }
+        check(file.isFile) { "DeepSeek Coder compatibility file is missing: ${file.name}" }
         var source = file.readText()
         if (callAfter in source && importAfter in source) return
         check(callBefore in source && importBefore in source) {
-            "DeepSeek Harness $DSH_VERSION is not compatible with this PocketDev build"
+            "DeepSeek Coder $DSH_VERSION is not compatible with this NovaCode build"
         }
         source = source.replace(importBefore, importAfter).replace(callBefore, callAfter)
         file.writeText(source)
@@ -1874,7 +1874,7 @@ printf '%s\n' '{"hookSpecificOutput":{"hookEventName":"PermissionRequest","decis
         private const val ANDROID_AAPT2_GUEST_PATH = "/root/android-sdk/build-tools/35.0.0/aapt2"
         private const val ANDROID_AAPT2_HOST_PATH = "root/android-sdk/build-tools/35.0.0/aapt2"
         private val CLAUDE_VERSION_PATTERN = Regex("[0-9]+\\.[0-9]+\\.[0-9]+")
-        /** Pinned DeepSeek Harness release installed via npm inside the guest (verified 2026-09-06). */
+        /** Pinned DeepSeek Coder release installed via npm inside the guest (verified 2026-09-06). */
         const val DSH_VERSION = "0.1.2-rc.1"
         private const val DSH_ANDROID_COMPATIBILITY_VERSION = "copyfile-excl-v1"
         private val CORE_BUNDLE = RuntimeBundle(
@@ -1904,7 +1904,7 @@ printf '%s\n' '{"hookSpecificOutput":{"hookEventName":"PermissionRequest","decis
             compressedBytes = 569_652_007L,
         )
         private val DSH_BUNDLE = RuntimeBundle(
-            label = "DeepSeek Harness",
+            label = "DeepSeek Coder",
             fileName = "pocketdev-dsh-arm64-2026.09.1.tar.zst",
             sha256 = "88e6a23ba74e1cd74a2c923b7e0d6bd78ba4b7e5f8a9b649f12bf4ffe158cce5",
             compressedBytes = 27_752_194L,

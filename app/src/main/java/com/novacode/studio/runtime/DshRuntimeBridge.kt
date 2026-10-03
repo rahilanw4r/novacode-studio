@@ -25,7 +25,7 @@ import org.json.JSONArray
 import org.json.JSONObject
 
 /**
- * [RuntimeBridge] driving the official DeepSeek Harness (`dsh`) in headless
+ * [RuntimeBridge] driving the official DeepSeek Coder (`dsh`) in headless
  * one-shot mode: `dsh --profile headless "<task>"`.
  *
  * Verified contract (dsh 0.1.2-rc.1): the final answer goes to stdout, provider
@@ -68,7 +68,7 @@ class DshRuntimeBridge(
         foregroundResultPosted = false
         lastThinkingUpdateAt = 0L
         eventBus.emit(RuntimeEvent.SessionStarted(sessionId))
-        pushForegroundProgress("Starting DeepSeek Harness…")
+        pushForegroundProgress("Starting DeepSeek Coder…")
         val secret = secretFor(provider).orEmpty()
         if (secret.isBlank()) {
             eventBus.emit(RuntimeEvent.SessionFailed(sessionId, "No API key is saved for ${provider.kind.title}."))
@@ -78,7 +78,7 @@ class DshRuntimeBridge(
             eventBus.emit(
                 RuntimeEvent.SessionFailed(
                     sessionId,
-                    "Claude subscription login is not supported by DeepSeek Harness. Pick a key-based provider in Settings.",
+                    "Claude subscription login is not supported by DeepSeek Coder. Pick a key-based provider in Settings.",
                 ),
             )
             return@withContext sessionId
@@ -99,8 +99,8 @@ class DshRuntimeBridge(
             }
             startForegroundRuntime(projectSlug)
             val installed = installer.installedRuntime()
-            check(installer.isAgentInstalled(com.novacode.studio.model.AgentKind.DEEPSEEK_HARNESS)) {
-                "DeepSeek Harness is not installed. Open Settings → Coding agent to install it."
+            check(installer.isAgentInstalled(com.novacode.studio.model.AgentKind.DEEPSEEK_CODER)) {
+                "DeepSeek Coder is not installed. Open Settings → Coding agent to install it."
             }
             installer.ensureDshAndroidCompatibility()
             val workspace = checkpoints.ensureWorkspace(projectId)
@@ -118,7 +118,7 @@ class DshRuntimeBridge(
             writeDshSettings(installed.rootfs, route, provider)
             val environment = linkedMapOf(
                 "DSH_HOME" to DSH_HOME_GUEST_PATH,
-                // PocketDev already confines the whole Linux guest with PRoot. Let dsh
+                // NovaCode already confines the whole Linux guest with PRoot. Let dsh
                 // use every tool inside that boundary without an unavailable approval UI.
                 "DSH_PERMISSION_MODE" to "danger-full-access",
                 route.keyEnv to secret,
@@ -167,11 +167,11 @@ class DshRuntimeBridge(
                 finishForegroundRuntime(
                     completed = true,
                     projectName = projectSlug,
-                    detail = "DeepSeek Harness finished the task in $projectSlug.",
+                    detail = "DeepSeek Coder finished the task in $projectSlug.",
                 )
             } else {
                 if (userStopRequested) throw DshSessionException("Stopped by user")
-                error(sdkResult.failure.ifBlank { "DeepSeek Harness stopped with exit code $exit" })
+                error(sdkResult.failure.ifBlank { "DeepSeek Coder stopped with exit code $exit" })
             }
         }.onFailure { error ->
             Log.e("DshBridge", "Session failed", error)
@@ -262,11 +262,11 @@ class DshRuntimeBridge(
                 is DshSdkProtocolEvent.Status -> {
                     if (protocolEvent.running) {
                         sawRunning = true
-                        pushForegroundProgress("DeepSeek Harness is working…")
+                        pushForegroundProgress("DeepSeek Coder is working…")
                     } else if (sawRunning && !shutdownSent) {
                         completed = sawActivity && failure.isBlank()
                         if (!completed && failure.isBlank()) {
-                            failure = "DeepSeek Harness stopped before processing the prompt"
+                            failure = "DeepSeek Coder stopped before processing the prompt"
                         }
                         shutdownSent = true
                         shutdownSentAt = android.os.SystemClock.elapsedRealtime()
@@ -485,7 +485,7 @@ class DshRuntimeBridge(
             finishForegroundRuntime(
                 completed = true,
                 projectName = activeProjectSlug ?: "your project",
-                detail = "DeepSeek Harness finished the task.",
+                detail = "DeepSeek Coder finished the task.",
             )
         }
     }
@@ -520,9 +520,9 @@ class DshRuntimeBridge(
                 } ->
                 "The provider rejected the saved API key."
             message.contains("missing_credential", true) ->
-                "No API key reached DeepSeek Harness. Re-save the provider key in Settings."
+                "No API key reached DeepSeek Coder. Re-save the provider key in Settings."
             message.contains("not installed", true) -> message.take(300)
-            !message.isMeaningfulDshText() -> "DeepSeek Harness could not start."
+            !message.isMeaningfulDshText() -> "DeepSeek Coder could not start."
             else -> message.take(500)
         }
     }
@@ -553,10 +553,10 @@ class DshRuntimeBridge(
             sb.appendLine("If this is an Android project, the phone already provides JDK 17, Android SDK 36, ARM64 Build Tools 35.0.0, Gradle 8.14.3, and an offline Maven repository.")
             sb.appendLine("For newly created Android projects, use AGP 8.11.0, Kotlin 1.9.22, compileSdk 36, and Java 17 so the preinstalled offline toolchain can build immediately.")
             sb.appendLine("The bundled Maven cache handles the base toolchain; Gradle may download project-specific libraries normally. Set android.useAndroidX=true for AndroidX or Compose projects.")
-            sb.appendLine("PocketDev globally configures Gradle to use the SDK's ARM64 aapt2. Do not use the x86_64 Maven aapt2, investigate its architecture, or add android.aapt2FromMavenOverride to the project.")
+            sb.appendLine("NovaCode globally configures Gradle to use the SDK's ARM64 aapt2. Do not use the x86_64 Maven aapt2, investigate its architecture, or add android.aapt2FromMavenOverride to the project.")
             sb.appendLine("Use the installed `gradle` command for Android builds; do not ask the user to install Android Studio, an SDK, Gradle, ADB, or Termux.")
         } else {
-            sb.appendLine("The optional Android build toolchain is not installed in this PocketDev runtime. You may create Android project files, but do not claim that Gradle, the Android SDK, or aapt2 is available and do not present build or install commands as verified. Tell the user to add the Android development stack in PocketDev Settings before building.")
+            sb.appendLine("The optional Android build toolchain is not installed in this NovaCode runtime. You may create Android project files, but do not claim that Gradle, the Android SDK, or aapt2 is available and do not present build or install commands as verified. Tell the user to add the Android development stack in NovaCode Settings before building.")
         }
         sb.appendLine("For local servers, give a clear start command and never use a kill command that searches its own command text with pgrep, because it can terminate the terminal itself.")
         sb.appendLine("</project_workspace>")
@@ -742,7 +742,7 @@ internal object DshRouteMapper {
                 defaultModel = model,
                 custom = DshCustomRoute("openai-completions", profile.resolvedBaseUrl),
             )
-            ProviderKind.CLAUDE -> throw IllegalArgumentException("Claude subscription login is not supported by DeepSeek Harness")
+            ProviderKind.CLAUDE -> throw IllegalArgumentException("Claude subscription login is not supported by DeepSeek Coder")
         }
     }
 }
@@ -804,7 +804,7 @@ internal class DshSdkProtocolParser(private val expectedSessionId: String) {
             ?: return if (line.startsWith("dsh:", ignoreCase = true)) {
                 DshSdkProtocolEvent.Failed(
                     line.removePrefix("dsh:").trim().meaningfulDshText(
-                        "DeepSeek Harness reported an unspecified error",
+                        "DeepSeek Coder reported an unspecified error",
                     ),
                 )
             } else {
@@ -815,7 +815,7 @@ internal class DshSdkProtocolParser(private val expectedSessionId: String) {
             val id = frame.optInt("id", -1)
             frame.optJSONObject("error")?.let { error ->
                 return DshSdkProtocolEvent.Failed(
-                    error.optString("message").meaningfulDshText("DeepSeek Harness SDK request $id failed"),
+                    error.optString("message").meaningfulDshText("DeepSeek Coder SDK request $id failed"),
                 )
             }
             return when (id) {
@@ -885,9 +885,9 @@ internal class DshSdkProtocolParser(private val expectedSessionId: String) {
                 when (reason?.optString("kind")) {
                     "error" -> DshSdkProtocolEvent.Failed(
                         reason.optJSONObject("error")?.optString("message").orEmpty()
-                            .meaningfulDshText("DeepSeek Harness turn failed"),
+                            .meaningfulDshText("DeepSeek Coder turn failed"),
                     )
-                    "blocked" -> DshSdkProtocolEvent.Failed("DeepSeek Harness was blocked from completing the task")
+                    "blocked" -> DshSdkProtocolEvent.Failed("DeepSeek Coder was blocked from completing the task")
                     else -> DshSdkProtocolEvent.TurnCompleted
                 }
             }

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Build a portable PocketDev overlay from Google's checksum-pinned official
+# Build a portable NovaCode overlay from Google's checksum-pinned official
 # Antigravity CLI release. The archive contains only the executable and version
 # marker: no OAuth credentials, settings, conversations, projects, or device data.
 VERSION="${POCKETDEV_AGY_VERSION:-1.1.27}"

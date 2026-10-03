@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.22.1)
-project(mobile_harness_native C ASM)
+project(novacode_studio_native C ASM)
 
 if(NOT ANDROID_ABI STREQUAL "arm64-v8a")
     message(FATAL_ERROR "NovaCode Studio currently supports only arm64-v8a")

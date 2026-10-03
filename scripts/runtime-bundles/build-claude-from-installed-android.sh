@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # Export the checksum-verified official Claude Code ARM64 binary from an
-# existing PocketDev installation. Only the executable and version marker are
+# existing NovaCode installation. Only the executable and version marker are
 # included; authentication, settings, conversations, projects, and device data
 # are never copied.
 ADB_SERIAL="${ADB_SERIAL:-}"

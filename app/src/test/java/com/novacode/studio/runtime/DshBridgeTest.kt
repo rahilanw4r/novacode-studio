@@ -1,7 +1,7 @@
 package com.novacode.studio.runtime
 
 import com.novacode.studio.model.AgentKind
-import com.novacode.studio.model.DEEPSEEK_HARNESS_PROVIDERS
+import com.novacode.studio.model.DEEPSEEK_CODER_PROVIDERS
 import com.novacode.studio.model.ProviderKind
 import com.novacode.studio.model.ProviderProfile
 import com.novacode.studio.model.ProviderProtocol
@@ -174,7 +174,7 @@ class DshSdkProtocolParserTest {
         )
 
         assertEquals(
-            DshSdkProtocolEvent.Failed("DeepSeek Harness SDK request 2 failed"),
+            DshSdkProtocolEvent.Failed("DeepSeek Coder SDK request 2 failed"),
             failed,
         )
     }
@@ -193,7 +193,7 @@ class DshSdkProtocolParserTest {
             ),
         )
 
-        assertEquals(DshSdkProtocolEvent.Failed("DeepSeek Harness turn failed"), failed)
+        assertEquals(DshSdkProtocolEvent.Failed("DeepSeek Coder turn failed"), failed)
     }
 
     private fun sessionEvent(type: String, data: JSONObject): String = notification(
@@ -259,14 +259,14 @@ class AgentProviderPresetTest {
     }
 
     @Test
-    fun deepSeekHarnessValidationUsesSelectedCustomProtocol() {
+    fun deepSeekCoderValidationUsesSelectedCustomProtocol() {
         val profile = ProviderProfile(
             ProviderKind.CUSTOM,
             baseUrl = "https://api.example.com/v1",
             model = "model",
             dshApi = "openai-completions",
         )
-        assertEquals(ProviderProtocol.OPENAI_CHAT, providerProtocolForAgent(profile, AgentKind.DEEPSEEK_HARNESS))
+        assertEquals(ProviderProtocol.OPENAI_CHAT, providerProtocolForAgent(profile, AgentKind.DEEPSEEK_CODER))
         assertEquals(ProviderProtocol.ANTHROPIC_GATEWAY, providerProtocolForAgent(profile, AgentKind.CLAUDE_CODE))
     }
 
@@ -288,31 +288,31 @@ class AgentProviderPresetTest {
     @Test
     fun storedDriftCannotOverrideFixedProtocol() {
         val profile = ProviderProfile(ProviderKind.NVIDIA_NIM, dshApi = "anthropic-messages")
-        assertEquals(ProviderProtocol.OPENAI_CHAT, providerProtocolForAgent(profile, AgentKind.DEEPSEEK_HARNESS))
+        assertEquals(ProviderProtocol.OPENAI_CHAT, providerProtocolForAgent(profile, AgentKind.DEEPSEEK_CODER))
         assertEquals("openai-completions", DshRouteMapper.forProfile(profile).custom?.api)
     }
 
     @Test
-    fun dshHarnessExcludesClaudeSubscription() {
-        assertFalse(ProviderKind.CLAUDE in DEEPSEEK_HARNESS_PROVIDERS)
-        assertTrue(ProviderKind.OPENCODE_ZEN in DEEPSEEK_HARNESS_PROVIDERS)
-        assertTrue(ProviderKind.DEEPSEEK in DEEPSEEK_HARNESS_PROVIDERS)
-        assertTrue(ProviderKind.NVIDIA_NIM in DEEPSEEK_HARNESS_PROVIDERS)
-        assertEquals(7, DEEPSEEK_HARNESS_PROVIDERS.size)
+    fun dshCoderExcludesClaudeSubscription() {
+        assertFalse(ProviderKind.CLAUDE in DEEPSEEK_CODER_PROVIDERS)
+        assertTrue(ProviderKind.OPENCODE_ZEN in DEEPSEEK_CODER_PROVIDERS)
+        assertTrue(ProviderKind.DEEPSEEK in DEEPSEEK_CODER_PROVIDERS)
+        assertTrue(ProviderKind.NVIDIA_NIM in DEEPSEEK_CODER_PROVIDERS)
+        assertEquals(7, DEEPSEEK_CODER_PROVIDERS.size)
     }
 
     @Test
-    fun openCodeZenIsOnlyShownForDeepSeekHarness() {
-        assertTrue(ProviderKind.OPENCODE_ZEN in providersForAgent(AgentKind.DEEPSEEK_HARNESS))
+    fun openCodeZenIsOnlyShownForDeepSeekCoder() {
+        assertTrue(ProviderKind.OPENCODE_ZEN in providersForAgent(AgentKind.DEEPSEEK_CODER))
         assertFalse(ProviderKind.OPENCODE_ZEN in providersForAgent(AgentKind.CLAUDE_CODE))
     }
 
     @Test
     fun agentKindsAreStable() {
         assertEquals(AgentKind.CLAUDE_CODE, AgentKind.valueOf("CLAUDE_CODE"))
-        assertEquals(AgentKind.DEEPSEEK_HARNESS, AgentKind.valueOf("DEEPSEEK_HARNESS"))
+        assertEquals(AgentKind.DEEPSEEK_CODER, AgentKind.valueOf("DEEPSEEK_CODER"))
         assertEquals(AgentKind.ANTIGRAVITY, AgentKind.fromStored("antigravity"))
         assertEquals(AgentKind.CLAUDE_CODE, AgentKind.fromStored("CLAUDE_CODE"))
-        assertEquals(AgentKind.DEEPSEEK_HARNESS, AgentKind.fromStored("DEEPSEEK_HARNESS"))
+        assertEquals(AgentKind.DEEPSEEK_CODER, AgentKind.fromStored("DEEPSEEK_CODER"))
     }
 }

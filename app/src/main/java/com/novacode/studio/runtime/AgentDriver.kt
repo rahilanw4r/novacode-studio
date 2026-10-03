@@ -60,7 +60,7 @@ class AgentRegistry(drivers: List<AgentDriver>) {
                     ),
                 ),
                 BuiltInAgentDriver(
-                    AgentKind.DEEPSEEK_HARNESS,
+                    AgentKind.DEEPSEEK_CODER,
                     deepSeek,
                     setOf(
                         AgentCapability.API_KEY,

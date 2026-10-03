@@ -515,7 +515,7 @@ internal fun antigravityCommand(model: String, effort: String, conversationId: S
     addAll(listOf("--output-format", "stream-json"))
     addAll(listOf("--print-timeout", "60m"))
     // This is intentionally explicit and covered by tests. Antigravity tool calls
-    // do not pass through PocketDev approval dialogs while this mode is enabled.
+    // do not pass through NovaCode approval dialogs while this mode is enabled.
     add("--dangerously-skip-permissions")
     addAntigravitySelection(model, effort)
     conversationId?.takeIf(String::isNotBlank)?.let {

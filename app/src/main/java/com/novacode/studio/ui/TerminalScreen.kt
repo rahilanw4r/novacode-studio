@@ -85,8 +85,8 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.novacode.studio.ui.theme.AppThemeMode
-import com.novacode.studio.ui.theme.PocketGreen
-import com.novacode.studio.ui.theme.PocketOrange
+import com.novacode.studio.ui.theme.NovaEmerald
+import com.novacode.studio.ui.theme.NovaIndigo
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -187,10 +187,10 @@ fun TerminalScreen(
                         Box(
                             modifier = Modifier
                                 .size(34.dp)
-                                .background(PocketOrange.copy(alpha = 0.12f), RoundedCornerShape(10.dp)),
+                                .background(NovaIndigo.copy(alpha = 0.12f), RoundedCornerShape(10.dp)),
                             contentAlignment = Alignment.Center,
                         ) {
-                            Icon(Icons.Default.Terminal, contentDescription = null, tint = PocketOrange, modifier = Modifier.size(18.dp))
+                            Icon(Icons.Default.Terminal, contentDescription = null, tint = NovaIndigo, modifier = Modifier.size(18.dp))
                         }
                         Spacer(Modifier.width(11.dp))
                         Column(Modifier.weight(1f)) {
@@ -300,7 +300,7 @@ fun TerminalScreen(
                 AppThemeMode.SYSTEM -> isSystemInDarkTheme()
             }
             val terminalBg = if (isDark) Color(0xFF090D14) else MaterialTheme.colorScheme.surface
-            val promptGreen = if (isDark) PocketGreen else Color(0xFF0D7A3E)
+            val promptGreen = if (isDark) NovaEmerald else Color(0xFF0D7A3E)
             val commandTextColor = if (isDark) Color(0xFFF0F6FC) else MaterialTheme.colorScheme.onSurface
             val outputTextColor = if (isDark) Color(0xFFC9D1D9) else MaterialTheme.colorScheme.onSurface
             val emptyStateColor = if (isDark) Color(0xFF6E7681) else MaterialTheme.colorScheme.onSurfaceVariant
@@ -496,12 +496,12 @@ private fun TerminalKeyButton(
         contentPadding = PaddingValues(horizontal = 10.dp, vertical = 0.dp),
         modifier = Modifier.height(34.dp).then(if (fixedWidth) Modifier.width(78.dp) else Modifier),
         colors = androidx.compose.material3.ButtonDefaults.outlinedButtonColors(
-            containerColor = if (active) PocketOrange.copy(alpha = 0.18f) else Color.Transparent,
-            contentColor = if (active) PocketOrange else MaterialTheme.colorScheme.onSurface,
+            containerColor = if (active) NovaIndigo.copy(alpha = 0.18f) else Color.Transparent,
+            contentColor = if (active) NovaIndigo else MaterialTheme.colorScheme.onSurface,
         ),
         border = androidx.compose.foundation.BorderStroke(
             1.dp,
-            if (active) PocketOrange else MaterialTheme.colorScheme.outlineVariant,
+            if (active) NovaIndigo else MaterialTheme.colorScheme.outlineVariant,
         ),
     ) {
         Text(
@@ -522,7 +522,7 @@ private fun TerminalIconKeyButton(icon: androidx.compose.ui.graphics.vector.Imag
 
 @Composable
 private fun TerminalCommandPrompt(promptPath: String, command: String, isDark: Boolean = true) {
-    val promptGreen = if (isDark) PocketGreen else Color(0xFF0D7A3E)
+    val promptGreen = if (isDark) NovaEmerald else Color(0xFF0D7A3E)
     val commandColor = if (isDark) Color(0xFFF0F6FC) else MaterialTheme.colorScheme.onSurface
     val promptText = remember(promptPath, command, isDark) {
         buildAnnotatedString {

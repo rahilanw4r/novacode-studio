@@ -19,7 +19,7 @@
         android:networkSecurityConfig="@xml/network_security_config"
         android:supportsRtl="true"
         android:extractNativeLibs="true"
-        android:theme="@style/Theme.PocketDev"
+        android:theme="@style/Theme.NovaCode"
         android:usesCleartextTraffic="false">
         <activity
             android:name=".MainActivity"

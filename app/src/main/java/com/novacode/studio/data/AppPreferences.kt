@@ -89,7 +89,7 @@ class AppPreferences(private val context: Context) {
         return "agent_conversation_${version}${agent.stableId}_${projectId}_$chatId"
     }
 
-    /** Pinned dsh version recorded when DeepSeek Harness was installed. */
+    /** Pinned dsh version recorded when DeepSeek Coder was installed. */
     var dshVersion: String
         get() = preferences.getString("dsh_version", "") ?: ""
         set(value) { preferences.edit().putString("dsh_version", value).apply() }
@@ -170,18 +170,18 @@ class AppPreferences(private val context: Context) {
             preferences.getString("${sourcePrefix}model", it.defaultModel) ?: it.defaultModel
         }.orEmpty()
         // Older builds copied the global Claude/Anthropic default into a new
-        // DeepSeek Harness profile. Treat that untouched, keyless placeholder
+        // DeepSeek Coder profile. Treat that untouched, keyless placeholder
         // as unconfigured so DeepSeek opens on its own official provider.
-        val legacyClaudeDefaultInDeepSeek = agent == AgentKind.DEEPSEEK_HARNESS &&
+        val legacyClaudeDefaultInDeepSeek = agent == AgentKind.DEEPSEEK_CODER &&
             storedKind == ProviderKind.ANTHROPIC &&
             !vault.contains(ProviderKind.ANTHROPIC.name) &&
             storedBaseUrl == ProviderKind.ANTHROPIC.defaultBaseUrl &&
             storedModel == ProviderKind.ANTHROPIC.defaultModel
         val kind = when {
             agent == null -> storedKind ?: ProviderKind.ANTHROPIC
-            agent == AgentKind.DEEPSEEK_HARNESS && (!hasAgentProfile || legacyClaudeDefaultInDeepSeek) -> ProviderKind.DEEPSEEK
+            agent == AgentKind.DEEPSEEK_CODER && (!hasAgentProfile || legacyClaudeDefaultInDeepSeek) -> ProviderKind.DEEPSEEK
             storedKind != null && storedKind in providersForAgent(agent) -> storedKind
-            agent == AgentKind.DEEPSEEK_HARNESS -> ProviderKind.DEEPSEEK
+            agent == AgentKind.DEEPSEEK_CODER -> ProviderKind.DEEPSEEK
             else -> ProviderKind.ANTHROPIC
         }
         val useStoredValues = storedKind == kind

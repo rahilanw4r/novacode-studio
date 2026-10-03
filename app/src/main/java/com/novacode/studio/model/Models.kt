@@ -63,9 +63,9 @@ enum class AgentKind(
         "Anthropic's coding agent · broad provider support",
         "71.8 MB",
     ),
-    DEEPSEEK_HARNESS(
-        "deepseek-harness",
-        "DeepSeek Harness",
+    DEEPSEEK_CODER(
+        "deepseek-coder",
+        "DeepSeek Coder",
         "Official DeepSeek coding agent · API-key providers",
         "26.5 MB",
     ),
@@ -84,8 +84,8 @@ enum class AgentKind(
     }
 }
 
-/** Provider kinds usable with [AgentKind.DEEPSEEK_HARNESS]. Claude OAuth login has no dsh equivalent. */
-val DEEPSEEK_HARNESS_PROVIDERS: Set<ProviderKind> = setOf(
+/** Provider kinds usable with [AgentKind.DEEPSEEK_CODER]. Claude OAuth login has no dsh equivalent. */
+val DEEPSEEK_CODER_PROVIDERS: Set<ProviderKind> = setOf(
     ProviderKind.DEEPSEEK,
     ProviderKind.ANTHROPIC,
     ProviderKind.GEMINI,
@@ -128,9 +128,9 @@ fun inferredDshApiForUrl(baseUrl: String): String {
     }
 }
 
-/** Resolves the protocol DeepSeek Harness will actually use for this saved profile. */
+/** Resolves the protocol DeepSeek Coder will actually use for this saved profile. */
 fun providerProtocolForAgent(profile: ProviderProfile, agent: AgentKind): ProviderProtocol {
-    if (agent != AgentKind.DEEPSEEK_HARNESS || profile.kind !in DSH_PROTOCOL_PROVIDERS) {
+    if (agent != AgentKind.DEEPSEEK_CODER || profile.kind !in DSH_PROTOCOL_PROVIDERS) {
         return profile.kind.protocol
     }
     val api = if (profile.kind.fixedProtocol) defaultDshApiForProvider(profile.kind) else profile.dshApi
@@ -143,7 +143,7 @@ fun providerProtocolForAgent(profile: ProviderProfile, agent: AgentKind): Provid
 
 /** Provider choices shown for the selected coding agent. */
 fun providersForAgent(agent: AgentKind): List<ProviderKind> = when (agent) {
-    AgentKind.DEEPSEEK_HARNESS -> ProviderKind.entries.filter { it in DEEPSEEK_HARNESS_PROVIDERS }
+    AgentKind.DEEPSEEK_CODER -> ProviderKind.entries.filter { it in DEEPSEEK_CODER_PROVIDERS }
     AgentKind.CLAUDE_CODE -> ProviderKind.entries.filterNot { it == ProviderKind.OPENCODE_ZEN }
     AgentKind.ANTIGRAVITY -> emptyList()
 }

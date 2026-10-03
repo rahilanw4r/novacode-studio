@@ -184,7 +184,7 @@ import com.novacode.studio.model.ChangeItem
 import com.novacode.studio.model.ChatMessage
 import com.novacode.studio.model.ChatAttachment
 import com.novacode.studio.model.DevStack
-import com.novacode.studio.model.DEEPSEEK_HARNESS_PROVIDERS
+import com.novacode.studio.model.DEEPSEEK_CODER_PROVIDERS
 import com.novacode.studio.model.DSH_PROTOCOL_PROVIDERS
 import com.novacode.studio.model.DiffLine
 import com.novacode.studio.model.DiffLineType
@@ -214,9 +214,9 @@ import com.novacode.studio.network.ConnectionValidation
 import com.novacode.studio.network.DiscoveredModel
 import com.novacode.studio.network.ModelDiscoveryResult
 import com.novacode.studio.network.GitHubRepository
-import com.novacode.studio.ui.theme.PocketBlue
-import com.novacode.studio.ui.theme.PocketGreen
-import com.novacode.studio.ui.theme.PocketOrange
+import com.novacode.studio.ui.theme.NovaCyan
+import com.novacode.studio.ui.theme.NovaEmerald
+import com.novacode.studio.ui.theme.NovaIndigo
 import java.io.ByteArrayInputStream
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -241,7 +241,7 @@ private enum class WorkspaceTab(val label: String, val icon: ImageVector) {
 }
 
 @Composable
-fun PocketDevApp(viewModel: MainViewModel = viewModel()) {
+fun NovaCodeApp(viewModel: MainViewModel = viewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val projectsListState = rememberSaveable(saver = LazyListState.Saver) { LazyListState() }
@@ -389,7 +389,7 @@ private fun AntigravityOnboardingScreen(
         ) {
             Text("Connect your Google account", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
             Text(
-                "PocketDev runs Google's official agy CLI inside its private Linux environment. Google handles authentication and agy owns the saved session.",
+                "NovaCode runs Google's official agy CLI inside its private Linux environment. Google handles authentication and agy owns the saved session.",
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             when (state.antigravityAuth.status) {
@@ -433,11 +433,11 @@ private fun AntigravityOnboardingScreen(
                     ) { Text("Complete sign-in") }
                 }
                 AntigravityAuthStatus.SIGNED_IN -> {
-                    Surface(color = PocketGreen.copy(alpha = 0.12f), shape = RoundedCornerShape(14.dp)) {
+                    Surface(color = NovaEmerald.copy(alpha = 0.12f), shape = RoundedCornerShape(14.dp)) {
                         Text(
                             state.antigravityAuth.accountEmail?.let { "Connected as $it" } ?: "Google account connected",
                             Modifier.fillMaxWidth().padding(16.dp),
-                            color = PocketGreen,
+                            color = NovaEmerald,
                             fontWeight = FontWeight.SemiBold,
                         )
                     }
@@ -454,7 +454,7 @@ private fun AntigravityOnboardingScreen(
             }
             Surface(color = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.6f), shape = RoundedCornerShape(14.dp)) {
                 Text(
-                    "Automatic tool approval is enabled for Antigravity. It can edit project files and run commands without confirmation. Changes remain reviewable in PocketDev.",
+                    "Automatic tool approval is enabled for Antigravity. It can edit project files and run commands without confirmation. Changes remain reviewable in NovaCode.",
                     Modifier.fillMaxWidth().padding(14.dp),
                     color = MaterialTheme.colorScheme.onErrorContainer,
                     fontSize = 12.sp,
@@ -612,7 +612,7 @@ private fun BackgroundTaskSetupScreen(
                             Text("STEP ${currentStep + 1} OF 3", color = MaterialTheme.colorScheme.primary, fontSize = 9.sp, fontWeight = FontWeight.Bold, letterSpacing = 0.8.sp)
                             Text(currentTitle, color = MaterialTheme.colorScheme.onSurface, fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
                         }
-                        if (currentGranted) Icon(Icons.Default.Check, "Granted", tint = PocketGreen)
+                        if (currentGranted) Icon(Icons.Default.Check, "Granted", tint = NovaEmerald)
                     }
                     Spacer(Modifier.height(14.dp))
                     Text(currentDescription, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 13.sp, lineHeight = 18.sp)
@@ -722,7 +722,7 @@ private fun PermissionSummaryRow(
         Icon(
             icon,
             null,
-            tint = if (active) MaterialTheme.colorScheme.primary else if (complete) PocketGreen else MaterialTheme.colorScheme.onSurfaceVariant,
+            tint = if (active) MaterialTheme.colorScheme.primary else if (complete) NovaEmerald else MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.size(18.dp),
         )
         Spacer(Modifier.width(12.dp))
@@ -734,7 +734,7 @@ private fun PermissionSummaryRow(
             fontWeight = if (active) FontWeight.SemiBold else FontWeight.Medium,
         )
         when {
-            complete -> Icon(Icons.Default.Check, "Complete", tint = PocketGreen, modifier = Modifier.size(18.dp))
+            complete -> Icon(Icons.Default.Check, "Complete", tint = NovaEmerald, modifier = Modifier.size(18.dp))
             active -> Text("Required", color = MaterialTheme.colorScheme.primary, fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
             else -> Text("Next", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 11.sp)
         }
@@ -909,15 +909,15 @@ private fun RuntimeSetupPromptScreen(
                             }
                             Surface(
                                 shape = RoundedCornerShape(6.dp),
-                                color = if (compatible) PocketGreen.copy(alpha = 0.15f) else MaterialTheme.colorScheme.error.copy(alpha = 0.15f),
-                                border = BorderStroke(0.5.dp, if (compatible) PocketGreen.copy(alpha = 0.35f) else MaterialTheme.colorScheme.error.copy(alpha = 0.35f)),
+                                color = if (compatible) NovaEmerald.copy(alpha = 0.15f) else MaterialTheme.colorScheme.error.copy(alpha = 0.15f),
+                                border = BorderStroke(0.5.dp, if (compatible) NovaEmerald.copy(alpha = 0.35f) else MaterialTheme.colorScheme.error.copy(alpha = 0.35f)),
                             ) {
                                 Text(
                                     text = if (compatible) "Ready" else "Unsupported",
                                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
                                     fontSize = 11.sp,
                                     fontWeight = FontWeight.SemiBold,
-                                    color = if (compatible) PocketGreen else MaterialTheme.colorScheme.error,
+                                    color = if (compatible) NovaEmerald else MaterialTheme.colorScheme.error,
                                 )
                             }
                         }
@@ -1044,7 +1044,7 @@ private fun RuntimeSetupPromptScreen(
                             )
                             Text("Ubuntu  ·  Node.js  ·  npm  ·  Git", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 11.sp)
                         }
-                        Icon(Icons.Default.Check, "Included", tint = PocketGreen, modifier = Modifier.size(20.dp))
+                        Icon(Icons.Default.Check, "Included", tint = NovaEmerald, modifier = Modifier.size(20.dp))
                     }
                 }
 
@@ -1202,7 +1202,7 @@ private fun toolchainDownloadSummary(selected: Set<DevStack>, agent: AgentKind):
     val total = CORE_RUNTIME_DOWNLOAD_MB +
         when (agent) {
             AgentKind.CLAUDE_CODE -> CLAUDE_RUNTIME_DOWNLOAD_MB
-            AgentKind.DEEPSEEK_HARNESS -> DSH_RUNTIME_DOWNLOAD_MB
+            AgentKind.DEEPSEEK_CODER -> DSH_RUNTIME_DOWNLOAD_MB
             AgentKind.ANTIGRAVITY -> AGY_RUNTIME_DOWNLOAD_MB
         } +
         (if (DevStack.PYTHON in selected) PYTHON_RUNTIME_DOWNLOAD_MB else 0) +
@@ -1287,12 +1287,12 @@ private fun AgentChoiceRow(
 ) {
     val accent = when (agent) {
         AgentKind.CLAUDE_CODE -> Color(0xFFD97757)
-        AgentKind.DEEPSEEK_HARNESS -> Color(0xFF4D6BFE)
+        AgentKind.DEEPSEEK_CODER -> Color(0xFF4D6BFE)
         AgentKind.ANTIGRAVITY -> Color(0xFF4285F4)
     }
     val mark = when (agent) {
         AgentKind.CLAUDE_CODE -> "CC"
-        AgentKind.DEEPSEEK_HARNESS -> "DS"
+        AgentKind.DEEPSEEK_CODER -> "DS"
         AgentKind.ANTIGRAVITY -> "AG"
     }
     Row(
@@ -1321,16 +1321,16 @@ private fun AgentChoiceRow(
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 13.sp,
                 )
-                if (agent == AgentKind.DEEPSEEK_HARNESS) {
+                if (agent == AgentKind.DEEPSEEK_CODER) {
                     Spacer(Modifier.width(7.dp))
                     Surface(
-                        color = PocketOrange.copy(alpha = 0.14f),
+                        color = NovaIndigo.copy(alpha = 0.14f),
                         shape = RoundedCornerShape(50),
                     ) {
                         Text(
                             "Recommended",
                             modifier = Modifier.padding(horizontal = 7.dp, vertical = 2.dp),
-                            color = PocketOrange,
+                            color = NovaIndigo,
                             fontSize = 9.sp,
                             fontWeight = FontWeight.Bold,
                             maxLines = 1,
@@ -1492,7 +1492,7 @@ private fun RuntimeInstallationScreen(
                     "STEP 1 OF 3",
                     fontSize = 10.sp,
                     fontWeight = FontWeight.Bold,
-                    color = PocketOrange,
+                    color = NovaIndigo,
                     letterSpacing = 1.1.sp,
                 )
                 Spacer(Modifier.weight(1f))
@@ -1730,14 +1730,14 @@ private fun WorkspaceLaunchExperience(state: AppUiState) {
                     )
                 }
                 Surface(
-                    color = PocketGreen.copy(alpha = 0.12f),
+                    color = NovaEmerald.copy(alpha = 0.12f),
                     shape = RoundedCornerShape(50),
-                    border = BorderStroke(1.dp, PocketGreen.copy(alpha = 0.3f)),
+                    border = BorderStroke(1.dp, NovaEmerald.copy(alpha = 0.3f)),
                 ) {
                     Text(
                         if (agentReady) "READY" else "STARTING",
                         modifier = Modifier.padding(horizontal = 9.dp, vertical = 5.dp),
-                        color = PocketGreen,
+                        color = NovaEmerald,
                         fontSize = 9.sp,
                         fontWeight = FontWeight.Bold,
                         letterSpacing = 0.7.sp,
@@ -1800,7 +1800,7 @@ private fun LaunchStatusRow(icon: ImageVector, label: String, status: String, co
             Modifier
                 .size(28.dp)
                 .background(
-                    if (complete) PocketGreen.copy(alpha = 0.11f) else MaterialTheme.colorScheme.surfaceVariant,
+                    if (complete) NovaEmerald.copy(alpha = 0.11f) else MaterialTheme.colorScheme.surfaceVariant,
                     RoundedCornerShape(9.dp),
                 ),
             contentAlignment = Alignment.Center,
@@ -1808,7 +1808,7 @@ private fun LaunchStatusRow(icon: ImageVector, label: String, status: String, co
             Icon(
                 if (complete) Icons.Default.Check else icon,
                 contentDescription = null,
-                tint = if (complete) PocketGreen else MaterialTheme.colorScheme.onSurfaceVariant,
+                tint = if (complete) NovaEmerald else MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(15.dp),
             )
         }
@@ -1816,7 +1816,7 @@ private fun LaunchStatusRow(icon: ImageVector, label: String, status: String, co
         Text(label, modifier = Modifier.weight(1f), fontSize = 12.sp, fontWeight = FontWeight.Medium)
         Text(
             status,
-            color = if (complete) PocketGreen else MaterialTheme.colorScheme.primary,
+            color = if (complete) NovaEmerald else MaterialTheme.colorScheme.primary,
             fontSize = 11.sp,
             fontWeight = FontWeight.SemiBold,
         )
@@ -2335,7 +2335,7 @@ private fun ProviderSetupScreen(
                     apiKey = apiKey,
                     onBaseUrl = {
                         baseUrl = it
-                        if (agentKind == AgentKind.DEEPSEEK_HARNESS && selected == ProviderKind.CUSTOM) {
+                        if (agentKind == AgentKind.DEEPSEEK_CODER && selected == ProviderKind.CUSTOM) {
                             dshApi = inferredDshApiForUrl(it)
                         }
                     },
@@ -2393,7 +2393,7 @@ private fun DshApiProtocolPicker(selected: String, onSelected: (String) -> Unit)
             }
         }
         Text(
-            "Pick the protocol your gateway speaks; DeepSeek Harness routes it directly.",
+            "Pick the protocol your gateway speaks; DeepSeek Coder routes it directly.",
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             fontSize = 11.sp,
         )
@@ -2406,7 +2406,7 @@ private fun StepDots(step: Int) {
         repeat(3) { index ->
             Box(
                 Modifier.height(5.dp).weight(1f)
-                    .background(if (index <= step) PocketOrange else MaterialTheme.colorScheme.outlineVariant, CircleShape),
+                    .background(if (index <= step) NovaIndigo else MaterialTheme.colorScheme.outlineVariant, CircleShape),
             )
         }
     }
@@ -2444,14 +2444,14 @@ private fun DeviceCheckStep(context: Context, onContinue: () -> Unit) {
 private fun CheckRow(icon: ImageVector, title: String, value: String, passed: Boolean) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Surface(shape = RoundedCornerShape(12.dp), color = MaterialTheme.colorScheme.surfaceVariant) {
-            Icon(icon, null, Modifier.padding(11.dp).size(22.dp), tint = if (passed) PocketGreen else MaterialTheme.colorScheme.error)
+            Icon(icon, null, Modifier.padding(11.dp).size(22.dp), tint = if (passed) NovaEmerald else MaterialTheme.colorScheme.error)
         }
         Spacer(Modifier.width(12.dp))
         Column(Modifier.weight(1f)) {
             Text(title, fontWeight = FontWeight.SemiBold)
             Text(value, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 13.sp)
         }
-        Icon(if (passed) Icons.Default.Check else Icons.Default.Warning, null, tint = if (passed) PocketGreen else MaterialTheme.colorScheme.error)
+        Icon(if (passed) Icons.Default.Check else Icons.Default.Warning, null, tint = if (passed) NovaEmerald else MaterialTheme.colorScheme.error)
     }
 }
 
@@ -2470,21 +2470,21 @@ private fun ProviderChoiceStep(
                 "STEP 2 OF 3",
                 fontSize = 10.sp,
                 fontWeight = FontWeight.Bold,
-                color = PocketOrange,
+                color = NovaIndigo,
                 letterSpacing = 1.1.sp,
             )
             Spacer(Modifier.weight(1f))
             Surface(
-                color = PocketGreen.copy(alpha = 0.10f),
+                color = NovaEmerald.copy(alpha = 0.10f),
                 shape = RoundedCornerShape(50),
             ) {
                 Row(
                     modifier = Modifier.padding(horizontal = 9.dp, vertical = 4.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Icon(Icons.Default.Shield, null, tint = PocketGreen, modifier = Modifier.size(12.dp))
+                    Icon(Icons.Default.Shield, null, tint = NovaEmerald, modifier = Modifier.size(12.dp))
                     Spacer(Modifier.width(5.dp))
-                    Text("Secure setup", color = PocketGreen, fontSize = 10.sp, fontWeight = FontWeight.SemiBold)
+                    Text("Secure setup", color = NovaEmerald, fontSize = 10.sp, fontWeight = FontWeight.SemiBold)
                 }
             }
         }
@@ -2572,7 +2572,7 @@ private fun ProviderChoiceRow(
         ProviderKind.KIMI -> Color(0xFF8B7CF6)
         ProviderKind.OPENCODE_ZEN -> Color(0xFF22C55E)
         ProviderKind.NVIDIA_NIM -> Color(0xFF76B900)
-        ProviderKind.CUSTOM -> PocketOrange
+        ProviderKind.CUSTOM -> NovaIndigo
         else -> Color(0xFF6366F1)
     }
     val mark = when (provider) {
@@ -2798,12 +2798,12 @@ private fun ProviderCredentialsStep(
                                 Box(
                                     Modifier.size(20.dp).border(
                                         if (model == option.id) 2.dp else 1.dp,
-                                        if (model == option.id) PocketOrange else MaterialTheme.colorScheme.outline,
+                                        if (model == option.id) NovaIndigo else MaterialTheme.colorScheme.outline,
                                         CircleShape,
                                     ),
                                     contentAlignment = Alignment.Center,
                                 ) {
-                                    if (model == option.id) Box(Modifier.size(9.dp).background(PocketOrange, CircleShape))
+                                    if (model == option.id) Box(Modifier.size(9.dp).background(NovaIndigo, CircleShape))
                                 }
                             }
                             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.55f))
@@ -2821,7 +2821,7 @@ private fun ProviderCredentialsStep(
     ) {
         item {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("STEP 3 OF 3", color = PocketOrange, fontSize = 12.sp, fontWeight = FontWeight.Bold, letterSpacing = 1.sp)
+                Text("STEP 3 OF 3", color = NovaIndigo, fontSize = 12.sp, fontWeight = FontWeight.Bold, letterSpacing = 1.sp)
                 Spacer(Modifier.weight(1f))
                 Surface(color = MaterialTheme.colorScheme.surfaceVariant, shape = CircleShape) {
                     Row(Modifier.padding(horizontal = 12.dp, vertical = 7.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -2836,7 +2836,7 @@ private fun ProviderCredentialsStep(
             Spacer(Modifier.height(5.dp))
             Text(
                 when {
-                    agentKind == AgentKind.DEEPSEEK_HARNESS -> "DeepSeek Harness will connect through this API endpoint."
+                    agentKind == AgentKind.DEEPSEEK_CODER -> "DeepSeek Coder will connect through this API endpoint."
                     provider.protocol.name.startsWith("OPENAI") -> "NovaCode Studio will translate Claude Code requests for this provider."
                     else -> "Claude Code will connect through this API endpoint."
                 },
@@ -2862,7 +2862,7 @@ private fun ProviderCredentialsStep(
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth(),
                     )
-                    if (agentKind == AgentKind.DEEPSEEK_HARNESS && provider in DSH_PROTOCOL_PROVIDERS && !provider.fixedProtocol) {
+                    if (agentKind == AgentKind.DEEPSEEK_CODER && provider in DSH_PROTOCOL_PROVIDERS && !provider.fixedProtocol) {
                         DshApiProtocolPicker(selected = dshApi, onSelected = { onDshApi(it); status = null })
                     }
                     OutlinedTextField(
@@ -2986,7 +2986,7 @@ private fun ClaudeSubscriptionCredentialsStep(
     ) {
         item {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("STEP 3 OF 3", color = PocketOrange, fontSize = 12.sp, fontWeight = FontWeight.Bold, letterSpacing = 1.sp)
+                Text("STEP 3 OF 3", color = NovaIndigo, fontSize = 12.sp, fontWeight = FontWeight.Bold, letterSpacing = 1.sp)
                 Spacer(Modifier.weight(1f))
                 Surface(color = MaterialTheme.colorScheme.surfaceVariant, shape = CircleShape) {
                     Row(Modifier.padding(horizontal = 12.dp, vertical = 7.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -3017,7 +3017,7 @@ private fun ClaudeSubscriptionCredentialsStep(
                             "claude setup-token",
                             modifier = Modifier.fillMaxWidth().padding(12.dp),
                             fontFamily = FontFamily.Monospace,
-                            color = PocketOrange,
+                            color = NovaIndigo,
                         )
                     }
                     Text("2. Sign in to Claude and paste the generated token here.", fontSize = 13.sp)
@@ -3229,7 +3229,7 @@ private fun ProjectsScreen(
                                     border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
                                 ) {
                                     Row(Modifier.padding(horizontal = 12.dp, vertical = 11.dp), verticalAlignment = Alignment.CenterVertically) {
-                                        Icon(Icons.Default.Code, null, tint = PocketOrange, modifier = Modifier.size(19.dp))
+                                        Icon(Icons.Default.Code, null, tint = NovaIndigo, modifier = Modifier.size(19.dp))
                                         Spacer(Modifier.width(10.dp))
                                         Column(Modifier.weight(1f)) {
                                             Text(
@@ -3259,19 +3259,19 @@ private fun ProjectsScreen(
                     Surface(
                         modifier = Modifier.fillMaxWidth().clickable { showUpdateDialog = true },
                         shape = RoundedCornerShape(20.dp),
-                        color = PocketOrange.copy(alpha = 0.11f),
-                        border = BorderStroke(1.dp, PocketOrange.copy(alpha = 0.45f)),
+                        color = NovaIndigo.copy(alpha = 0.11f),
+                        border = BorderStroke(1.dp, NovaIndigo.copy(alpha = 0.45f)),
                     ) {
                         Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-                            Surface(shape = CircleShape, color = PocketOrange.copy(alpha = 0.18f), modifier = Modifier.size(46.dp)) {
-                                Box(contentAlignment = Alignment.Center) { Icon(Icons.Default.Download, null, tint = PocketOrange) }
+                            Surface(shape = CircleShape, color = NovaIndigo.copy(alpha = 0.18f), modifier = Modifier.size(46.dp)) {
+                                Box(contentAlignment = Alignment.Center) { Icon(Icons.Default.Download, null, tint = NovaIndigo) }
                             }
                             Spacer(Modifier.width(12.dp))
                             Column(Modifier.weight(1f)) {
                                 Text("NovaCode Studio ${update.versionName}", fontWeight = FontWeight.Bold)
                                 Text("A new update is ready", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             }
-                            Text("Update", color = PocketOrange, fontWeight = FontWeight.Bold, fontSize = 13.sp)
+                            Text("Update", color = NovaIndigo, fontWeight = FontWeight.Bold, fontSize = 13.sp)
                         }
                     }
                 }
@@ -3295,14 +3295,14 @@ private fun ProjectsScreen(
                         ) {
                             Surface(
                                 shape = CircleShape,
-                                color = PocketOrange.copy(alpha = 0.15f),
+                                color = NovaIndigo.copy(alpha = 0.15f),
                                 modifier = Modifier.size(56.dp),
                             ) {
                                 Box(contentAlignment = Alignment.Center) {
                                     Icon(
                                         Icons.Default.Folder,
                                         contentDescription = null,
-                                        tint = PocketOrange,
+                                        tint = NovaIndigo,
                                         modifier = Modifier.size(28.dp),
                                     )
                                 }
@@ -3359,7 +3359,7 @@ private fun ProjectsScreen(
     )
     if (showGitDialog) AlertDialog(
         onDismissRequest = { if (!state.gitCloneRunning) showGitDialog = false },
-        icon = { Icon(Icons.Default.Code, null, tint = PocketOrange) },
+        icon = { Icon(Icons.Default.Code, null, tint = NovaIndigo) },
         title = { Text("Clone Git repository") },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -3389,7 +3389,7 @@ private fun ProjectsScreen(
         }
         AlertDialog(
             onDismissRequest = { if (!state.gitCloneRunning) showGitHubDialog = false },
-            icon = { Icon(Icons.Default.Code, null, tint = PocketOrange) },
+            icon = { Icon(Icons.Default.Code, null, tint = NovaIndigo) },
             title = { Text(state.githubLogin?.let { "GitHub · @$it" } ?: "Connect GitHub") },
             text = {
                 when (state.githubAuthStatus) {
@@ -3423,7 +3423,7 @@ private fun ProjectsScreen(
                                 letterSpacing = 2.sp,
                             )
                         }
-                        Text("Tap the code to copy it. PocketDev will connect automatically after approval.", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text("Tap the code to copy it. NovaCode will connect automatically after approval.", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         OutlinedButton(
                             onClick = onGenerateNewGitHubCode,
                             modifier = Modifier.fillMaxWidth(),
@@ -3460,7 +3460,7 @@ private fun ProjectsScreen(
                                     color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.55f),
                                 ) {
                                     Row(Modifier.padding(11.dp), verticalAlignment = Alignment.CenterVertically) {
-                                        Icon(if (repository.private) Icons.Default.Key else Icons.Default.Code, null, modifier = Modifier.size(17.dp), tint = PocketOrange)
+                                        Icon(if (repository.private) Icons.Default.Key else Icons.Default.Code, null, modifier = Modifier.size(17.dp), tint = NovaIndigo)
                                         Spacer(Modifier.width(9.dp))
                                         Column(Modifier.weight(1f)) {
                                             Text(repository.fullName, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
@@ -3497,7 +3497,7 @@ private fun ProjectsScreen(
         val progress = if (total > 0) (downloaded.toFloat() / total).coerceIn(0f, 1f) else 0f
         AlertDialog(
             onDismissRequest = { if (!installing) showUpdateDialog = false },
-            icon = { Icon(Icons.Default.Download, null, tint = PocketOrange, modifier = Modifier.size(34.dp)) },
+            icon = { Icon(Icons.Default.Download, null, tint = NovaIndigo, modifier = Modifier.size(34.dp)) },
             title = { Text("Update to ${update.versionName}", fontWeight = FontWeight.Bold) },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -3521,7 +3521,7 @@ private fun ProjectsScreen(
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
-                    if (installing) Text("Download verified. Opening Android installer…", color = PocketGreen, fontSize = 13.sp)
+                    if (installing) Text("Download verified. Opening Android installer…", color = NovaEmerald, fontSize = 13.sp)
                     state.appUpdateError?.let { Text(it, color = MaterialTheme.colorScheme.error, fontSize = 13.sp) }
                 }
             },
@@ -3572,9 +3572,9 @@ private fun ImportSourceButton(
 @Composable
 private fun ApiStatusChip(state: AppUiState, onSettings: () -> Unit, onPing: () -> Unit) {
     val dotColor = when (state.apiPingStatus) {
-        ApiPingStatus.OK -> PocketGreen
+        ApiPingStatus.OK -> NovaEmerald
         ApiPingStatus.FAILED -> MaterialTheme.colorScheme.error
-        ApiPingStatus.PINGING -> PocketOrange
+        ApiPingStatus.PINGING -> NovaIndigo
         ApiPingStatus.IDLE -> MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
     }
     val providerLabel = when {
@@ -3619,7 +3619,7 @@ private fun ApiStatusChip(state: AppUiState, onSettings: () -> Unit, onPing: () 
                 modifier = Modifier.size(28.dp),
             ) {
                 if (state.apiPingStatus == ApiPingStatus.PINGING) {
-                    CircularProgressIndicator(Modifier.size(14.dp), strokeWidth = 2.dp, color = PocketOrange)
+                    CircularProgressIndicator(Modifier.size(14.dp), strokeWidth = 2.dp, color = NovaIndigo)
                 } else {
                     Icon(
                         Icons.Default.Refresh,
@@ -3651,7 +3651,7 @@ private fun ProjectCard(
     Card(Modifier.fillMaxWidth().clickable(onClick = onOpen), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)) {
         Row(Modifier.padding(start = 16.dp, top = 12.dp, bottom = 12.dp, end = 4.dp), verticalAlignment = Alignment.CenterVertically) {
             Surface(shape = RoundedCornerShape(14.dp), color = MaterialTheme.colorScheme.surfaceVariant) {
-                Icon(Icons.Default.Folder, null, Modifier.padding(13.dp), tint = PocketOrange)
+                Icon(Icons.Default.Folder, null, Modifier.padding(13.dp), tint = NovaIndigo)
             }
             Spacer(Modifier.width(13.dp))
             Column(Modifier.weight(1f)) {
@@ -4154,7 +4154,7 @@ private fun ChatSwitcherDialog(
                                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     )
                                 }
-                                if (chat.id == activeChatId) Icon(Icons.Default.Check, "Current", tint = PocketGreen)
+                                if (chat.id == activeChatId) Icon(Icons.Default.Check, "Current", tint = NovaEmerald)
                             }
                         }
                     }
@@ -4202,7 +4202,7 @@ private fun FileViewerScreen(
                             Icon(
                                 if (copied) Icons.Default.Check else Icons.Default.ContentCopy,
                                 "Copy file contents",
-                                tint = if (copied) PocketOrange else MaterialTheme.colorScheme.onSurface,
+                                tint = if (copied) NovaIndigo else MaterialTheme.colorScheme.onSurface,
                             )
                         }
                     }
@@ -4215,7 +4215,7 @@ private fun FileViewerScreen(
             when {
                 loading -> {
                     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator(color = PocketOrange)
+                        CircularProgressIndicator(color = NovaIndigo)
                     }
                 }
                 content == null -> {
@@ -4391,7 +4391,7 @@ private fun FilesTab(
                 Icon(
                     if (entry.isDirectory) Icons.Default.Folder else Icons.Default.Description,
                     null,
-                    tint = if (entry.isDirectory) PocketOrange else MaterialTheme.colorScheme.onSurfaceVariant,
+                    tint = if (entry.isDirectory) NovaIndigo else MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 Spacer(Modifier.width(11.dp))
                 Text(
@@ -5090,7 +5090,7 @@ private fun AttachmentChip(
         border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
     ) {
         Row(Modifier.padding(start = 9.dp, end = if (onRemove == null) 10.dp else 3.dp, top = 7.dp, bottom = 7.dp), verticalAlignment = Alignment.CenterVertically) {
-            Icon(icon, null, Modifier.size(17.dp), tint = PocketOrange)
+            Icon(icon, null, Modifier.size(17.dp), tint = NovaIndigo)
             Spacer(Modifier.width(7.dp))
             Column(Modifier.widthIn(max = 180.dp)) {
                 Text(attachment.displayName, fontSize = 12.sp, fontWeight = FontWeight.Medium, maxLines = 1, overflow = TextOverflow.Ellipsis)
@@ -5110,7 +5110,7 @@ private fun ApprovalCard(request: ToolRequest, onApproval: (Boolean) -> Unit) {
     Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Default.Warning, null, tint = PocketOrange)
+                Icon(Icons.Default.Warning, null, tint = NovaIndigo)
                 Spacer(Modifier.width(8.dp)); Text("Review this action", fontWeight = FontWeight.Bold)
             }
             Text(request.explanation)
@@ -5148,7 +5148,7 @@ private fun FilesTab(files: List<WorkspaceEntry>, loading: Boolean, onRefresh: (
                 Icon(
                     if (entry.isDirectory) Icons.Default.Folder else Icons.Default.Description,
                     null,
-                    tint = if (entry.isDirectory) PocketOrange else MaterialTheme.colorScheme.onSurfaceVariant,
+                    tint = if (entry.isDirectory) NovaIndigo else MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 Spacer(Modifier.width(11.dp))
                 Text(entry.name, Modifier.weight(1f))
@@ -5208,7 +5208,7 @@ private fun ChangesTab(
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                         }
-                        Text("+${change.additions}", color = PocketGreen)
+                        Text("+${change.additions}", color = NovaEmerald)
                         Spacer(Modifier.width(7.dp))
                         Text("-${change.deletions}", color = MaterialTheme.colorScheme.error)
                     }
@@ -5332,7 +5332,7 @@ private fun PreviewTab(ready: Boolean, url: String?) {
                         leadingIcon = {
                             Box(
                                 Modifier.size(8.dp).background(
-                                    if (activeUrl != null) PocketGreen else MaterialTheme.colorScheme.outline,
+                                    if (activeUrl != null) NovaEmerald else MaterialTheme.colorScheme.outline,
                                     CircleShape,
                                 ),
                             )
