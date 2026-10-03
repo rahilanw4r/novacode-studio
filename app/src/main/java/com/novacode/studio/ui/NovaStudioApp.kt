@@ -3101,9 +3101,28 @@ private fun ProjectsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                modifier = Modifier.padding(top = 8.dp),
-                title = { Row(verticalAlignment = Alignment.CenterVertically) { BrandMark(compact = true); Spacer(Modifier.width(9.dp)); Text("NovaCode Studio", fontWeight = FontWeight.Bold) } },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
+                title = {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        BrandMark(compact = true)
+                        Spacer(Modifier.width(10.dp))
+                        Text(
+                            "NOVACODE",
+                            fontWeight = FontWeight.Black,
+                            fontFamily = FontFamily.Monospace,
+                            letterSpacing = 2.sp,
+                            fontSize = 16.sp
+                        )
+                        Spacer(Modifier.width(5.dp))
+                        Text(
+                            "STUDIO",
+                            fontWeight = FontWeight.Bold,
+                            fontFamily = FontFamily.Monospace,
+                            letterSpacing = 2.sp,
+                            fontSize = 11.5.sp,
+                            color = Color(0xFF00E5FF)
+                        )
+                    }
+                },
             )
         },
     ) { padding ->
@@ -5451,30 +5470,31 @@ private fun EmptyState(icon: ImageVector, title: String, body: String) {
 
 @Composable
 private fun BrandMark(modifier: Modifier = Modifier, compact: Boolean = false) {
-    val size = if (compact) 32.dp else 50.dp
-    val iconSize = if (compact) 17.dp else 24.dp
-    val cornerRadius = if (compact) 9.dp else 14.dp
-    val primary = MaterialTheme.colorScheme.primary
+    val size = if (compact) 34.dp else 52.dp
+    val fontSize = if (compact) 16.sp else 24.sp
+    val cornerRadius = if (compact) 10.dp else 16.dp
 
     Box(
         modifier = modifier
             .size(size)
             .background(
-                color = primary.copy(alpha = 0.12f),
+                brush = androidx.compose.ui.graphics.Brush.linearGradient(
+                    listOf(androidx.compose.ui.graphics.Color(0xFF131D33), androidx.compose.ui.graphics.Color(0xFF090D16))
+                ),
                 shape = RoundedCornerShape(cornerRadius),
             )
             .border(
-                width = 1.dp,
-                color = primary.copy(alpha = 0.32f),
+                width = 1.5.dp,
+                brush = androidx.compose.ui.graphics.Brush.linearGradient(
+                    listOf(androidx.compose.ui.graphics.Color(0xFF6366F1), androidx.compose.ui.graphics.Color(0xFF00E5FF))
+                ),
                 shape = RoundedCornerShape(cornerRadius),
             ),
         contentAlignment = Alignment.Center,
     ) {
-        Icon(
-            imageVector = Icons.Default.Terminal,
-            contentDescription = "NovaCode Studio",
-            modifier = Modifier.size(iconSize),
-            tint = primary,
+        Text(
+            text = "⚡",
+            fontSize = fontSize
         )
     }
 }
