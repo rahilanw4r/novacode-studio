@@ -961,37 +961,55 @@ class RuntimeInstaller(private val context: Context) {
         val destination = File(downloads, bundle.fileName)
         val useEmbedded = preferEmbedded || BuildConfig.OFFLINE_RUNTIME_BUNDLES
         if (useEmbedded) {
-            onProgress(RuntimeInstallProgress("Loading ${bundle.label} bundle", from, 0, bundle.compressedBytes))
             val temporary = File(downloads, "${bundle.fileName}.part")
-            context.assets.open("runtime/${bundle.fileName}").use { input ->
-                FileOutputStream(temporary).use { output ->
-                    val buffer = ByteArray(256 * 1024)
-                    var copied = 0L
-                    while (true) {
-                        coroutineContext.ensureActive()
-                        val count = input.read(buffer)
-                        if (count < 0) break
-                        output.write(buffer, 0, count)
-                        copied += count
-                        val ratio = (copied.toFloat() / bundle.compressedBytes).coerceIn(0f, 1f)
-                        onProgress(RuntimeInstallProgress("Loading ${bundle.label} bundle", from + ratio * (to - from), copied, bundle.compressedBytes))
+            try {
+                onProgress(RuntimeInstallProgress("Loading ${bundle.label} bundle", from, 0, bundle.compressedBytes))
+                context.assets.open("runtime/${bundle.fileName}").use { input ->
+                    FileOutputStream(temporary).use { output ->
+                        val buffer = ByteArray(256 * 1024)
+                        var copied = 0L
+                        while (true) {
+                            coroutineContext.ensureActive()
+                            val count = input.read(buffer)
+                            if (count < 0) break
+                            output.write(buffer, 0, count)
+                            copied += count
+                            val ratio = (copied.toFloat() / bundle.compressedBytes).coerceIn(0f, 1f)
+                            onProgress(RuntimeInstallProgress("Loading ${bundle.label} bundle", from + ratio * (to - from), copied, bundle.compressedBytes))
+                        }
                     }
                 }
+                require(digest(temporary, "SHA-256").equals(bundle.sha256, ignoreCase = true)) {
+                    "${bundle.label} bundle checksum mismatch"
+                }
+                if (destination.exists()) destination.delete()
+                check(temporary.renameTo(destination)) { "Could not stage the ${bundle.label} bundle" }
+                return destination
+            } catch (e: Exception) {
+                temporary.delete()
+                // Asset is not packaged inside this APK variant, smoothly fall through to remote candidate mirrors
             }
-            require(digest(temporary, "SHA-256").equals(bundle.sha256, ignoreCase = true)) {
-                "${bundle.label} bundle checksum mismatch"
-            }
-            if (destination.exists()) destination.delete()
-            check(temporary.renameTo(destination)) { "Could not stage the ${bundle.label} bundle" }
-            return destination
         }
 
-        val url = "${BuildConfig.RUNTIME_RELEASE_BASE_URL}/${bundle.fileName}"
-        downloadVerified(url, destination, bundle.sha256) { downloaded, total ->
-            val ratio = if (total > 0) downloaded.toFloat() / total else 0f
-            onProgress(RuntimeInstallProgress("Downloading ${bundle.label} bundle", from + ratio * (to - from), downloaded, total.takeIf { it > 0 }))
+        val candidateBaseUrls = listOf(
+            BuildConfig.RUNTIME_RELEASE_BASE_URL.trimEnd('/'),
+            "https://github.com/techjarves/Mobile-Harness/releases/download/runtime-2026.09.4"
+        ).distinct()
+
+        var lastError: Exception? = null
+        for (baseUrl in candidateBaseUrls) {
+            val url = "$baseUrl/${bundle.fileName}"
+            try {
+                downloadVerified(url, destination, bundle.sha256) { downloaded, total ->
+                    val ratio = if (total > 0) downloaded.toFloat() / total else 0f
+                    onProgress(RuntimeInstallProgress("Downloading ${bundle.label} bundle", from + ratio * (to - from), downloaded, total.takeIf { it > 0 }))
+                }
+                return destination
+            } catch (e: Exception) {
+                lastError = e
+            }
         }
-        return destination
+        throw lastError ?: IllegalStateException("Could not download ${bundle.label} bundle from available mirrors")
     }
 
     private suspend fun installZipAsset(
