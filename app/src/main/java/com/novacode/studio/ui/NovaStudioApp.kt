@@ -5,6 +5,15 @@ import com.novacode.studio.ui.components.NovaPrimaryButton
 import com.novacode.studio.ui.components.NovaSecondaryButton
 import com.novacode.studio.ui.theme.NovaCyan
 import com.novacode.studio.ui.theme.NovaIndigo
+import com.novacode.studio.ui.theme.NovaObsidian
+import com.novacode.studio.ui.theme.NovaSurface
+import com.novacode.studio.ui.theme.NovaSurfaceVariant
+import com.novacode.studio.ui.theme.NovaSurfaceElevated
+import com.novacode.studio.ui.theme.NovaBorder
+import com.novacode.studio.ui.theme.NovaBorderGlow
+import com.novacode.studio.ui.theme.NovaTextMuted
+import com.novacode.studio.ui.theme.NovaTextPrimary
+import androidx.compose.ui.draw.clip
 import android.Manifest
 import android.app.ActivityManager
 import android.content.Intent
@@ -1105,7 +1114,7 @@ private fun RuntimeSetupPromptScreen(
 
                 NovaPrimaryButton(
                     text = if (compatible) "Initialize NovaCode Studio" else "Device not supported",
-                    icon = if (compatible) Icons.Default.RocketLaunch else null,
+                    icon = if (compatible) Icons.Default.PlayArrow else null,
                     enabled = compatible,
                     onClick = onDownload,
                     modifier = Modifier.fillMaxWidth(),
@@ -2106,8 +2115,12 @@ private fun RootScreenHost(
                             onInput = viewModel::sendTerminalInput,
                             onInterrupt = viewModel::interruptTerminalCommand,
                             onClear = viewModel::clearTerminal,
-                            onConfirm = viewModel::confirmTerminalCommand,
-                            onCancel = viewModel::cancelTerminalCommand,
+                            onToggleTheme = viewModel::toggleTheme,
+                            themeMode = state.themeMode,
+                            liveOutput = terminalLiveOutput,
+                            currentCommand = terminalCurrentCommand,
+                            showThemeAction = false,
+                            showQuickCommands = true,
                         )
                     }
                 }

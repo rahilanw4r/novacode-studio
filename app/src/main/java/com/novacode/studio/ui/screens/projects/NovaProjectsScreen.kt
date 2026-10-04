@@ -86,8 +86,8 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.novacode.studio.model.GitHubAuthStatus
-import com.novacode.studio.model.GitHubRepository
+import com.novacode.studio.ui.GitHubAuthStatus
+import com.novacode.studio.network.GitHubRepository
 import com.novacode.studio.model.Project
 import com.novacode.studio.model.ProjectKind
 import com.novacode.studio.ui.AppUiState
