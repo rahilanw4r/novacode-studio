@@ -1,6 +1,7 @@
 package com.novacode.studio.ui
 
 import android.content.Intent
+import android.net.Uri
 import android.provider.Settings
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
@@ -24,9 +25,12 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Code
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.DeleteSweep
 import androidx.compose.material.icons.filled.Dns
@@ -724,37 +728,82 @@ private fun LegacySettingsScreen(
             // 4. ABOUT POCKET DEV
             // -------------------------------------------------------------
             item {
+                val context = LocalContext.current
                 SectionHeader(
-                    title = "About",
-                    subtitle = "App details & build info",
-                    icon = Icons.Default.Settings,
+                    title = "Developer & Project",
+                    subtitle = "Creator details & official links",
+                    icon = Icons.Default.Person,
                 )
                 Spacer(Modifier.height(10.dp))
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f)),
                 ) {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(6.dp),
+                        verticalArrangement = Arrangement.spacedBy(10.dp),
                     ) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
-                            Text("NovaCode Studio", fontWeight = FontWeight.Bold, fontSize = 15.sp)
-                            Text("v1.0.0", color = NovaIndigo, fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
+                            Text("NovaCode Studio", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                            Text("v1.0.8", color = NovaEmerald, fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
                         }
                         Text(
-                            "Autonomous AI Developer with native on-device Linux PRoot sandbox and Claude Code integration.",
-                            fontSize = 12.sp,
+                            "Autonomous on-device Linux development environment and Liquid AI copilot.",
+                            fontSize = 12.5.sp,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             lineHeight = 18.sp,
                         )
+
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
+
+                        // Developer Row: Rahil Anwar
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://t.me/RahilAnw4r"))
+                                    context.startActivity(intent)
+                                },
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                Icon(Icons.Default.Send, contentDescription = null, tint = NovaCyan, modifier = Modifier.size(16.dp))
+                                Column {
+                                    Text("Creator: Rahil Anwar", fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
+                                    Text("Telegram: @RahilAnw4r", fontSize = 11.5.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                }
+                            }
+                            Icon(Icons.AutoMirrored.Filled.OpenInNew, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(16.dp))
+                        }
+
+                        // GitHub Repo Row
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/rahilanw4r/novacode-studio"))
+                                    context.startActivity(intent)
+                                },
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                Icon(Icons.Default.Code, contentDescription = null, tint = NovaEmerald, modifier = Modifier.size(16.dp))
+                                Column {
+                                    Text("Official GitHub Repository", fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
+                                    Text("rahilanw4r/novacode-studio", fontSize = 11.5.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                }
+                            }
+                            Icon(Icons.AutoMirrored.Filled.OpenInNew, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(16.dp))
+                        }
                     }
                 }
                 Spacer(Modifier.height(16.dp))

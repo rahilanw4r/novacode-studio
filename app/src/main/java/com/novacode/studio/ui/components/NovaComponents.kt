@@ -429,11 +429,11 @@ fun NovaPrimaryButton(
     Box(
         modifier = modifier
             .height(height)
+            .liquidBounceClick(onClick = onClick, enabled = enabled)
             .clip(RoundedCornerShape(10.dp))
             .background(
                 if (enabled) NovaEmerald else NovaEmerald.copy(alpha = 0.35f)
             )
-            .clickable(enabled = enabled, onClick = onClick)
             .padding(horizontal = 16.dp),
         contentAlignment = Alignment.Center
     ) {
@@ -477,10 +477,10 @@ fun NovaSecondaryButton(
     Box(
         modifier = modifier
             .height(height)
+            .liquidBounceClick(onClick = onClick, enabled = enabled)
             .clip(RoundedCornerShape(10.dp))
             .background(NovaSurfaceVariant)
             .border(1.dp, NovaBorder, RoundedCornerShape(10.dp))
-            .clickable(enabled = enabled, onClick = onClick)
             .padding(horizontal = 16.dp),
         contentAlignment = Alignment.Center
     ) {

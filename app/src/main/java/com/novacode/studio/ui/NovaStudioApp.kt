@@ -1,6 +1,7 @@
 package com.novacode.studio.ui
 
 import com.novacode.studio.ui.screens.workspace.NovaMasterWorkspace
+import com.novacode.studio.ui.screens.developer.NovaDeveloperScreen
 import com.novacode.studio.ui.components.NovaPrimaryButton
 import com.novacode.studio.ui.components.NovaSecondaryButton
 import com.novacode.studio.ui.theme.NovaCyan
@@ -1993,6 +1994,7 @@ private fun RootScreenHost(
 ) {
     var screen by rememberSaveable { mutableStateOf(RootScreen.PROJECTS) }
     var showQuickTerminal by rememberSaveable { mutableStateOf(false) }
+    var showDeveloperScreen by rememberSaveable { mutableStateOf(false) }
     val keyboardVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
     val terminalLines by viewModel.terminalLines.collectAsStateWithLifecycle()
     val isTerminalRunning by viewModel.isTerminalRunning.collectAsStateWithLifecycle()
@@ -2073,6 +2075,8 @@ private fun RootScreenHost(
                     onRenameProject = viewModel::renameProject,
                     onDeleteProject = viewModel::deleteProject,
                     onSettings = { screen = RootScreen.SETTINGS },
+                    onOpenDeveloper = { showDeveloperScreen = true },
+                    onTriggerAiPrompt = { _ -> viewModel.createQuickProject() },
                     onPing = viewModel::pingApi,
                     onToggleTheme = viewModel::toggleTheme,
                     onInstallUpdate = viewModel::installAppUpdate,
@@ -2155,6 +2159,10 @@ private fun RootScreenHost(
                 )
             }
         }
+    if (showDeveloperScreen) {
+        NovaDeveloperScreen(
+            onBack = { showDeveloperScreen = false }
+        )
     }
     if (showQuickTerminal) {
         QuickTerminalSheet(

@@ -49,6 +49,7 @@ import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Psychology
 import androidx.compose.material.icons.filled.Refresh
@@ -56,6 +57,8 @@ import androidx.compose.material.icons.filled.RocketLaunch
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Terminal
+import com.novacode.studio.ui.components.LiquidAiAssistantBar
+import com.novacode.studio.ui.components.liquidBounceClick
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -142,6 +145,8 @@ fun NovaProjectsScreen(
     onRenameProject: (String, String) -> Unit,
     onDeleteProject: (String) -> Unit,
     onSettings: () -> Unit,
+    onOpenDeveloper: () -> Unit = {},
+    onTriggerAiPrompt: (String) -> Unit = {},
     onPing: () -> Unit = {},
     onToggleTheme: () -> Unit = {},
     onInstallUpdate: () -> Unit = {},
@@ -255,12 +260,15 @@ fun NovaProjectsScreen(
                     }
                 }
 
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                     NovaStatusPill(
                         statusText = "ARM64 ISOLATED",
                         isRunning = state.isRunning,
                         color = if (state.isRunning) NovaAmber else NovaEmerald
                     )
+                    IconButton(onClick = onOpenDeveloper) {
+                        Icon(Icons.Default.Person, contentDescription = "Developer Profile", tint = NovaEmerald, modifier = Modifier.size(20.dp))
+                    }
                     IconButton(onClick = onSettings) {
                         Icon(Icons.Default.Settings, contentDescription = "Preferences", tint = NovaTextSecondary, modifier = Modifier.size(20.dp))
                     }
@@ -334,6 +342,59 @@ fun NovaProjectsScreen(
                             height = 44.dp
                         )
                     }
+                }
+            }
+        }
+
+        // Apple-style Liquid AI Assistant Bar
+        item {
+            LiquidAiAssistantBar(
+                onTriggerAction = onTriggerAiPrompt,
+                isThinking = state.isRunning
+            )
+        }
+
+        // Developer Spotlight Card (Direct contact & Repo)
+        item {
+            NovaGlassCard(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .liquidBounceClick(onClick = onOpenDeveloper)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(36.dp)
+                                .clip(RoundedCornerShape(10.dp))
+                                .background(NovaEmerald.copy(alpha = 0.15f)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(Icons.Default.Person, contentDescription = null, tint = NovaEmerald, modifier = Modifier.size(20.dp))
+                        }
+                        Column {
+                            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                                Text("Rahil Anwar", color = NovaTextPrimary, fontSize = 13.5.sp, fontWeight = FontWeight.SemiBold)
+                                Box(
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(4.dp))
+                                        .background(NovaEmerald.copy(alpha = 0.15f))
+                                        .padding(horizontal = 5.dp, vertical = 2.dp)
+                                ) {
+                                    Text("CREATOR", color = NovaEmerald, fontSize = 9.sp, fontWeight = FontWeight.Bold)
+                                }
+                            }
+                            Text("Telegram: @RahilAnw4r · GitHub: rahilanw4r", color = NovaTextMuted, fontSize = 11.sp, fontFamily = FontFamily.Monospace)
+                        }
+                    }
+                    Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null, tint = NovaTextSecondary, modifier = Modifier.size(18.dp))
                 }
             }
         }
