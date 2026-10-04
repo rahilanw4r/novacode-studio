@@ -15,6 +15,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -111,6 +112,7 @@ import com.novacode.studio.ui.theme.NovaSurfaceElevated
 import com.novacode.studio.ui.theme.NovaSurfaceVariant
 import com.novacode.studio.ui.theme.NovaTextMuted
 import com.novacode.studio.ui.theme.NovaTextPrimary
+import com.novacode.studio.ui.theme.NovaTextSecondary
 import kotlinx.coroutines.launch
 
 private data class KeyConnectionStatus(
