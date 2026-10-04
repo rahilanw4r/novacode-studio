@@ -881,18 +881,63 @@ class RuntimeInstaller(private val context: Context) {
         val androidHome = File(rootfs, "root/android-sdk")
         val gradleHome = File(rootfs, "opt/gradle")
         val localMaven = File(rootfs, "root/maven/localMvnRepository")
+        val androidBuildToolsInstalled = File(androidHome, "build-tools/35.0.0/aapt2").isFile || File(androidHome, "build-tools/36.0.0/aapt2").isFile
         if (marker.readTextOrNull() != ANDROID_TOOLS_VERSION ||
             !File(androidHome, "platforms/android-36/android.jar").isFile ||
-            !File(androidHome, "build-tools/35.0.0/aapt2").isFile ||
+            !androidBuildToolsInstalled ||
             !File(gradleHome, "gradle-8.14.3/bin/gradle").isFile ||
             !localMaven.isDirectory) {
-            installRuntimeOverlay(
-                ANDROID_BUNDLE,
-                "Installing the Android development tools",
-                from,
-                to,
-                onProgress,
-            )
+
+            val installedViaOverlay = runCatching {
+                installRuntimeOverlay(
+                    ANDROID_BUNDLE,
+                    "Installing the Android development tools",
+                    from,
+                    to,
+                    onProgress,
+                )
+            }.isSuccess
+
+            if (!installedViaOverlay) {
+                android.util.Log.w("RuntimeInstaller", "Android tarball bundle unavailable, falling back to direct assets")
+                val sdkFrom = from
+                val sdkTo = from + (to - from) * 0.35f
+                val gradleFrom = sdkTo
+                val gradleTo = from + (to - from) * 0.70f
+                val mavenFrom = gradleTo
+                val mavenTo = to
+
+                installZipAsset(
+                    url = ANDROID_SDK_URL,
+                    checksum = ANDROID_SDK_SHA256,
+                    archiveName = "android-sdk-arm64-v8a.zip",
+                    destination = androidHome,
+                    message = "Downloading Android SDK 36",
+                    from = sdkFrom,
+                    to = sdkTo,
+                    onProgress = onProgress,
+                )
+                installZipAsset(
+                    url = ANDROID_GRADLE_URL,
+                    checksum = ANDROID_GRADLE_SHA256,
+                    archiveName = "gradle-8.14.3-bin.zip",
+                    destination = gradleHome,
+                    message = "Downloading Gradle 8.14.3",
+                    from = gradleFrom,
+                    to = gradleTo,
+                    onProgress = onProgress,
+                )
+                installZipAsset(
+                    url = ANDROID_MAVEN_URL,
+                    checksum = ANDROID_MAVEN_SHA256,
+                    archiveName = "localMvnRepository.zip",
+                    destination = File(rootfs, "root/maven/localMvnRepository"),
+                    message = "Downloading offline Android Maven dependencies",
+                    from = mavenFrom,
+                    to = mavenTo,
+                    onProgress = onProgress,
+                )
+            }
             makeAndroidToolsExecutable(androidHome, gradleHome)
             marker.parentFile?.mkdirs()
             marker.writeText(ANDROID_TOOLS_VERSION)
@@ -1066,12 +1111,17 @@ class RuntimeInstaller(private val context: Context) {
     }
 
     private fun makeAndroidToolsExecutable(androidHome: File, gradleHome: File) {
-        val buildTools = File(androidHome, "build-tools/35.0.0")
-        listOf("aapt", "aapt2", "aidl", "apksigner", "d8", "dexdump", "split-select", "zipalign")
-            .map { File(buildTools, it) }
-            .plus(File(gradleHome, "gradle-8.14.3/bin/gradle"))
-            .filter(File::isFile)
-            .forEach { Os.chmod(it.absolutePath, 0b111101101) }
+        val buildToolsDirs = File(androidHome, "build-tools").listFiles()?.filter(File::isDirectory).orEmpty()
+        for (dir in buildToolsDirs) {
+            listOf("aapt", "aapt2", "aidl", "apksigner", "d8", "dexdump", "split-select", "zipalign")
+                .map { File(dir, it) }
+                .filter(File::isFile)
+                .forEach { Os.chmod(it.absolutePath, 0b111101101) }
+        }
+        val gradleBin = File(gradleHome, "gradle-8.14.3/bin/gradle")
+        if (gradleBin.isFile) {
+            Os.chmod(gradleBin.absolutePath, 0b111101101)
+        }
     }
 
     private fun writeAndroidGradleInitScript(runtimeRootfs: File) {
@@ -1837,10 +1887,16 @@ printf '%s\n' '{"hookSpecificOutput":{"hookEventName":"PermissionRequest","decis
             connection = conn
             break
         }
-        val finalConnection = connection ?: error("Too many redirects downloading $initialUrl")
+        val finalConnection = connection ?: run {
+            temporary.delete()
+            error("Too many redirects downloading $initialUrl")
+        }
         try {
             val responseCode = finalConnection.responseCode
-            check(responseCode in 200..299) { "Download failed with HTTP $responseCode" }
+            if (responseCode !in 200..299 && responseCode != HttpURLConnection.HTTP_PARTIAL) {
+                temporary.delete()
+                error("Download failed with HTTP $responseCode")
+            }
             val resumed = responseCode == HttpURLConnection.HTTP_PARTIAL && existing > 0L
             if (!resumed) {
                 temporary.delete()
@@ -1860,6 +1916,9 @@ printf '%s\n' '{"hookSpecificOutput":{"hookEventName":"PermissionRequest","decis
                     }
                 }
             }
+        } catch (e: Exception) {
+            temporary.delete()
+            throw e
         } finally {
             finalConnection.disconnect()
         }

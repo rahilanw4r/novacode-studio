@@ -50,6 +50,6 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           APK_FILE=$(ls app/build/outputs/apk/online/debug/*.apk | head -n 1)
-          cp "$APK_FILE" NovaCode-Studio-v1.0.12.apk
-          gh release create v1.0.12 NovaCode-Studio-v1.0.12.apk --title "NovaCode Studio v1.0.12 — Antigravity Connection & AI Copilot Fixes" --notes "NovaCode Studio v1.0.12 fixes Antigravity connection and AI Copilot integration: automatic Antigravity CLI installation on sign-in, reliable cross-domain runtime downloads with redirect support, direct Google sign-in browser launcher, and wired AI Copilot prompt execution." || gh release upload v1.0.12 NovaCode-Studio-v1.0.12.apk --clobber
+          cp "$APK_FILE" NovaCode-Studio-v1.0.13.apk
+          gh release create v1.0.13 NovaCode-Studio-v1.0.13.apk --title "NovaCode Studio v1.0.13 — Android Toolchain Fallback & Runtime Fixes" --notes "NovaCode Studio v1.0.13 fixes runtime setup errors: automatic fallback to direct Android SDK/Gradle/Maven assets when tarball bundles return 404, instant cleanup of partial downloads on HTTP errors, and support for all Android build-tools versions." || gh release upload v1.0.13 NovaCode-Studio-v1.0.13.apk --clobber
 
