@@ -40,6 +40,8 @@ import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Undo
+import androidx.compose.material.icons.filled.Warning
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -444,7 +446,6 @@ fun NovaMasterWorkspace(
             }
         }
     )
-    }
 
     // Terminal command confirmation dialog
     state.pendingTerminalCommand?.let { cmd ->
