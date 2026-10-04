@@ -58,7 +58,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.novacode.studio.model.AppThemeMode
+import com.novacode.studio.ui.theme.AppThemeMode
 import com.novacode.studio.ui.AppUiState
 import com.novacode.studio.ui.theme.NovaBorder
 import com.novacode.studio.ui.theme.NovaCyan

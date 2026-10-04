@@ -71,8 +71,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.novacode.studio.model.GitHubAuthStatus
-import com.novacode.studio.model.GitHubRepository
+import com.novacode.studio.ui.GitHubAuthStatus
+import com.novacode.studio.network.GitHubRepository
 import com.novacode.studio.model.Project
 import com.novacode.studio.ui.AppUiState
 import com.novacode.studio.ui.components.NovaPrimaryButton
@@ -736,7 +736,7 @@ fun NovaProjectsScreen(
                                         horizontalArrangement = Arrangement.SpaceBetween
                                     ) {
                                         Column(modifier = Modifier.weight(1f)) {
-                                            Text(repo.name, color = NovaTextPrimary, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, maxLines = 1)
+                                            Text(repo.fullName.substringAfterLast('/'), color = NovaTextPrimary, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, maxLines = 1)
                                             Text(repo.fullName, color = NovaTextMuted, fontSize = 11.sp, maxLines = 1)
                                         }
                                         Icon(Icons.Default.CloudDownload, contentDescription = "Clone", tint = NovaEmerald, modifier = Modifier.size(16.dp))
