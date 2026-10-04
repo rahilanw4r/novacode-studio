@@ -264,33 +264,58 @@ fun NovaMasterWorkspace(
 
         HorizontalDivider(color = NovaBorder)
 
-        // Bottom Navigation Bar
-        Row(
+        // Floating Workspace Dock
+        Surface(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(NovaSurface)
-                .padding(vertical = 6.dp, horizontal = 12.dp),
-            horizontalArrangement = Arrangement.SpaceAround,
-            verticalAlignment = Alignment.CenterVertically
+                .padding(horizontal = 14.dp, vertical = 6.dp),
+            shape = RoundedCornerShape(20.dp),
+            color = NovaSurface,
+            border = BorderStroke(1.dp, NovaBorder),
+            shadowElevation = 6.dp
         ) {
-            NovaWorkspaceTab.entries.forEach { tab ->
-                val active = tab == currentTab
-                val tint = if (active) NovaIndigo else NovaTextMuted
-                Column(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(8.dp))
-                        .clickable { currentTab = tab }
-                        .padding(horizontal = 14.dp, vertical = 4.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(2.dp)
-                ) {
-                    Icon(imageVector = tab.icon, contentDescription = tab.label, tint = tint, modifier = Modifier.size(20.dp))
-                    Text(
-                        text = tab.label,
-                        color = tint,
-                        fontSize = 10.5.sp,
-                        fontWeight = if (active) FontWeight.Bold else FontWeight.Medium
-                    )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp, horizontal = 6.dp),
+                horizontalArrangement = Arrangement.SpaceAround,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                NovaWorkspaceTab.entries.forEach { tab ->
+                    val active = tab == currentTab
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(if (active) NovaIndigo.copy(alpha = 0.2f) else Color.Transparent)
+                            .border(
+                                width = if (active) 1.dp else 0.dp,
+                                color = if (active) NovaCyan.copy(alpha = 0.5f) else Color.Transparent,
+                                shape = RoundedCornerShape(12.dp)
+                            )
+                            .clickable { currentTab = tab }
+                            .padding(horizontal = 12.dp, vertical = 6.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(5.dp)
+                        ) {
+                            Icon(
+                                imageVector = tab.icon,
+                                contentDescription = tab.label,
+                                tint = if (active) NovaCyan else NovaTextMuted,
+                                modifier = Modifier.size(18.dp)
+                            )
+                            if (active) {
+                                Text(
+                                    text = tab.label,
+                                    color = NovaTextPrimary,
+                                    fontSize = 11.5.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -301,24 +326,41 @@ fun NovaMasterWorkspace(
         AlertDialog(
             onDismissRequest = onTerminalCancel,
             icon = { Icon(Icons.Default.Warning, contentDescription = null, tint = NovaAmber) },
-            title = { Text("Run potentially destructive command?") },
+            title = { Text("Approve Terminal Command", color = NovaTextPrimary, fontWeight = FontWeight.Bold) },
             text = {
-                Text(
-                    text = cmd,
-                    fontFamily = FontFamily.Monospace,
-                    fontSize = 12.sp,
-                    color = NovaCyan
-                )
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text("The AI copilot requested to run this command in your isolated Linux workspace:", color = NovaTextSecondary, fontSize = 12.5.sp)
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(NovaSurfaceElevated)
+                            .border(1.dp, NovaBorder, RoundedCornerShape(8.dp))
+                            .padding(10.dp)
+                    ) {
+                        Text(
+                            text = cmd,
+                            fontFamily = FontFamily.Monospace,
+                            fontSize = 12.sp,
+                            color = NovaCyan
+                        )
+                    }
+                }
             },
             confirmButton = {
-                Button(
+                NovaPrimaryButton(
+                    text = "Approve & Run",
                     onClick = onTerminalConfirm,
-                    colors = ButtonDefaults.buttonColors(containerColor = NovaRose)
-                ) { Text("Execute") }
+                    height = 38.dp
+                )
             },
             dismissButton = {
-                OutlinedButton(onClick = onTerminalCancel) { Text("Cancel") }
-            }
+                TextButton(onClick = onTerminalCancel) {
+                    Text("Reject", color = NovaRose)
+                }
+            },
+            containerColor = NovaSurface,
+            shape = RoundedCornerShape(16.dp)
         )
     }
 }

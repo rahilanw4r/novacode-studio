@@ -1,6 +1,10 @@
 package com.novacode.studio.ui
 
 import com.novacode.studio.ui.screens.workspace.NovaMasterWorkspace
+import com.novacode.studio.ui.components.NovaPrimaryButton
+import com.novacode.studio.ui.components.NovaSecondaryButton
+import com.novacode.studio.ui.theme.NovaCyan
+import com.novacode.studio.ui.theme.NovaIndigo
 import android.Manifest
 import android.app.ActivityManager
 import android.content.Intent
@@ -222,15 +226,19 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
+import com.novacode.studio.ui.screens.projects.NovaProjectsScreen
 import com.novacode.studio.ui.theme.AppThemeMode
 import androidx.compose.material.icons.filled.SmartToy
 import androidx.compose.material.icons.filled.Terminal
+import androidx.compose.material.icons.filled.Psychology
+import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.ExtendedFloatingActionButton
 
 private enum class RootScreen(val label: String, val icon: ImageVector) {
-    PROJECTS("Projects", Icons.Default.Folder),
-    AGENT("Agent", Icons.Default.SmartToy),
-    SETTINGS("Settings", Icons.Default.Settings),
+    PROJECTS("Studio", Icons.Default.AutoAwesome),
+    AGENT("Copilot", Icons.Default.Psychology),
+    TERMINAL("Terminal", Icons.Default.Terminal),
+    SETTINGS("Preferences", Icons.Default.Tune),
 }
 private enum class WorkspaceTab(val label: String, val icon: ImageVector) {
     CHAT("Chat", Icons.Default.AutoAwesome),
@@ -849,22 +857,22 @@ private fun RuntimeSetupPromptScreen(
             if (currentStep == 0) {
                 // Step 0: Device Compatibility & Verification
                 Text(
-                    text = "DEVICE CHECK",
-                    color = MaterialTheme.colorScheme.primary,
-                    fontSize = 10.sp,
+                    text = "SYSTEM READY",
+                    color = NovaCyan,
+                    fontSize = 11.sp,
                     fontWeight = FontWeight.Bold,
                     letterSpacing = 1.sp,
                 )
                 Spacer(Modifier.height(8.dp))
                 Text(
-                    text = "Ready to build on this phone",
+                    text = "Your device is ready to build",
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onBackground,
                 )
                 Spacer(Modifier.height(8.dp))
                 Text(
-                    text = "Your phone meets the requirements. Choose your coding tools next and NovaCode Studio will handle the setup.",
+                    text = "NovaCode Studio runs a full, isolated Linux environment right on your phone. No root required, no cloud needed.",
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 13.5.sp,
                     lineHeight = 19.sp,
@@ -955,37 +963,14 @@ private fun RuntimeSetupPromptScreen(
 
                 Spacer(Modifier.height(28.dp))
 
-                Button(
-                    onClick = { currentStep = 1 },
+                NovaPrimaryButton(
+                    text = if (compatible) "Customize Your Setup" else "Device not supported",
+                    icon = if (compatible) Icons.AutoMirrored.Filled.ArrowForward else null,
                     enabled = compatible,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(54.dp),
-                    shape = RoundedCornerShape(14.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary,
-                        disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-                        disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    ),
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center,
-                    ) {
-                        Text(
-                            text = if (compatible) "Continue to tool setup" else "Device not supported",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 15.sp,
-                        )
-                        Spacer(Modifier.width(8.dp))
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                            contentDescription = null,
-                            modifier = Modifier.size(18.dp),
-                        )
-                    }
-                }
+                    onClick = { currentStep = 1 },
+                    modifier = Modifier.fillMaxWidth(),
+                    height = 52.dp
+                )
                 Spacer(Modifier.height(10.dp))
                 Text(
                     "You can change tools later",
@@ -996,22 +981,22 @@ private fun RuntimeSetupPromptScreen(
                 )
             } else {
                 Text(
-                    "TOOLCHAIN SETUP",
-                    color = MaterialTheme.colorScheme.primary,
-                    fontSize = 10.sp,
+                    "DEVELOPMENT STACKS",
+                    color = NovaCyan,
+                    fontSize = 11.sp,
                     fontWeight = FontWeight.Bold,
                     letterSpacing = 1.sp,
                 )
                 Spacer(Modifier.height(6.dp))
                 Text(
-                    text = "Choose your tools",
+                    text = "Select your languages & tools",
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onBackground,
                 )
                 Spacer(Modifier.height(6.dp))
                 Text(
-                    text = "Start lightweight. You can install more toolchains later from Settings.",
+                    text = "Choose what you love building with. NovaCode will configure your isolated workspace so you're ready to code in seconds.",
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 13.sp,
                     lineHeight = 18.sp,
@@ -1118,41 +1103,14 @@ private fun RuntimeSetupPromptScreen(
                 }
                 Spacer(Modifier.height(12.dp))
 
-                Button(
-                    onClick = onDownload,
+                NovaPrimaryButton(
+                    text = if (compatible) "Initialize NovaCode Studio" else "Device not supported",
+                    icon = if (compatible) Icons.Default.RocketLaunch else null,
                     enabled = compatible,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(54.dp),
-                    shape = RoundedCornerShape(14.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary,
-                        disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-                        disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    ),
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center,
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Download,
-                            contentDescription = null,
-                            modifier = Modifier.size(20.dp),
-                        )
-                        Spacer(Modifier.width(10.dp))
-                        Text(
-                            text = if (compatible) "Install NovaCode Studio" else "Device not supported",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 15.sp,
-                        )
-                        if (compatible) {
-                            Spacer(Modifier.width(8.dp))
-                            Icon(Icons.AutoMirrored.Filled.ArrowForward, null, modifier = Modifier.size(18.dp))
-                        }
-                    }
-                }
+                    onClick = onDownload,
+                    modifier = Modifier.fillMaxWidth(),
+                    height = 52.dp
+                )
             }
 
             Spacer(Modifier.height(28.dp))
@@ -2031,37 +1989,67 @@ private fun RootScreenHost(
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         bottomBar = {
-            if (!keyboardVisible) NavigationBar(containerColor = MaterialTheme.colorScheme.surface) {
-                RootScreen.entries.forEach { tab ->
-                    NavigationBarItem(
-                        selected = screen == tab,
-                        onClick = { screen = tab },
-                        icon = { Icon(tab.icon, contentDescription = tab.label) },
-                        label = { Text(tab.label, fontSize = 11.sp) },
-                        colors = NavigationBarItemDefaults.colors(
-                            selectedIconColor = MaterialTheme.colorScheme.primary,
-                            selectedTextColor = MaterialTheme.colorScheme.primary,
-                            indicatorColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.16f),
-                        ),
-                    )
+            if (!keyboardVisible) {
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 14.dp, vertical = 8.dp),
+                    shape = RoundedCornerShape(22.dp),
+                    color = NovaSurface,
+                    border = BorderStroke(1.dp, NovaBorder),
+                    shadowElevation = 6.dp
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 6.dp, horizontal = 6.dp),
+                        horizontalArrangement = Arrangement.SpaceAround,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        RootScreen.entries.forEach { tab ->
+                            val selected = screen == tab
+                            Box(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(14.dp))
+                                    .background(if (selected) NovaIndigo.copy(alpha = 0.22f) else Color.Transparent)
+                                    .border(
+                                        width = if (selected) 1.dp else 0.dp,
+                                        color = if (selected) NovaCyan.copy(alpha = 0.6f) else Color.Transparent,
+                                        shape = RoundedCornerShape(14.dp)
+                                    )
+                                    .clickable { screen = tab }
+                                    .padding(horizontal = 12.dp, vertical = 7.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = tab.icon,
+                                        contentDescription = tab.label,
+                                        tint = if (selected) NovaCyan else NovaTextMuted,
+                                        modifier = Modifier.size(19.dp)
+                                    )
+                                    if (selected) {
+                                        Text(
+                                            text = tab.label,
+                                            color = NovaTextPrimary,
+                                            fontSize = 11.5.sp,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
-            }
-        },
-        floatingActionButton = {
-            if (screen == RootScreen.PROJECTS && !keyboardVisible && !showQuickTerminal) {
-                ExtendedFloatingActionButton(
-                    onClick = { showQuickTerminal = true },
-                    icon = { Icon(Icons.Default.Terminal, contentDescription = null) },
-                    text = { Text("Terminal", fontWeight = FontWeight.SemiBold) },
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary,
-                )
             }
         },
     ) { padding ->
         Box(Modifier.fillMaxSize().padding(padding)) {
             when (screen) {
-                RootScreen.PROJECTS -> ProjectsScreen(
+                RootScreen.PROJECTS -> NovaProjectsScreen(
                     state = state,
                     listState = projectsListState,
                     onOpen = viewModel::openProject,
@@ -2105,6 +2093,24 @@ private fun RootScreenHost(
                     onSetAntigravityModel = viewModel::setAntigravityModel,
                     onSetAntigravityEffort = viewModel::setAntigravityEffort,
                 )
+                RootScreen.TERMINAL -> {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(NovaObsidian)
+                    ) {
+                        TerminalScreen(
+                            lines = terminalLines,
+                            isRunning = isTerminalRunning,
+                            onRun = viewModel::runTerminalCommand,
+                            onInput = viewModel::sendTerminalInput,
+                            onInterrupt = viewModel::interruptTerminalCommand,
+                            onClear = viewModel::clearTerminal,
+                            onConfirm = viewModel::confirmTerminalCommand,
+                            onCancel = viewModel::cancelTerminalCommand,
+                        )
+                    }
+                }
                 RootScreen.SETTINGS -> SettingsScreen(
                     state = state,
                     onSaveProvider = { profile, key ->

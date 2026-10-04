@@ -411,3 +411,101 @@ fun ToolExecutionCard(
         )
     }
 }
+
+/**
+ * Custom High-Tech Neon Gradient Primary Action Button.
+ * Replaces generic Material 3 Buttons across the app.
+ */
+@Composable
+fun NovaPrimaryButton(
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    icon: ImageVector? = null,
+    enabled: Boolean = true,
+    height: androidx.compose.ui.unit.Dp = 48.dp,
+) {
+    Box(
+        modifier = modifier
+            .height(height)
+            .clip(RoundedCornerShape(14.dp))
+            .background(
+                if (enabled) {
+                    Brush.horizontalGradient(listOf(NovaIndigo, NovaCyan))
+                } else {
+                    Brush.horizontalGradient(listOf(NovaIndigo.copy(alpha = 0.4f), NovaCyan.copy(alpha = 0.4f)))
+                }
+            )
+            .clickable(enabled = enabled, onClick = onClick)
+            .padding(horizontal = 16.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            if (icon != null) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    tint = Color.White,
+                    modifier = Modifier.size(18.dp)
+                )
+                Spacer(Modifier.width(8.dp))
+            }
+            Text(
+                text = text,
+                color = Color.White,
+                fontSize = 13.5.sp,
+                fontWeight = FontWeight.Bold,
+                letterSpacing = 0.3.sp
+            )
+        }
+    }
+}
+
+/**
+ * Custom Cyber-Glass Secondary Action Button.
+ */
+@Composable
+fun NovaSecondaryButton(
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    icon: ImageVector? = null,
+    enabled: Boolean = true,
+    height: androidx.compose.ui.unit.Dp = 48.dp,
+) {
+    Box(
+        modifier = modifier
+            .height(height)
+            .clip(RoundedCornerShape(14.dp))
+            .background(NovaSurfaceElevated)
+            .border(1.dp, NovaBorder, RoundedCornerShape(14.dp))
+            .clickable(enabled = enabled, onClick = onClick)
+            .padding(horizontal = 16.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            if (icon != null) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    tint = NovaCyan,
+                    modifier = Modifier.size(18.dp)
+                )
+                Spacer(Modifier.width(8.dp))
+            }
+            Text(
+                text = text,
+                color = NovaTextPrimary,
+                fontSize = 13.5.sp,
+                fontWeight = FontWeight.SemiBold
+            )
+        }
+    }
+}
+
