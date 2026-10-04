@@ -6,85 +6,213 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
-// NovaCode Studio Human Tone & Minimal Palette
-val NovaObsidian = Color(0xFF0D1014)       // Background: #0D1014
-val NovaSurface = Color(0xFF171B22)        // Surface: #171B22
-val NovaSurfaceVariant = Color(0xFF1D222C) // Elevated surface: #1D222C
-val NovaSurfaceElevated = Color(0xFF222834)// High elevated surface
-val NovaBorder = Color(0xFF2A303C)         // Borders: #2A303C
-val NovaBorderGlow = Color(0xFF353D4C)
-
-val NovaEmerald = Color(0xFF18C78A)        // Primary accent: #18C78A
-val NovaIndigo = Color(0xFF3B82F6)         // Clean Developer Blue
-val NovaCyan = Color(0xFF0EA5E9)           // Soft Ocean Blue
-val NovaAmber = Color(0xFFF59E0B)          // Warm Amber
-val NovaRose = Color(0xFFEF4444)           // Calm Rose
-val NovaPurple = Color(0xFF8B5CF6)         // Calm Violet
-
-val NovaTextPrimary = Color(0xFFF3F5F7)    // Primary text: #F3F5F7
-val NovaTextSecondary = Color(0xFF9299A6)  // Secondary text: #9299A6
-val NovaTextMuted = Color(0xFF5E6571)      // Disabled / Muted text: #5E6571
-
-// Minimal, clean surface gradients (no neon or harsh color shifts)
-val NovaNeonGradient = Brush.linearGradient(
-    listOf(NovaIndigo, NovaIndigo)
+data class NovaColorPalette(
+    val background: Color,
+    val surface: Color,
+    val surfaceVariant: Color,
+    val surfaceElevated: Color,
+    val border: Color,
+    val borderGlow: Color,
+    val textPrimary: Color,
+    val textSecondary: Color,
+    val textMuted: Color,
+    val emerald: Color,
+    val indigo: Color,
+    val cyan: Color,
+    val amber: Color,
+    val rose: Color,
+    val purple: Color,
+    val isDark: Boolean,
 )
-val NovaCardGradient = Brush.linearGradient(
-    listOf(NovaSurface, NovaSurface)
+
+// Human-toned Obsidian Dark Developer-Tool Palette
+val NovaDarkPalette = NovaColorPalette(
+    background = Color(0xFF0D1014),       // Background: #0D1014
+    surface = Color(0xFF171B22),          // Surface: #171B22
+    surfaceVariant = Color(0xFF1D222C),   // Elevated surface: #1D222C
+    surfaceElevated = Color(0xFF222834),  // High elevated surface
+    border = Color(0xFF2A303C),           // Borders: #2A303C
+    borderGlow = Color(0xFF353D4C),
+    textPrimary = Color(0xFFF3F5F7),      // Primary text: #F3F5F7
+    textSecondary = Color(0xFF9299A6),    // Secondary text: #9299A6
+    textMuted = Color(0xFF5E6571),        // Disabled text: #5E6571
+    emerald = Color(0xFF18C78A),          // Primary accent: #18C78A
+    indigo = Color(0xFF3B82F6),           // Developer Blue
+    cyan = Color(0xFF0EA5E9),             // Soft Ocean Blue
+    amber = Color(0xFFF59E0B),            // Warm Amber
+    rose = Color(0xFFEF4444),             // Calm Rose
+    purple = Color(0xFF8B5CF6),           // Calm Violet
+    isDark = true,
 )
-val NovaGlassGradient = Brush.linearGradient(
-    listOf(NovaSurfaceVariant, NovaSurfaceVariant)
+
+// Human-toned Crisp Light Developer-Tool Palette (VS Code / Android Studio / GitHub Light inspired)
+val NovaLightPalette = NovaColorPalette(
+    background = Color(0xFFF6F8FA),       // Background: Clean slate off-white #F6F8FA
+    surface = Color(0xFFFFFFFF),          // Surface: Clean pure white #FFFFFF
+    surfaceVariant = Color(0xFFEEF2F6),   // Elevated surface: #EEF2F6
+    surfaceElevated = Color(0xFFE2E7ED),  // High elevated surface / input background
+    border = Color(0xFFD0D7DE),           // Borders: Clean 1dp boundary #D0D7DE
+    borderGlow = Color(0xFFB8C2CC),
+    textPrimary = Color(0xFF1F2328),      // Primary text: #1F2328 (high legibility)
+    textSecondary = Color(0xFF59636E),    // Secondary text: #59636E
+    textMuted = Color(0xFF8C959F),        // Disabled/muted text: #8C959F
+    emerald = Color(0xFF0F9960),          // Primary accent: High-contrast emerald #0F9960
+    indigo = Color(0xFF0969DA),           // Developer Blue
+    cyan = Color(0xFF057A9E),             // Ocean Blue
+    amber = Color(0xFF9A6700),            // Accessible Amber
+    rose = Color(0xFFCF222E),             // Accessible Rose
+    purple = Color(0xFF8250DF),           // Calm Violet
+    isDark = false,
 )
+
+val LocalNovaColors = staticCompositionLocalOf { NovaDarkPalette }
+
+val NovaObsidian: Color
+    @Composable
+    @ReadOnlyComposable
+    get() = LocalNovaColors.current.background
+
+val NovaSurface: Color
+    @Composable
+    @ReadOnlyComposable
+    get() = LocalNovaColors.current.surface
+
+val NovaSurfaceVariant: Color
+    @Composable
+    @ReadOnlyComposable
+    get() = LocalNovaColors.current.surfaceVariant
+
+val NovaSurfaceElevated: Color
+    @Composable
+    @ReadOnlyComposable
+    get() = LocalNovaColors.current.surfaceElevated
+
+val NovaBorder: Color
+    @Composable
+    @ReadOnlyComposable
+    get() = LocalNovaColors.current.border
+
+val NovaBorderGlow: Color
+    @Composable
+    @ReadOnlyComposable
+    get() = LocalNovaColors.current.borderGlow
+
+val NovaTextPrimary: Color
+    @Composable
+    @ReadOnlyComposable
+    get() = LocalNovaColors.current.textPrimary
+
+val NovaTextSecondary: Color
+    @Composable
+    @ReadOnlyComposable
+    get() = LocalNovaColors.current.textSecondary
+
+val NovaTextMuted: Color
+    @Composable
+    @ReadOnlyComposable
+    get() = LocalNovaColors.current.textMuted
+
+val NovaEmerald: Color
+    @Composable
+    @ReadOnlyComposable
+    get() = LocalNovaColors.current.emerald
+
+val NovaIndigo: Color
+    @Composable
+    @ReadOnlyComposable
+    get() = LocalNovaColors.current.indigo
+
+val NovaCyan: Color
+    @Composable
+    @ReadOnlyComposable
+    get() = LocalNovaColors.current.cyan
+
+val NovaAmber: Color
+    @Composable
+    @ReadOnlyComposable
+    get() = LocalNovaColors.current.amber
+
+val NovaRose: Color
+    @Composable
+    @ReadOnlyComposable
+    get() = LocalNovaColors.current.rose
+
+val NovaPurple: Color
+    @Composable
+    @ReadOnlyComposable
+    get() = LocalNovaColors.current.purple
+
+val NovaNeonGradient: Brush
+    @Composable
+    @ReadOnlyComposable
+    get() = Brush.linearGradient(listOf(LocalNovaColors.current.indigo, LocalNovaColors.current.indigo))
+
+val NovaCardGradient: Brush
+    @Composable
+    @ReadOnlyComposable
+    get() = Brush.linearGradient(listOf(LocalNovaColors.current.surface, LocalNovaColors.current.surface))
+
+val NovaGlassGradient: Brush
+    @Composable
+    @ReadOnlyComposable
+    get() = Brush.linearGradient(listOf(LocalNovaColors.current.surfaceVariant, LocalNovaColors.current.surfaceVariant))
 
 private val NovaDarkColors = darkColorScheme(
-    primary = NovaEmerald,
+    primary = Color(0xFF18C78A),
     onPrimary = Color(0xFF0F1218),
     primaryContainer = Color(0xFF064E3B),
     onPrimaryContainer = Color(0xFFD1FAE5),
-    secondary = NovaIndigo,
+    secondary = Color(0xFF3B82F6),
     onSecondary = Color(0xFFFFFFFF),
     secondaryContainer = Color(0xFF1E3A8A),
     onSecondaryContainer = Color(0xFFDBEAFE),
-    tertiary = NovaPurple,
+    tertiary = Color(0xFF8B5CF6),
     onTertiary = Color(0xFFFFFFFF),
-    background = NovaObsidian,
-    onBackground = NovaTextPrimary,
-    surface = NovaSurface,
-    onSurface = NovaTextPrimary,
-    surfaceVariant = NovaSurfaceVariant,
-    onSurfaceVariant = NovaTextSecondary,
-    outline = NovaBorder,
-    outlineVariant = NovaBorderGlow,
-    error = NovaRose,
+    background = Color(0xFF0D1014),
+    onBackground = Color(0xFFF3F5F7),
+    surface = Color(0xFF171B22),
+    onSurface = Color(0xFFF3F5F7),
+    surfaceVariant = Color(0xFF1D222C),
+    onSurfaceVariant = Color(0xFF9299A6),
+    surfaceContainer = Color(0xFF1D222C),
+    surfaceContainerHigh = Color(0xFF222834),
+    outline = Color(0xFF2A303C),
+    outlineVariant = Color(0xFF353D4C),
+    error = Color(0xFFEF4444),
     onError = Color(0xFFFFFFFF),
 )
 
 private val NovaLightColors = lightColorScheme(
-    primary = Color(0xFF4F46E5),
+    primary = Color(0xFF0F9960),
     onPrimary = Color(0xFFFFFFFF),
-    primaryContainer = Color(0xFFEEF2FF),
-    onPrimaryContainer = Color(0xFF312E81),
-    secondary = Color(0xFF0891B2),
+    primaryContainer = Color(0xFFE6F9F0),
+    onPrimaryContainer = Color(0xFF064E3B),
+    secondary = Color(0xFF0969DA),
     onSecondary = Color(0xFFFFFFFF),
-    secondaryContainer = Color(0xFFECFEFF),
-    onSecondaryContainer = Color(0xFF164E63),
-    tertiary = Color(0xFF9333EA),
+    secondaryContainer = Color(0xFFDDF4FF),
+    onSecondaryContainer = Color(0xFF054DA7),
+    tertiary = Color(0xFF8250DF),
     onTertiary = Color(0xFFFFFFFF),
-    background = Color(0xFFF8FAFC),
-    onBackground = Color(0xFF0F172A),
+    background = Color(0xFFF6F8FA),
+    onBackground = Color(0xFF1F2328),
     surface = Color(0xFFFFFFFF),
-    onSurface = Color(0xFF0F172A),
-    surfaceVariant = Color(0xFFF1F5F9),
-    onSurfaceVariant = Color(0xFF475569),
-    outline = Color(0xFFCBD5E1),
-    outlineVariant = Color(0xFFE2E8F0),
-    error = Color(0xFFE11D48),
+    onSurface = Color(0xFF1F2328),
+    surfaceVariant = Color(0xFFEEF2F6),
+    onSurfaceVariant = Color(0xFF59636E),
+    surfaceContainer = Color(0xFFEEF2F6),
+    surfaceContainerHigh = Color(0xFFE2E7ED),
+    outline = Color(0xFFD0D7DE),
+    outlineVariant = Color(0xFFB8C2CC),
+    error = Color(0xFFCF222E),
     onError = Color(0xFFFFFFFF),
 )
 
@@ -99,6 +227,9 @@ fun NovaTheme(
         AppThemeMode.SYSTEM -> isSystemInDarkTheme()
     }
 
+    val palette = if (isDark) NovaDarkPalette else NovaLightPalette
+    val colorScheme = if (isDark) NovaDarkColors else NovaLightColors
+
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {
@@ -109,8 +240,12 @@ fun NovaTheme(
         }
     }
 
-    MaterialTheme(
-        colorScheme = if (isDark) NovaDarkColors else NovaLightColors,
-        content = content,
-    )
+    CompositionLocalProvider(
+        LocalNovaColors provides palette
+    ) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            content = content,
+        )
+    }
 }

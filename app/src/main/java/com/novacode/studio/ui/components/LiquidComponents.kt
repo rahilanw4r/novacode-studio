@@ -180,37 +180,41 @@ fun LiquidAiAssistantBar(
     modifier: Modifier = Modifier,
     isThinking: Boolean = false,
 ) {
-    val actions = remember {
+    val emerald = NovaEmerald
+    val indigo = NovaIndigo
+    val cyan = NovaCyan
+    val purple = NovaPurple
+    val actions = remember(emerald, indigo, cyan, purple) {
         listOf(
             LiquidAiAction(
                 title = "Auto-Fix",
                 prompt = "Review this codebase, detect any syntax or runtime bugs, and provide the exact fix.",
                 icon = Icons.Default.Bolt,
-                accentColor = NovaEmerald
+                accentColor = emerald
             ),
             LiquidAiAction(
                 title = "Explain Logic",
                 prompt = "Break down how this project operates step-by-step in clear, simple terms.",
                 icon = Icons.Default.Psychology,
-                accentColor = NovaIndigo
+                accentColor = indigo
             ),
             LiquidAiAction(
                 title = "Optimize",
                 prompt = "Profile this code for performance bottlenecks, algorithmic complexity, and memory leaks.",
                 icon = Icons.Default.Speed,
-                accentColor = NovaCyan
+                accentColor = cyan
             ),
             LiquidAiAction(
                 title = "Security Audit",
                 prompt = "Inspect this codebase for security vulnerabilities, API token leaks, and sandbox risks.",
                 icon = Icons.Default.Security,
-                accentColor = NovaPurple
+                accentColor = purple
             ),
             LiquidAiAction(
                 title = "Write Tests",
                 prompt = "Generate comprehensive automated unit tests covering all core functions and edge cases.",
                 icon = Icons.Default.Code,
-                accentColor = NovaEmerald
+                accentColor = emerald
             )
         )
     }

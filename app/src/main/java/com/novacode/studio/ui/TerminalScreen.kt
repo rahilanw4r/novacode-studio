@@ -194,7 +194,8 @@ fun TerminalScreen(
     )
 
     Scaffold(
-        modifier = if (compactHeader) Modifier else Modifier.statusBarsPadding(),
+        modifier = Modifier,
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             if (compactHeader) {
                 Column {

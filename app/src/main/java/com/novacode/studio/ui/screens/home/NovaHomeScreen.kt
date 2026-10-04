@@ -107,13 +107,17 @@ fun NovaHomeScreen(
     var newProjectName by remember { mutableStateOf("") }
     var copilotPrompt by remember { mutableStateOf("") }
 
-    val starterTemplates = remember {
+    val cyan = NovaCyan
+    val emerald = NovaEmerald
+    val purple = NovaPurple
+    val indigo = NovaIndigo
+    val starterTemplates = remember(cyan, emerald, purple, indigo) {
         listOf(
-            StarterTemplate("React + Vite", "TypeScript • SPA", "WEB", NovaCyan, Icons.Default.Code, "vite-react-app"),
-            StarterTemplate("FastAPI", "Python • Async REST", "API", NovaEmerald, Icons.Default.Terminal, "fastapi-service"),
-            StarterTemplate("Android", "Kotlin • Compose", "APP", NovaPurple, Icons.Default.Android, "android-compose-app"),
-            StarterTemplate("Python", "Scripting • CLI", "PY", NovaIndigo, Icons.Default.Terminal, "python-script"),
-            StarterTemplate("Node.js", "Express • REST", "NODE", NovaCyan, Icons.Default.Code, "node-express-api")
+            StarterTemplate("React + Vite", "TypeScript • SPA", "WEB", cyan, Icons.Default.Code, "vite-react-app"),
+            StarterTemplate("FastAPI", "Python • Async REST", "API", emerald, Icons.Default.Terminal, "fastapi-service"),
+            StarterTemplate("Android", "Kotlin • Compose", "APP", purple, Icons.Default.Android, "android-compose-app"),
+            StarterTemplate("Python", "Scripting • CLI", "PY", indigo, Icons.Default.Terminal, "python-script"),
+            StarterTemplate("Node.js", "Express • REST", "NODE", cyan, Icons.Default.Code, "node-express-api")
         )
     }
 

@@ -2014,6 +2014,7 @@ private fun RootScreenHost(
 
     Scaffold(
         contentWindowInsets = WindowInsets.statusBars,
+        containerColor = NovaObsidian,
         bottomBar = {
             if (!keyboardVisible) {
                 Surface(
@@ -2125,28 +2126,20 @@ private fun RootScreenHost(
                     onSetAntigravityModel = viewModel::setAntigravityModel,
                     onSetAntigravityEffort = viewModel::setAntigravityEffort,
                 )
-                RootScreen.TERMINAL -> {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(NovaObsidian)
-                    ) {
-                        TerminalScreen(
-                            lines = terminalLines,
-                            isRunning = isTerminalRunning,
-                            onRun = viewModel::runTerminalCommand,
-                            onInput = viewModel::sendTerminalInput,
-                            onInterrupt = viewModel::interruptTerminalCommand,
-                            onClear = viewModel::clearTerminal,
-                            onToggleTheme = viewModel::toggleTheme,
-                            themeMode = state.themeMode,
-                            liveOutput = terminalLiveOutput,
-                            currentCommand = terminalCurrentCommand,
-                            showThemeAction = false,
-                            showQuickCommands = true,
-                        )
-                    }
-                }
+                RootScreen.TERMINAL -> TerminalScreen(
+                    lines = terminalLines,
+                    isRunning = isTerminalRunning,
+                    onRun = viewModel::runTerminalCommand,
+                    onInput = viewModel::sendTerminalInput,
+                    onInterrupt = viewModel::interruptTerminalCommand,
+                    onClear = viewModel::clearTerminal,
+                    onToggleTheme = viewModel::toggleTheme,
+                    themeMode = state.themeMode,
+                    liveOutput = terminalLiveOutput,
+                    currentCommand = terminalCurrentCommand,
+                    showThemeAction = false,
+                    showQuickCommands = true,
+                )
                 RootScreen.MORE -> NovaMoreScreen(
                     state = state,
                     onToggleTheme = viewModel::toggleTheme,
