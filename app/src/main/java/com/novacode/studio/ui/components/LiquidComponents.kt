@@ -40,11 +40,14 @@ import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Code
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Psychology
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.Speed
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -228,10 +231,10 @@ fun LiquidAiAssistantBar(
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable { expanded = !expanded },
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Row(
+                modifier = Modifier.weight(1f),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
@@ -249,31 +252,49 @@ fun LiquidAiAssistantBar(
                         modifier = Modifier.size(15.dp)
                     )
                 }
-                Column {
+                Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = if (isThinking) "Liquid AI · Processing…" else "Liquid AI Assistant",
                         color = NovaTextPrimary,
                         fontSize = 13.sp,
-                        fontWeight = FontWeight.SemiBold
+                        fontWeight = FontWeight.SemiBold,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                     Text(
-                        text = if (isThinking) "Generating solution on ARM64 runtime" else "Tap a quick action to trigger autonomous copilot",
+                        text = if (isThinking) "Generating solution on ARM64 runtime" else "Tap a quick action to trigger copilot",
                         color = NovaTextMuted,
-                        fontSize = 11.sp
+                        fontSize = 11.sp,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
             }
 
-            Text(
-                text = if (expanded) "Hide" else "Actions",
-                color = NovaEmerald,
-                fontSize = 11.5.sp,
-                fontWeight = FontWeight.SemiBold,
+            Spacer(Modifier.width(8.dp))
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(2.dp),
                 modifier = Modifier
-                    .clip(RoundedCornerShape(6.dp))
+                    .clip(RoundedCornerShape(8.dp))
                     .background(NovaEmerald.copy(alpha = 0.12f))
-                    .padding(horizontal = 8.dp, vertical = 4.dp)
-            )
+                    .padding(horizontal = 8.dp, vertical = 5.dp)
+            ) {
+                Text(
+                    text = if (expanded) "Hide" else "Actions",
+                    color = NovaEmerald,
+                    fontSize = 11.5.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    maxLines = 1
+                )
+                Icon(
+                    imageVector = if (expanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                    contentDescription = null,
+                    tint = NovaEmerald,
+                    modifier = Modifier.size(14.dp)
+                )
+            }
         }
 
         // Action Pills Carousel

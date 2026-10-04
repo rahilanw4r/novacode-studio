@@ -38,9 +38,12 @@ import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.LightMode
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Terminal
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -164,15 +167,28 @@ fun TerminalScreen(
         terminalScrollState.scrollTo(terminalScrollState.maxValue)
     }
 
+    var terminalMenuOpen by remember { mutableStateOf(false) }
+    var quickCmdMenuOpen by remember { mutableStateOf(false) }
+
+    val compactShortcuts = listOf(
+        "ls" to "ls -la",
+        "pwd" to "pwd",
+        "git" to "git status",
+        "npm" to "npm -v",
+        "python" to "python3 --version",
+        "node" to "node -v",
+        "apt" to "apt list --upgradable",
+        "make" to "make --version"
+    )
+
     val quickCommands = listOf(
-        "uname -a",
-        "ls -la",
-        "pwd",
-        "node -v",
-        "python3 --version",
-        "df -h",
-        "free -m",
-        "claude --version",
+        "uname -a" to "Kernel & Architecture",
+        "df -h" to "Storage usage",
+        "free -m" to "Memory consumption",
+        "htop" to "System processes",
+        "git log -n 5 --oneline" to "Recent commits",
+        "python3 -m http.server 8080" to "Local HTTP server",
+        "netstat -tuln" to "Listening ports"
     )
 
     Scaffold(
@@ -213,19 +229,19 @@ fun TerminalScreen(
                 }
             } else {
                 TopAppBar(
-                    modifier = Modifier.padding(top = 8.dp),
+                    modifier = Modifier.padding(top = 4.dp),
                     title = {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Box(
                                 modifier = Modifier
                                     .size(32.dp)
                                     .background(
-                                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
+                                        color = NovaEmerald.copy(alpha = 0.15f),
                                         shape = RoundedCornerShape(9.dp),
                                     )
                                     .border(
                                         width = 1.dp,
-                                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.32f),
+                                        color = NovaEmerald.copy(alpha = 0.35f),
                                         shape = RoundedCornerShape(9.dp),
                                     ),
                                 contentAlignment = Alignment.Center,
@@ -233,27 +249,52 @@ fun TerminalScreen(
                                 Icon(
                                     imageVector = Icons.Default.Terminal,
                                     contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.primary,
+                                    tint = NovaEmerald,
                                     modifier = Modifier.size(17.dp),
                                 )
                             }
                             Spacer(Modifier.width(10.dp))
                             Column {
-                                Text(title, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleLarge)
-                                Text(subtitle, fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                Text("Linux Terminal", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleLarge)
+                                Text("Ubuntu 24.04 • ARM64", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             }
                         }
                     },
                     actions = {
-                        IconButton(onClick = onClear) {
-                            Icon(Icons.Default.DeleteOutline, contentDescription = "Clear output")
-                        }
-                        if (showThemeAction) {
-                            IconButton(onClick = onToggleTheme) {
-                                Icon(
-                                    if (themeMode == AppThemeMode.DARK) Icons.Default.LightMode else Icons.Default.DarkMode,
-                                    contentDescription = "Toggle theme",
+                        Box {
+                            IconButton(onClick = { terminalMenuOpen = true }) {
+                                Icon(Icons.Default.MoreVert, contentDescription = "Options")
+                            }
+                            DropdownMenu(
+                                expanded = terminalMenuOpen,
+                                onDismissRequest = { terminalMenuOpen = false }
+                            ) {
+                                DropdownMenuItem(
+                                    text = { Text("Clear Console") },
+                                    leadingIcon = { Icon(Icons.Default.DeleteOutline, contentDescription = null) },
+                                    onClick = {
+                                        terminalMenuOpen = false
+                                        onClear()
+                                    }
                                 )
+                                onInterrupt?.let { interrupt ->
+                                    DropdownMenuItem(
+                                        text = { Text("Interrupt Process (Ctrl+C)") },
+                                        onClick = {
+                                            terminalMenuOpen = false
+                                            interrupt()
+                                        }
+                                    )
+                                }
+                                if (showThemeAction) {
+                                    DropdownMenuItem(
+                                        text = { Text("Toggle Theme") },
+                                        onClick = {
+                                            terminalMenuOpen = false
+                                            onToggleTheme()
+                                        }
+                                    )
+                                }
                             }
                         }
                     },
@@ -269,25 +310,58 @@ fun TerminalScreen(
                 .then(if (compactHeader) Modifier else Modifier.imePadding()),
         ) {
             if (showQuickCommands && !keyboardVisible) {
-                // Quick command chips are useful in the standalone terminal, but
-                // project terminal space is reserved for the actual project session.
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .horizontalScroll(rememberScrollState())
-                        .padding(horizontal = 14.dp, vertical = 6.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        .padding(horizontal = 12.dp, vertical = 5.dp),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    quickCommands.forEach { cmd ->
+                    Box {
+                        AssistChip(
+                            onClick = { quickCmdMenuOpen = true },
+                            label = {
+                                Text(
+                                    "⌘ Commands",
+                                    fontFamily = FontFamily.Monospace,
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = NovaEmerald
+                                )
+                            }
+                        )
+                        DropdownMenu(
+                            expanded = quickCmdMenuOpen,
+                            onDismissRequest = { quickCmdMenuOpen = false }
+                        ) {
+                            quickCommands.forEach { (cmd, desc) ->
+                                DropdownMenuItem(
+                                    text = {
+                                        Column {
+                                            Text(cmd, fontFamily = FontFamily.Monospace, fontSize = 12.sp, color = NovaTextPrimary)
+                                            Text(desc, fontSize = 10.sp, color = NovaTextMuted)
+                                        }
+                                    },
+                                    onClick = {
+                                        quickCmdMenuOpen = false
+                                        onRun(cmd)
+                                    }
+                                )
+                            }
+                        }
+                    }
+
+                    compactShortcuts.forEach { (label, cmd) ->
                         AssistChip(
                             onClick = { onRun(cmd) },
                             label = {
                                 Text(
-                                    cmd,
+                                    label,
                                     fontFamily = FontFamily.Monospace,
                                     fontSize = 11.sp,
                                 )
-                            },
+                            }
                         )
                     }
                 }

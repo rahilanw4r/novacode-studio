@@ -32,6 +32,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AutoAwesome
@@ -47,11 +48,15 @@ import androidx.compose.material.icons.filled.PrivacyTip
 import androidx.compose.material.icons.filled.Psychology
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Send
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.SmartToy
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.ui.draw.clip
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material.icons.filled.Warning
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -217,6 +222,8 @@ fun AgentScreen(
     var antigravitySearch by rememberSaveable { mutableStateOf("") }
     var antigravityCode by rememberSaveable { mutableStateOf("") }
     var viewedAgent by rememberSaveable { mutableStateOf(state.agentKind) }
+    var aiWorkspacePrompt by rememberSaveable { mutableStateOf("") }
+    var configExpanded by rememberSaveable { mutableStateOf(false) }
 
     val orderedAgents = remember(state.primaryAgentKind) {
         listOf(state.primaryAgentKind) + AgentKind.entries.filterNot { it == state.primaryAgentKind }
@@ -813,7 +820,200 @@ fun AgentScreen(
                 .imePadding(),
             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 10.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
-        ) {
+            // ── AI COPILOT WORKSPACE ──
+            item {
+                Surface(
+                    shape = RoundedCornerShape(14.dp),
+                    color = NovaSurface,
+                    border = BorderStroke(1.dp, NovaBorder),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(14.dp),
+                        verticalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        Text(
+                            text = "What do you want to build?",
+                            color = NovaTextPrimary,
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.SemiBold
+                        )
+
+                        // Big Ask NovaCode Input Card
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(105.dp)
+                                .clip(RoundedCornerShape(10.dp))
+                                .background(NovaSurfaceElevated)
+                                .border(1.dp, NovaBorder, RoundedCornerShape(10.dp))
+                                .padding(10.dp)
+                        ) {
+                            BasicTextField(
+                                value = aiWorkspacePrompt,
+                                onValueChange = { aiWorkspacePrompt = it },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .fillMaxHeight(0.70f),
+                                textStyle = TextStyle(
+                                    color = NovaTextPrimary,
+                                    fontSize = 13.sp,
+                                    lineHeight = 18.sp
+                                ),
+                                cursorBrush = SolidColor(NovaEmerald),
+                                decorationBox = { innerTextField ->
+                                    if (aiWorkspacePrompt.isEmpty()) {
+                                        Text(
+                                            text = "Ask NovaCode to write, debug, explain, or refactor code…",
+                                            color = NovaTextMuted,
+                                            fontSize = 12.5.sp,
+                                            lineHeight = 17.sp
+                                        )
+                                    }
+                                    innerTextField()
+                                }
+                            )
+
+                            // Send button
+                            Box(
+                                modifier = Modifier
+                                    .align(Alignment.BottomEnd)
+                                    .size(32.dp)
+                                    .clip(RoundedCornerShape(8.dp))
+                                    .background(if (aiWorkspacePrompt.isNotBlank()) NovaEmerald else NovaSurfaceVariant)
+                                    .clickable(enabled = aiWorkspacePrompt.isNotBlank()) {
+                                        val p = aiWorkspacePrompt.trim()
+                                        if (p.isNotBlank()) {
+                                            aiWorkspacePrompt = ""
+                                            onPing()
+                                        }
+                                    },
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Send,
+                                    contentDescription = "Send",
+                                    tint = if (aiWorkspacePrompt.isNotBlank()) NovaObsidian else NovaTextMuted,
+                                    modifier = Modifier.size(15.dp)
+                                )
+                            }
+                        }
+
+                        // Quick Actions
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
+                            listOf("Fix Code", "Explain", "Build", "Refactor").forEach { action ->
+                                Box(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .clip(RoundedCornerShape(6.dp))
+                                        .background(NovaSurfaceElevated)
+                                        .border(1.dp, NovaBorder, RoundedCornerShape(6.dp))
+                                        .clickable {
+                                            aiWorkspacePrompt = "$action: "
+                                        }
+                                        .padding(vertical = 7.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = action,
+                                        color = NovaTextPrimary,
+                                        fontSize = 11.5.sp,
+                                        fontWeight = FontWeight.Medium,
+                                        maxLines = 1
+                                    )
+                                }
+                            }
+                        }
+
+                        // Active Model Display
+                        Surface(
+                            shape = RoundedCornerShape(8.dp),
+                            color = NovaSurfaceElevated,
+                            border = BorderStroke(1.dp, NovaBorder),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable { showAntigravityModelSheet = true }
+                                    .padding(horizontal = 10.dp, vertical = 8.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                                    Text("Active Model", color = NovaTextMuted, fontSize = 10.5.sp)
+                                    Text(
+                                        text = if (isAntigravity) {
+                                            "Antigravity • ${formatAntigravityModelName(state.antigravityModel)}"
+                                        } else {
+                                            "${state.agentKind.title} • ${model.ifBlank { selectedKind.title }}"
+                                        },
+                                        color = NovaTextPrimary,
+                                        fontSize = 12.5.sp,
+                                        fontWeight = FontWeight.SemiBold
+                                    )
+                                }
+                                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                    Box(Modifier.size(6.dp).background(dot, CircleShape))
+                                    Text(label, color = dot, fontSize = 11.sp, fontWeight = FontWeight.Medium)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // ── Expandable AI Configuration Header ──
+            item {
+                Surface(
+                    shape = RoundedCornerShape(10.dp),
+                    color = NovaSurface,
+                    border = BorderStroke(1.dp, NovaBorder),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { configExpanded = !configExpanded }
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 14.dp, vertical = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(10.dp)
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(28.dp)
+                                    .clip(RoundedCornerShape(6.dp))
+                                    .background(NovaSurfaceElevated),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(Icons.Default.Settings, contentDescription = null, tint = NovaIndigo, modifier = Modifier.size(16.dp))
+                            }
+                            Column {
+                                Text("AI Configuration", color = NovaTextPrimary, fontSize = 13.5.sp, fontWeight = FontWeight.SemiBold)
+                                Text("Google Account, Provider, Models, Depth", color = NovaTextMuted, fontSize = 11.sp)
+                            }
+                        }
+                        Icon(
+                            imageVector = if (configExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                            contentDescription = null,
+                            tint = NovaTextMuted,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+                }
+            }
+
+            if (configExpanded) {
             // ── 1. Compact 3-Way Segmented Engine Selector ──
             item {
                 Column(modifier = Modifier.fillMaxWidth()) {
@@ -1148,6 +1348,11 @@ fun AgentScreen(
                         lineHeight = 16.sp,
                     )
                 }
+            }
+            } // end if (configExpanded)
+
+            item {
+                Spacer(Modifier.height(72.dp))
             }
         }
     }

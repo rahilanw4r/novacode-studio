@@ -35,13 +35,18 @@ import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Undo
+import androidx.compose.material.icons.filled.AutoAwesome
+import androidx.compose.material.icons.filled.Send
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -83,12 +88,15 @@ fun NovaCodeStudioScreen(
     onUndoFileChange: (String) -> Unit,
     onKeepAllChanges: () -> Unit,
     onUndoAllChanges: () -> Unit,
+    onAskCopilotContextual: ((String) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     var selectedTab by remember {
         mutableStateOf(if (changes.isNotEmpty()) CodeStudioTab.DIFFS else CodeStudioTab.FILES)
     }
     var searchQuery by remember { mutableStateOf("") }
+    var showContextualAi by remember { mutableStateOf(false) }
+    var customAiPrompt by remember { mutableStateOf("") }
 
     Column(
         modifier = modifier
@@ -168,22 +176,121 @@ fun NovaCodeStudioScreen(
                 )
             }
             CodeStudioTab.EDITOR -> {
-                CodeEditorView(
-                    filePath = openedFilePath ?: "No file open",
-                    initialContent = openedFileContent ?: "",
-                    isLoading = isLoadingFile,
-                    onClose = {
-                        onCloseFile()
-                        selectedTab = CodeStudioTab.FILES
-                    },
-                    onSave = { updated ->
-                        if (openedFilePath != null) {
-                            onSaveFile?.invoke(openedFilePath, updated)
+                Box(modifier = Modifier.fillMaxSize()) {
+                    CodeEditorView(
+                        filePath = openedFilePath ?: "No file open",
+                        initialContent = openedFileContent ?: "",
+                        isLoading = isLoadingFile,
+                        onClose = {
+                            onCloseFile()
+                            selectedTab = CodeStudioTab.FILES
+                        },
+                        onSave = { updated ->
+                            if (openedFilePath != null) {
+                                onSaveFile?.invoke(openedFilePath, updated)
+                            }
+                        }
+                    )
+
+                    // Floating Contextual AI Button ✦
+                    if (openedFilePath != null) {
+                        Box(
+                            modifier = Modifier
+                                .align(Alignment.BottomEnd)
+                                .padding(16.dp)
+                                .size(44.dp)
+                                .clip(CircleShape)
+                                .background(NovaEmerald)
+                                .clickable { showContextualAi = true },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.AutoAwesome,
+                                contentDescription = "AI Actions",
+                                tint = NovaObsidian,
+                                modifier = Modifier.size(20.dp)
+                            )
                         }
                     }
-                )
+                }
             }
         }
+    }
+
+    // Contextual AI Sheet Dialog
+    if (showContextualAi && openedFilePath != null) {
+        val fileName = openedFilePath.substringAfterLast('/')
+        val fileSnippet = openedFileContent?.take(1500) ?: ""
+        AlertDialog(
+            onDismissRequest = { showContextualAi = false },
+            title = {
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Icon(Icons.Default.AutoAwesome, contentDescription = null, tint = NovaEmerald, modifier = Modifier.size(18.dp))
+                    Text("NovaCode Copilot", color = NovaTextPrimary, fontWeight = FontWeight.Bold)
+                }
+            },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Text("Context: $fileName", color = NovaTextMuted, fontSize = 12.sp, fontFamily = FontFamily.Monospace)
+
+                    val contextualActions = listOf(
+                        "Explain this code" to "Explain the logic, architecture, and potential pitfalls of $fileName:\n```\n$fileSnippet\n```",
+                        "Fix this error" to "Diagnose syntax, runtime, and logic errors in $fileName and provide the corrected code:\n```\n$fileSnippet\n```",
+                        "Optimize" to "Optimize performance, algorithmic complexity, and memory usage for $fileName:\n```\n$fileSnippet\n```",
+                        "Add feature" to "Suggest and implement production-ready features for $fileName:\n```\n$fileSnippet\n```",
+                        "Write tests" to "Generate comprehensive unit tests with edge cases for $fileName:\n```\n$fileSnippet\n```"
+                    )
+
+                    Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                        contextualActions.forEach { (label, prompt) ->
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clip(RoundedCornerShape(8.dp))
+                                    .background(NovaSurfaceElevated)
+                                    .border(1.dp, NovaBorder, RoundedCornerShape(8.dp))
+                                    .clickable {
+                                        showContextualAi = false
+                                        onAskCopilotContextual?.invoke(prompt)
+                                    }
+                                    .padding(horizontal = 12.dp, vertical = 9.dp)
+                            ) {
+                                Text(label, color = NovaTextPrimary, fontSize = 13.sp, fontWeight = FontWeight.Medium)
+                            }
+                        }
+                    }
+
+                    OutlinedTextField(
+                        value = customAiPrompt,
+                        onValueChange = { customAiPrompt = it },
+                        placeholder = { Text("Ask anything about this file…", fontSize = 12.sp) },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            },
+            confirmButton = {
+                if (customAiPrompt.isNotBlank()) {
+                    TextButton(
+                        onClick = {
+                            val p = customAiPrompt.trim()
+                            showContextualAi = false
+                            customAiPrompt = ""
+                            onAskCopilotContextual?.invoke("Regarding $fileName:\n$p\n\nFile code:\n```\n$fileSnippet\n```")
+                        }
+                    ) {
+                        Text("Send", color = NovaEmerald, fontWeight = FontWeight.Bold)
+                    }
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showContextualAi = false }) {
+                    Text("Close", color = NovaTextSecondary)
+                }
+            },
+            containerColor = NovaSurface,
+            shape = RoundedCornerShape(14.dp)
+        )
     }
 }
 

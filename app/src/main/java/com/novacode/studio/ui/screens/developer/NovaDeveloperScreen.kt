@@ -323,7 +323,7 @@ fun NovaDeveloperScreen(
 
                     NovaGlassCard(modifier = Modifier.fillMaxWidth()) {
                         Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                            SpecRow(icon = Icons.Default.Shield, label = "Studio Version", value = "v1.0.9 (Build 10)")
+                            SpecRow(icon = Icons.Default.Shield, label = "Studio Version", value = "v1.0.10 (Build 11)")
                             SpecRow(icon = Icons.Default.Memory, label = "Virtualization Runtime", value = "PRoot Isolated ARM64")
                             SpecRow(icon = Icons.Default.Person, label = "Lead Developer", value = "Rahil Anwar")
                             SpecRow(icon = Icons.Default.Code, label = "Linux Base", value = "Ubuntu 24.04 LTS")

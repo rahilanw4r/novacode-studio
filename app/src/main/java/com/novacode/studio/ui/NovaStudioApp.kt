@@ -242,19 +242,27 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
+import com.novacode.studio.ui.screens.home.NovaHomeScreen
 import com.novacode.studio.ui.screens.projects.NovaProjectsScreen
+import com.novacode.studio.ui.screens.more.NovaMoreScreen
+import com.novacode.studio.ui.components.CommandCenterDialog
 import com.novacode.studio.ui.theme.AppThemeMode
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.MoreHoriz
+import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.SmartToy
 import androidx.compose.material.icons.filled.Terminal
 import androidx.compose.material.icons.filled.Psychology
+import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.ExtendedFloatingActionButton
 
 private enum class RootScreen(val label: String, val icon: ImageVector) {
-    PROJECTS("Studio", Icons.Default.AutoAwesome),
-    AGENT("Copilot", Icons.Default.Psychology),
+    HOME("Home", Icons.Default.Home),
+    PROJECTS("Projects", Icons.Default.Folder),
+    AGENT("Copilot", Icons.Default.AutoAwesome),
     TERMINAL("Terminal", Icons.Default.Terminal),
-    SETTINGS("Preferences", Icons.Default.Tune),
+    MORE("More", Icons.Default.MoreHoriz),
 }
 private enum class WorkspaceTab(val label: String, val icon: ImageVector) {
     CHAT("Chat", Icons.Default.AutoAwesome),
@@ -1994,9 +2002,10 @@ private fun RootScreenHost(
     viewModel: MainViewModel,
     projectsListState: LazyListState = rememberSaveable(saver = LazyListState.Saver) { LazyListState() },
 ) {
-    var screen by rememberSaveable { mutableStateOf(RootScreen.PROJECTS) }
+    var screen by rememberSaveable { mutableStateOf(RootScreen.HOME) }
     var showQuickTerminal by rememberSaveable { mutableStateOf(false) }
     var showDeveloperScreen by rememberSaveable { mutableStateOf(false) }
+    var showCommandCenter by rememberSaveable { mutableStateOf(false) }
     val keyboardVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
     val terminalLines by viewModel.terminalLines.collectAsStateWithLifecycle()
     val isTerminalRunning by viewModel.isTerminalRunning.collectAsStateWithLifecycle()
@@ -2011,16 +2020,16 @@ private fun RootScreenHost(
                     modifier = Modifier
                         .fillMaxWidth()
                         .navigationBarsPadding()
-                        .padding(horizontal = 16.dp, vertical = 6.dp),
-                    shape = RoundedCornerShape(16.dp),
+                        .padding(horizontal = 12.dp, vertical = 5.dp),
+                    shape = RoundedCornerShape(14.dp),
                     color = NovaSurface,
                     border = BorderStroke(1.dp, NovaBorder),
-                    shadowElevation = 4.dp
+                    shadowElevation = 3.dp
                 ) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = 6.dp, horizontal = 4.dp),
+                            .padding(vertical = 4.dp, horizontal = 2.dp),
                         horizontalArrangement = Arrangement.SpaceEvenly,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -2029,9 +2038,9 @@ private fun RootScreenHost(
                             Box(
                                 modifier = Modifier
                                     .weight(1f)
-                                    .clip(RoundedCornerShape(10.dp))
+                                    .clip(RoundedCornerShape(8.dp))
                                     .background(if (selected) NovaSurfaceElevated else Color.Transparent)
-                                    .liquidBounceClick(onClick = { screen = tab })
+                                    .clickable { screen = tab }
                                     .padding(vertical = 5.dp),
                                 contentAlignment = Alignment.Center
                             ) {
@@ -2043,12 +2052,12 @@ private fun RootScreenHost(
                                         imageVector = tab.icon,
                                         contentDescription = tab.label,
                                         tint = if (selected) NovaEmerald else NovaTextMuted,
-                                        modifier = Modifier.size(19.dp)
+                                        modifier = Modifier.size(18.dp)
                                     )
                                     Text(
                                         text = tab.label,
                                         color = if (selected) NovaEmerald else NovaTextMuted,
-                                        fontSize = 10.5.sp,
+                                        fontSize = 10.sp,
                                         fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Medium,
                                         maxLines = 1
                                     )
@@ -2062,6 +2071,19 @@ private fun RootScreenHost(
     ) { padding ->
         Box(Modifier.fillMaxSize().padding(padding)) {
             when (screen) {
+                RootScreen.HOME -> NovaHomeScreen(
+                    state = state,
+                    listState = projectsListState,
+                    onOpenProject = viewModel::openProject,
+                    onCreateProject = viewModel::createProject,
+                    onCreateQuickProject = viewModel::createQuickProject,
+                    onViewAllProjects = { screen = RootScreen.PROJECTS },
+                    onOpenCommandCenter = { showCommandCenter = true },
+                    onOpenDeveloper = { showDeveloperScreen = true },
+                    onAskCopilot = { _ ->
+                        viewModel.createQuickProject()
+                    },
+                )
                 RootScreen.PROJECTS -> NovaProjectsScreen(
                     state = state,
                     listState = projectsListState,
@@ -2077,12 +2099,7 @@ private fun RootScreenHost(
                     onCloneGitHub = viewModel::cloneGitHubRepository,
                     onRenameProject = viewModel::renameProject,
                     onDeleteProject = viewModel::deleteProject,
-                    onSettings = { screen = RootScreen.SETTINGS },
-                    onOpenDeveloper = { showDeveloperScreen = true },
-                    onTriggerAiPrompt = { _ -> viewModel.createQuickProject() },
-                    onPing = viewModel::pingApi,
-                    onToggleTheme = viewModel::toggleTheme,
-                    onInstallUpdate = viewModel::installAppUpdate,
+                    onOpenCommandCenter = { showCommandCenter = true },
                 )
                 RootScreen.AGENT -> AgentScreen(
                     state = state,
@@ -2130,39 +2147,30 @@ private fun RootScreenHost(
                         )
                     }
                 }
-                RootScreen.SETTINGS -> SettingsScreen(
+                RootScreen.MORE -> NovaMoreScreen(
                     state = state,
-                    onSaveProvider = { profile, key ->
-                        viewModel.updateProvider(profile, key)
-                    },
-                    onDiscoverModels = viewModel::discoverModels,
-                    onValidateProvider = viewModel::validateProvider,
-                    onSetThemeMode = viewModel::setThemeMode,
-                    onPing = viewModel::pingApi,
-                    onClearTerminal = viewModel::clearTerminal,
-                    getSavedApiKey = viewModel::getSavedApiKey,
-                    getSavedApiKeys = viewModel::getSavedApiKeys,
-                    onAddApiKey = viewModel::addApiKey,
-                    onActivateApiKey = viewModel::activateApiKey,
-                    onRemoveApiKey = viewModel::removeApiKey,
-                    onInstallDevStack = viewModel::installDevStack,
-                    onRemoveDevStack = viewModel::removeDevStack,
-                    onInstallAgent = viewModel::installAgent,
-                    onCheckAgentUpdates = viewModel::checkAgentUpdates,
-                    onUpdateAgent = viewModel::updateAgent,
-                    onStartAntigravityLogin = viewModel::startAntigravityLogin,
-                    onSubmitAntigravityCode = viewModel::submitAntigravityCode,
-                    onLogoutAntigravity = viewModel::logoutAntigravity,
-                    onRefreshAntigravityModels = viewModel::refreshAntigravityModels,
-                    onSetAntigravityModel = viewModel::setAntigravityModel,
-                    onSetAntigravityEffort = viewModel::setAntigravityEffort,
-                    initialDebugUpdateManifestUrl = viewModel.debugUpdateManifestUrl(),
-                    onSetDebugUpdateManifestUrl = viewModel::setDebugUpdateManifestUrl,
-                    onClearDebugUpdateManifestUrl = viewModel::clearDebugUpdateManifestUrl,
+                    onToggleTheme = viewModel::toggleTheme,
+                    onOpenDeveloper = { showDeveloperScreen = true },
+                    onOpenAiSettings = { screen = RootScreen.AGENT },
+                    onInstallUpdate = viewModel::installAppUpdate,
+                    onOpenCommandCenter = { showCommandCenter = true },
                 )
             }
         }
     }
+
+    CommandCenterDialog(
+        isOpen = showCommandCenter,
+        onDismissRequest = { showCommandCenter = false },
+        onLaunchSandbox = viewModel::createQuickProject,
+        onCreateProject = { screen = RootScreen.PROJECTS },
+        onOpenTerminal = { screen = RootScreen.TERMINAL },
+        onAskCopilot = { screen = RootScreen.AGENT },
+        onGitClone = { screen = RootScreen.PROJECTS },
+        onImportZip = { screen = RootScreen.PROJECTS },
+        onOpenSettings = { screen = RootScreen.MORE },
+        onOpenDeveloper = { showDeveloperScreen = true }
+    )
     if (showDeveloperScreen) {
         NovaDeveloperScreen(
             onBack = { showDeveloperScreen = false }

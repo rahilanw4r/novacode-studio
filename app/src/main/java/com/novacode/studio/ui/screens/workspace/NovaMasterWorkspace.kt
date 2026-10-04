@@ -35,17 +35,24 @@ import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material.icons.filled.Terminal
-import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Folder
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Undo
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import com.novacode.studio.ui.components.CommandCenterDialog
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -89,9 +96,9 @@ import com.novacode.studio.ui.theme.NovaTextPrimary
 import com.novacode.studio.ui.theme.NovaTextSecondary
 
 enum class NovaWorkspaceTab(val label: String, val icon: androidx.compose.ui.graphics.vector.ImageVector) {
-    AGENT("Agent", Icons.Default.AutoAwesome),
-    CODE_STUDIO("Code", Icons.Default.Code),
+    FILES("Files", Icons.Default.Folder),
     TERMINAL("Terminal", Icons.Default.Terminal),
+    AGENT("AI ✦", Icons.Default.AutoAwesome),
     PREVIEW("Preview", Icons.Default.Language)
 }
 
@@ -123,7 +130,9 @@ fun NovaMasterWorkspace(
 ) {
     BackHandler(onBack = onBack)
     val context = LocalContext.current
-    var currentTab by rememberSaveable { mutableStateOf(NovaWorkspaceTab.AGENT) }
+    var currentTab by rememberSaveable { mutableStateOf(NovaWorkspaceTab.FILES) }
+    var showCommandCenter by rememberSaveable { mutableStateOf(false) }
+    var workspaceMenuOpen by rememberSaveable { mutableStateOf(false) }
 
     val attachmentLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenMultipleDocuments(),
@@ -148,9 +157,10 @@ fun NovaMasterWorkspace(
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.weight(1f, fill = false)
             ) {
-                IconButton(onClick = onBack, modifier = Modifier.size(32.dp)) {
+                IconButton(onClick = onBack, modifier = Modifier.size(30.dp)) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Back",
@@ -164,39 +174,34 @@ fun NovaMasterWorkspace(
                         color = NovaTextPrimary,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold,
-                        fontFamily = FontFamily.Monospace
+                        fontFamily = FontFamily.Monospace,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                     Text(
                         text = state.agentKind.title,
                         color = NovaCyan,
-                        fontSize = 10.5.sp
+                        fontSize = 10.5.sp,
+                        maxLines = 1
                     )
                 }
             }
 
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(6.dp)
             ) {
-                // On-Device Android Run Button (if android project detected)
-                if (state.androidProjectDetected) {
-                    Box(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(8.dp))
-                            .background(NovaEmerald.copy(alpha = 0.2f))
-                            .border(1.dp, NovaEmerald, RoundedCornerShape(8.dp))
-                            .clickable(onClick = onBuildAndRunAndroid)
-                            .padding(horizontal = 8.dp, vertical = 4.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(4.dp)
-                        ) {
-                            Icon(Icons.Default.PlayArrow, contentDescription = null, tint = NovaEmerald, modifier = Modifier.size(14.dp))
-                            Text("RUN APK", color = NovaEmerald, fontSize = 10.sp, fontWeight = FontWeight.Bold)
-                        }
-                    }
+                // Command Center ⌘
+                Box(
+                    modifier = Modifier
+                        .size(30.dp)
+                        .clip(RoundedCornerShape(6.dp))
+                        .background(NovaSurfaceElevated)
+                        .border(1.dp, NovaBorder, RoundedCornerShape(6.dp))
+                        .clickable { showCommandCenter = true },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text("⌘", color = NovaTextPrimary, fontSize = 12.sp, fontWeight = FontWeight.Bold)
                 }
 
                 // Status Pill
@@ -205,6 +210,42 @@ fun NovaMasterWorkspace(
                     isRunning = state.isRunning,
                     color = if (state.isRunning) NovaCyan else NovaEmerald
                 )
+
+                // Menu ⋮
+                Box {
+                    IconButton(onClick = { workspaceMenuOpen = true }, modifier = Modifier.size(30.dp)) {
+                        Icon(Icons.Default.MoreVert, contentDescription = "Menu", tint = NovaTextSecondary, modifier = Modifier.size(18.dp))
+                    }
+                    DropdownMenu(
+                        expanded = workspaceMenuOpen,
+                        onDismissRequest = { workspaceMenuOpen = false }
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text("Refresh Files") },
+                            leadingIcon = { Icon(Icons.Default.Refresh, contentDescription = null, modifier = Modifier.size(16.dp)) },
+                            onClick = {
+                                workspaceMenuOpen = false
+                                onRefreshFiles()
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Undo Last Changes") },
+                            leadingIcon = { Icon(Icons.Default.Undo, contentDescription = null, modifier = Modifier.size(16.dp)) },
+                            onClick = {
+                                workspaceMenuOpen = false
+                                onUndoChanges()
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Close Workspace") },
+                            leadingIcon = { Icon(Icons.Default.Close, contentDescription = null, modifier = Modifier.size(16.dp)) },
+                            onClick = {
+                                workspaceMenuOpen = false
+                                onBack()
+                            }
+                        )
+                    }
+                }
             }
         }
 
@@ -213,6 +254,27 @@ fun NovaMasterWorkspace(
         // Main Tab Content
         Box(modifier = Modifier.weight(1f)) {
             when (currentTab) {
+                NovaWorkspaceTab.FILES -> {
+                    NovaCodeStudioScreen(
+                        files = state.workspaceFiles,
+                        changes = state.changes,
+                        openedFilePath = state.openedFilePath,
+                        openedFileContent = state.openedFileContent,
+                        isLoadingFile = state.fileContentLoading,
+                        onOpenFile = onOpenFile,
+                        onCloseFile = onCloseFile,
+                        onSaveFile = onSaveFile,
+                        onRefreshFiles = onRefreshFiles,
+                        onKeepFileChange = onKeepFileChange,
+                        onUndoFileChange = onUndoFileChange,
+                        onKeepAllChanges = onKeepChanges,
+                        onUndoAllChanges = onUndoChanges,
+                        onAskCopilotContextual = { prompt ->
+                            onSend(prompt)
+                            currentTab = NovaWorkspaceTab.AGENT
+                        }
+                    )
+                }
                 NovaWorkspaceTab.AGENT -> {
                     NovaAgentChatScreen(
                         messages = state.messages,
@@ -228,23 +290,6 @@ fun NovaMasterWorkspace(
                         onApproval = onApproval,
                         onPickAttachment = { attachmentLauncher.launch(arrayOf("*/*")) },
                         onRemoveAttachment = onRemoveAttachment
-                    )
-                }
-                NovaWorkspaceTab.CODE_STUDIO -> {
-                    NovaCodeStudioScreen(
-                        files = state.workspaceFiles,
-                        changes = state.changes,
-                        openedFilePath = state.openedFilePath,
-                        openedFileContent = state.openedFileContent,
-                        isLoadingFile = state.fileContentLoading,
-                        onOpenFile = onOpenFile,
-                        onCloseFile = onCloseFile,
-                        onSaveFile = onSaveFile,
-                        onRefreshFiles = onRefreshFiles,
-                        onKeepFileChange = onKeepFileChange,
-                        onUndoFileChange = onUndoFileChange,
-                        onKeepAllChanges = onKeepChanges,
-                        onUndoAllChanges = onUndoChanges
                     )
                 }
                 NovaWorkspaceTab.TERMINAL -> {
@@ -268,12 +313,12 @@ fun NovaMasterWorkspace(
 
         HorizontalDivider(color = NovaBorder)
 
-        // Floating Workspace Dock
+        // Floating Workspace Dock: [ Files ] [ Terminal ] [ Run ▶ ] [ AI ✦ ] [ Preview ]
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 6.dp),
-            shape = RoundedCornerShape(16.dp),
+                .padding(horizontal = 12.dp, vertical = 6.dp),
+            shape = RoundedCornerShape(14.dp),
             color = NovaSurface,
             border = BorderStroke(1.dp, NovaBorder),
             shadowElevation = 3.dp
@@ -281,43 +326,124 @@ fun NovaMasterWorkspace(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 4.dp, horizontal = 6.dp),
-                horizontalArrangement = Arrangement.SpaceAround,
+                    .padding(vertical = 4.dp, horizontal = 4.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                NovaWorkspaceTab.entries.forEach { tab ->
-                    val active = tab == currentTab
-                    Box(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(10.dp))
-                            .background(if (active) NovaSurfaceElevated else Color.Transparent)
-                            .clickable { currentTab = tab }
-                            .padding(horizontal = 12.dp, vertical = 6.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(5.dp)
-                        ) {
-                            Icon(
-                                imageVector = tab.icon,
-                                contentDescription = tab.label,
-                                tint = if (active) NovaEmerald else NovaTextMuted,
-                                modifier = Modifier.size(18.dp)
-                            )
-                            if (active) {
-                                Text(
-                                    text = tab.label,
-                                    color = NovaTextPrimary,
-                                    fontSize = 11.5.sp,
-                                    fontWeight = FontWeight.SemiBold
-                                )
+                // Files tab
+                val filesActive = currentTab == NovaWorkspaceTab.FILES
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(if (filesActive) NovaSurfaceElevated else Color.Transparent)
+                        .clickable { currentTab = NovaWorkspaceTab.FILES }
+                        .padding(vertical = 6.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                        Icon(Icons.Default.Folder, contentDescription = "Files", tint = if (filesActive) NovaEmerald else NovaTextMuted, modifier = Modifier.size(16.dp))
+                        Text("Files", color = if (filesActive) NovaEmerald else NovaTextMuted, fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
+                    }
+                }
+
+                // Terminal tab
+                val termActive = currentTab == NovaWorkspaceTab.TERMINAL
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(if (termActive) NovaSurfaceElevated else Color.Transparent)
+                        .clickable { currentTab = NovaWorkspaceTab.TERMINAL }
+                        .padding(vertical = 6.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                        Icon(Icons.Default.Terminal, contentDescription = "Terminal", tint = if (termActive) NovaEmerald else NovaTextMuted, modifier = Modifier.size(16.dp))
+                        Text("Terminal", color = if (termActive) NovaEmerald else NovaTextMuted, fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
+                    }
+                }
+
+                // Run Action Button
+                Box(
+                    modifier = Modifier
+                        .weight(1.1f)
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(NovaEmerald.copy(alpha = 0.2f))
+                        .border(1.dp, NovaEmerald, RoundedCornerShape(8.dp))
+                        .clickable {
+                            if (state.androidProjectDetected) onBuildAndRunAndroid()
+                            else {
+                                onTerminalRun("npm run dev 2>/dev/null || python3 main.py 2>/dev/null || cargo run 2>/dev/null || ./run.sh")
+                                currentTab = NovaWorkspaceTab.TERMINAL
                             }
                         }
+                        .padding(vertical = 6.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                        Icon(Icons.Default.PlayArrow, contentDescription = "Run", tint = NovaEmerald, modifier = Modifier.size(16.dp))
+                        Text("Run ▶", color = NovaEmerald, fontSize = 11.5.sp, fontWeight = FontWeight.Bold)
+                    }
+                }
+
+                // AI ✦ tab
+                val agentActive = currentTab == NovaWorkspaceTab.AGENT
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(if (agentActive) NovaSurfaceElevated else Color.Transparent)
+                        .clickable { currentTab = NovaWorkspaceTab.AGENT }
+                        .padding(vertical = 6.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                        Icon(Icons.Default.AutoAwesome, contentDescription = "AI", tint = if (agentActive) NovaEmerald else NovaTextMuted, modifier = Modifier.size(16.dp))
+                        Text("AI ✦", color = if (agentActive) NovaEmerald else NovaTextMuted, fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
+                    }
+                }
+
+                // Preview tab
+                val previewActive = currentTab == NovaWorkspaceTab.PREVIEW
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(if (previewActive) NovaSurfaceElevated else Color.Transparent)
+                        .clickable { currentTab = NovaWorkspaceTab.PREVIEW }
+                        .padding(vertical = 6.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                        Icon(Icons.Default.Language, contentDescription = "Preview", tint = if (previewActive) NovaEmerald else NovaTextMuted, modifier = Modifier.size(16.dp))
+                        Text("Preview", color = if (previewActive) NovaEmerald else NovaTextMuted, fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
                     }
                 }
             }
         }
+    }
+
+    // Command Center Dialog in workspace
+    CommandCenterDialog(
+        isOpen = showCommandCenter,
+        onDismissRequest = { showCommandCenter = false },
+        onLaunchSandbox = {},
+        onCreateProject = {},
+        onOpenTerminal = { currentTab = NovaWorkspaceTab.TERMINAL },
+        onAskCopilot = { currentTab = NovaWorkspaceTab.AGENT },
+        onGitClone = {},
+        onImportZip = {},
+        onOpenSettings = {},
+        onOpenDeveloper = {},
+        onRunProject = {
+            if (state.androidProjectDetected) onBuildAndRunAndroid()
+            else {
+                onTerminalRun("npm run dev 2>/dev/null || python3 main.py 2>/dev/null || cargo run 2>/dev/null || ./run.sh")
+                currentTab = NovaWorkspaceTab.TERMINAL
+            }
+        }
+    )
     }
 
     // Terminal command confirmation dialog
