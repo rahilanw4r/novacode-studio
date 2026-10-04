@@ -93,6 +93,7 @@ import com.novacode.studio.network.ConnectionValidation
 import com.novacode.studio.network.DiscoveredModel
 import com.novacode.studio.network.ModelDiscoveryResult
 import com.novacode.studio.ui.theme.AppThemeMode
+import com.novacode.studio.ui.theme.NovaCyan
 import com.novacode.studio.ui.theme.NovaEmerald
 import com.novacode.studio.ui.theme.NovaIndigo
 import kotlinx.coroutines.launch

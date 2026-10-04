@@ -2159,6 +2159,7 @@ private fun RootScreenHost(
                 )
             }
         }
+    }
     if (showDeveloperScreen) {
         NovaDeveloperScreen(
             onBack = { showDeveloperScreen = false }
