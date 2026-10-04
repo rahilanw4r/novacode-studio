@@ -4,6 +4,7 @@ import com.novacode.studio.ui.screens.workspace.NovaMasterWorkspace
 import com.novacode.studio.ui.components.NovaPrimaryButton
 import com.novacode.studio.ui.components.NovaSecondaryButton
 import com.novacode.studio.ui.theme.NovaCyan
+import com.novacode.studio.ui.theme.NovaEmerald
 import com.novacode.studio.ui.theme.NovaIndigo
 import com.novacode.studio.ui.theme.NovaObsidian
 import com.novacode.studio.ui.theme.NovaSurface
@@ -13,6 +14,9 @@ import com.novacode.studio.ui.theme.NovaBorder
 import com.novacode.studio.ui.theme.NovaBorderGlow
 import com.novacode.studio.ui.theme.NovaTextMuted
 import com.novacode.studio.ui.theme.NovaTextPrimary
+import androidx.compose.foundation.Image
+import androidx.compose.ui.res.painterResource
+import com.novacode.studio.R
 import androidx.compose.ui.draw.clip
 import android.Manifest
 import android.app.ActivityManager
@@ -2002,16 +2006,16 @@ private fun RootScreenHost(
                 Surface(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 14.dp, vertical = 8.dp),
-                    shape = RoundedCornerShape(22.dp),
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    shape = RoundedCornerShape(16.dp),
                     color = NovaSurface,
                     border = BorderStroke(1.dp, NovaBorder),
-                    shadowElevation = 6.dp
+                    shadowElevation = 3.dp
                 ) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = 6.dp, horizontal = 6.dp),
+                            .padding(vertical = 5.dp, horizontal = 6.dp),
                         horizontalArrangement = Arrangement.SpaceAround,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -2019,15 +2023,10 @@ private fun RootScreenHost(
                             val selected = screen == tab
                             Box(
                                 modifier = Modifier
-                                    .clip(RoundedCornerShape(14.dp))
-                                    .background(if (selected) NovaIndigo.copy(alpha = 0.22f) else Color.Transparent)
-                                    .border(
-                                        width = if (selected) 1.dp else 0.dp,
-                                        color = if (selected) NovaCyan.copy(alpha = 0.6f) else Color.Transparent,
-                                        shape = RoundedCornerShape(14.dp)
-                                    )
+                                    .clip(RoundedCornerShape(10.dp))
+                                    .background(if (selected) NovaSurfaceElevated else Color.Transparent)
                                     .clickable { screen = tab }
-                                    .padding(horizontal = 12.dp, vertical = 7.dp),
+                                    .padding(horizontal = 14.dp, vertical = 7.dp),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Row(
@@ -2037,15 +2036,15 @@ private fun RootScreenHost(
                                     Icon(
                                         imageVector = tab.icon,
                                         contentDescription = tab.label,
-                                        tint = if (selected) NovaCyan else NovaTextMuted,
-                                        modifier = Modifier.size(19.dp)
+                                        tint = if (selected) NovaEmerald else NovaTextMuted,
+                                        modifier = Modifier.size(18.dp)
                                     )
                                     if (selected) {
                                         Text(
                                             text = tab.label,
                                             color = NovaTextPrimary,
-                                            fontSize = 11.5.sp,
-                                            fontWeight = FontWeight.Bold
+                                            fontSize = 12.sp,
+                                            fontWeight = FontWeight.SemiBold
                                         )
                                     }
                                 }
@@ -5490,33 +5489,13 @@ private fun EmptyState(icon: ImageVector, title: String, body: String) {
 @Composable
 private fun BrandMark(modifier: Modifier = Modifier, compact: Boolean = false) {
     val size = if (compact) 34.dp else 52.dp
-    val fontSize = if (compact) 16.sp else 26.sp
-    val cornerRadius = if (compact) 10.dp else 16.dp
+    val cornerRadius = if (compact) 8.dp else 12.dp
 
-    Box(
+    Image(
+        painter = painterResource(id = R.drawable.app_logo),
+        contentDescription = "NovaCode Studio",
         modifier = modifier
             .size(size)
-            .background(
-                brush = androidx.compose.ui.graphics.Brush.linearGradient(
-                    listOf(androidx.compose.ui.graphics.Color(0xFF131D33), androidx.compose.ui.graphics.Color(0xFF090D16))
-                ),
-                shape = RoundedCornerShape(cornerRadius),
-            )
-            .border(
-                width = 1.5.dp,
-                brush = androidx.compose.ui.graphics.Brush.linearGradient(
-                    listOf(androidx.compose.ui.graphics.Color(0xFF6366F1), androidx.compose.ui.graphics.Color(0xFF00E5FF))
-                ),
-                shape = RoundedCornerShape(cornerRadius),
-            ),
-        contentAlignment = Alignment.Center,
-    ) {
-        Text(
-            text = "N",
-            fontSize = fontSize,
-            fontWeight = FontWeight.Black,
-            color = androidx.compose.ui.graphics.Color(0xFF00E5FF),
-            fontFamily = FontFamily.Monospace,
-        )
-    }
+            .clip(RoundedCornerShape(cornerRadius))
+    )
 }

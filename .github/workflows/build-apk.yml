@@ -50,6 +50,6 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           APK_FILE=$(ls app/build/outputs/apk/online/debug/*.apk | head -n 1)
-          cp "$APK_FILE" NovaCode-Studio-v1.0.6.apk
-          gh release create v1.0.6 NovaCode-Studio-v1.0.6.apk --title "NovaCode Studio v1.0.6 — Bespoke UI Overhaul & Starter Blueprints" --notes "NovaCode Studio v1.0.6 delivers a full UI overhaul: custom neon gradient action buttons, cyber floating dock navigation bar, dedicated Linux Terminal tab, starter blueprint templates (React, FastAPI, Android Native, AI Agent), and human-centric studio experience." || gh release upload v1.0.6 NovaCode-Studio-v1.0.6.apk --clobber
+          cp "$APK_FILE" NovaCode-Studio-v1.0.7.apk
+          gh release create v1.0.7 NovaCode-Studio-v1.0.7.apk --title "NovaCode Studio v1.0.7 — Official Custom Logo & Minimal Human-Tone UI" --notes "NovaCode Studio v1.0.7 features the official new Android coder logo across app launcher icons, splash screen, and studio header, paired with a refined minimal human-tone color palette, tactile solid buttons, and clean dock navigation." || gh release upload v1.0.7 NovaCode-Studio-v1.0.7.apk --clobber
 

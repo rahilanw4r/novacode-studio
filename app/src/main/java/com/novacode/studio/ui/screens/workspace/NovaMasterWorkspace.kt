@@ -272,11 +272,11 @@ fun NovaMasterWorkspace(
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 14.dp, vertical = 6.dp),
-            shape = RoundedCornerShape(20.dp),
+                .padding(horizontal = 16.dp, vertical = 6.dp),
+            shape = RoundedCornerShape(16.dp),
             color = NovaSurface,
             border = BorderStroke(1.dp, NovaBorder),
-            shadowElevation = 6.dp
+            shadowElevation = 3.dp
         ) {
             Row(
                 modifier = Modifier
@@ -289,13 +289,8 @@ fun NovaMasterWorkspace(
                     val active = tab == currentTab
                     Box(
                         modifier = Modifier
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(if (active) NovaIndigo.copy(alpha = 0.2f) else Color.Transparent)
-                            .border(
-                                width = if (active) 1.dp else 0.dp,
-                                color = if (active) NovaCyan.copy(alpha = 0.5f) else Color.Transparent,
-                                shape = RoundedCornerShape(12.dp)
-                            )
+                            .clip(RoundedCornerShape(10.dp))
+                            .background(if (active) NovaSurfaceElevated else Color.Transparent)
                             .clickable { currentTab = tab }
                             .padding(horizontal = 12.dp, vertical = 6.dp),
                         contentAlignment = Alignment.Center
@@ -307,7 +302,7 @@ fun NovaMasterWorkspace(
                             Icon(
                                 imageVector = tab.icon,
                                 contentDescription = tab.label,
-                                tint = if (active) NovaCyan else NovaTextMuted,
+                                tint = if (active) NovaEmerald else NovaTextMuted,
                                 modifier = Modifier.size(18.dp)
                             )
                             if (active) {
@@ -315,7 +310,7 @@ fun NovaMasterWorkspace(
                                     text = tab.label,
                                     color = NovaTextPrimary,
                                     fontSize = 11.5.sp,
-                                    fontWeight = FontWeight.Bold
+                                    fontWeight = FontWeight.SemiBold
                                 )
                             }
                         }

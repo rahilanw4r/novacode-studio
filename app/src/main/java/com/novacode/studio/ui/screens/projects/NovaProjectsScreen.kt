@@ -5,9 +5,13 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.material.icons.filled.Bolt
+import androidx.compose.ui.res.painterResource
+import com.novacode.studio.R
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -219,51 +223,39 @@ fun NovaProjectsScreen(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    Box(
+                    Image(
+                        painter = painterResource(id = R.drawable.app_logo),
+                        contentDescription = "NovaCode Studio",
                         modifier = Modifier
-                            .size(38.dp)
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(
-                                Brush.linearGradient(listOf(Color(0xFF131D33), Color(0xFF090D16)))
-                            )
-                            .border(1.5.dp, Brush.linearGradient(listOf(NovaIndigo, NovaCyan)), RoundedCornerShape(12.dp)),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "N",
-                            color = NovaCyan,
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Black,
-                            fontFamily = FontFamily.Monospace
-                        )
-                    }
+                            .size(40.dp)
+                            .clip(RoundedCornerShape(10.dp))
+                    )
                     Column {
                         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                             Text(
-                                text = "NOVACODE",
+                                text = "NovaCode",
                                 color = NovaTextPrimary,
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Black,
-                                fontFamily = FontFamily.Monospace,
-                                letterSpacing = 1.sp
+                                fontSize = 17.sp,
+                                fontWeight = FontWeight.Bold,
+                                letterSpacing = 0.2.sp
                             )
                             Text(
-                                text = "STUDIO",
-                                color = NovaCyan,
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.Bold,
-                                fontFamily = FontFamily.Monospace
+                                text = "Studio",
+                                color = NovaEmerald,
+                                fontSize = 17.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                letterSpacing = 0.2.sp
                             )
                         }
                         Text(
-                            text = "Autonomous AI Software Studio",
+                            text = "Mobile Linux IDE & AI Copilot",
                             color = NovaTextMuted,
-                            fontSize = 11.sp
+                            fontSize = 11.5.sp
                         )
                     }
                 }
 
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                     NovaStatusPill(
                         statusText = "ARM64 ISOLATED",
                         isRunning = state.isRunning,
@@ -276,11 +268,10 @@ fun NovaProjectsScreen(
             }
         }
 
-        // Hero Inspiration Card (Human tone)
+        // Hero Inspiration Card (Human tone, minimal color, no gradients)
         item {
             NovaGlassCard(
-                modifier = Modifier.fillMaxWidth(),
-                glowEffect = true
+                modifier = Modifier.fillMaxWidth()
             ) {
                 Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                     Row(
@@ -291,29 +282,28 @@ fun NovaProjectsScreen(
                             modifier = Modifier
                                 .size(24.dp)
                                 .clip(CircleShape)
-                                .background(NovaIndigo.copy(alpha = 0.2f)),
+                                .background(NovaEmerald.copy(alpha = 0.15f)),
                             contentAlignment = Alignment.Center
                         ) {
-                            Icon(Icons.Default.AutoAwesome, contentDescription = null, tint = NovaCyan, modifier = Modifier.size(14.dp))
+                            Icon(Icons.Default.AutoAwesome, contentDescription = null, tint = NovaEmerald, modifier = Modifier.size(14.dp))
                         }
                         Text(
-                            text = "CREATOR WORKSPACE",
-                            color = NovaCyan,
-                            fontSize = 10.5.sp,
-                            fontWeight = FontWeight.Bold,
-                            fontFamily = FontFamily.Monospace,
-                            letterSpacing = 1.sp
+                            text = "WORKSPACE",
+                            color = NovaEmerald,
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            letterSpacing = 0.6.sp
                         )
                     }
 
                     Text(
-                        text = "Turn your ideas into software.",
+                        text = "Build apps directly on your device",
                         color = NovaTextPrimary,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold
+                        fontSize = 17.sp,
+                        fontWeight = FontWeight.SemiBold
                     )
                     Text(
-                        text = "Your private, on-device Linux development environment. Write, compile, preview, and ship apps with your autonomous AI copilot.",
+                        text = "Your private, on-device Linux development environment. Write, compile, preview, and ship software with your autonomous AI copilot.",
                         color = NovaTextSecondary,
                         fontSize = 12.5.sp,
                         lineHeight = 18.sp
@@ -321,17 +311,17 @@ fun NovaProjectsScreen(
 
                     Spacer(Modifier.height(4.dp))
 
-                    // Primary Action Deck (Bespoke Glowing Buttons)
+                    // Primary Action Deck (Clean Minimal Tactile Buttons)
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
                         NovaPrimaryButton(
                             text = "Instant Sandbox",
-                            icon = Icons.Default.RocketLaunch,
+                            icon = Icons.Default.Bolt,
                             onClick = onCreateQuickProject,
                             modifier = Modifier.weight(1.1f),
-                            height = 46.dp
+                            height = 44.dp
                         )
                         NovaSecondaryButton(
                             text = "New Project",
@@ -341,7 +331,7 @@ fun NovaProjectsScreen(
                                 showCreateDialog = true
                             },
                             modifier = Modifier.weight(0.9f),
-                            height = 46.dp
+                            height = 44.dp
                         )
                     }
                 }

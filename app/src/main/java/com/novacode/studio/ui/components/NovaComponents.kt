@@ -75,7 +75,7 @@ import com.novacode.studio.ui.theme.NovaTextPrimary
 import com.novacode.studio.ui.theme.NovaTextSecondary
 
 /**
- * Modern frosted-glass surface card with subtle neon border.
+ * Minimal tactile surface card with subtle neutral border.
  */
 @Composable
 fun NovaGlassCard(
@@ -86,12 +86,12 @@ fun NovaGlassCard(
 ) {
     Box(
         modifier = modifier
-            .clip(RoundedCornerShape(16.dp))
-            .background(NovaCardGradient)
+            .clip(RoundedCornerShape(12.dp))
+            .background(NovaSurfaceVariant)
             .border(
                 width = 1.dp,
                 color = if (glowEffect) NovaBorderGlow else borderColor,
-                shape = RoundedCornerShape(16.dp)
+                shape = RoundedCornerShape(12.dp)
             )
             .padding(14.dp)
     ) {
@@ -413,8 +413,8 @@ fun ToolExecutionCard(
 }
 
 /**
- * Custom High-Tech Neon Gradient Primary Action Button.
- * Replaces generic Material 3 Buttons across the app.
+ * Minimal, Tactile Solid Primary Action Button.
+ * Clean, solid, human-friendly button with no harsh gradients.
  */
 @Composable
 fun NovaPrimaryButton(
@@ -423,18 +423,14 @@ fun NovaPrimaryButton(
     modifier: Modifier = Modifier,
     icon: ImageVector? = null,
     enabled: Boolean = true,
-    height: androidx.compose.ui.unit.Dp = 48.dp,
+    height: androidx.compose.ui.unit.Dp = 44.dp,
 ) {
     Box(
         modifier = modifier
             .height(height)
-            .clip(RoundedCornerShape(14.dp))
+            .clip(RoundedCornerShape(10.dp))
             .background(
-                if (enabled) {
-                    Brush.horizontalGradient(listOf(NovaIndigo, NovaCyan))
-                } else {
-                    Brush.horizontalGradient(listOf(NovaIndigo.copy(alpha = 0.4f), NovaCyan.copy(alpha = 0.4f)))
-                }
+                if (enabled) NovaEmerald else NovaEmerald.copy(alpha = 0.35f)
             )
             .clickable(enabled = enabled, onClick = onClick)
             .padding(horizontal = 16.dp),
@@ -448,24 +444,25 @@ fun NovaPrimaryButton(
                 Icon(
                     imageVector = icon,
                     contentDescription = null,
-                    tint = Color.White,
-                    modifier = Modifier.size(18.dp)
+                    tint = Color(0xFF0F172A),
+                    modifier = Modifier.size(17.dp)
                 )
                 Spacer(Modifier.width(8.dp))
             }
             Text(
                 text = text,
-                color = Color.White,
+                color = Color(0xFF0F172A),
                 fontSize = 13.5.sp,
-                fontWeight = FontWeight.Bold,
-                letterSpacing = 0.3.sp
+                fontWeight = FontWeight.SemiBold,
+                letterSpacing = 0.1.sp
             )
         }
     }
 }
 
 /**
- * Custom Cyber-Glass Secondary Action Button.
+ * Minimal, Tactile Secondary Action Button.
+ * Clean neutral surface with subtle border and readable text.
  */
 @Composable
 fun NovaSecondaryButton(
@@ -474,14 +471,14 @@ fun NovaSecondaryButton(
     modifier: Modifier = Modifier,
     icon: ImageVector? = null,
     enabled: Boolean = true,
-    height: androidx.compose.ui.unit.Dp = 48.dp,
+    height: androidx.compose.ui.unit.Dp = 44.dp,
 ) {
     Box(
         modifier = modifier
             .height(height)
-            .clip(RoundedCornerShape(14.dp))
-            .background(NovaSurfaceElevated)
-            .border(1.dp, NovaBorder, RoundedCornerShape(14.dp))
+            .clip(RoundedCornerShape(10.dp))
+            .background(NovaSurfaceVariant)
+            .border(1.dp, NovaBorder, RoundedCornerShape(10.dp))
             .clickable(enabled = enabled, onClick = onClick)
             .padding(horizontal = 16.dp),
         contentAlignment = Alignment.Center
@@ -494,8 +491,8 @@ fun NovaSecondaryButton(
                 Icon(
                     imageVector = icon,
                     contentDescription = null,
-                    tint = NovaCyan,
-                    modifier = Modifier.size(18.dp)
+                    tint = NovaTextSecondary,
+                    modifier = Modifier.size(17.dp)
                 )
                 Spacer(Modifier.width(8.dp))
             }
@@ -503,7 +500,7 @@ fun NovaSecondaryButton(
                 text = text,
                 color = NovaTextPrimary,
                 fontSize = 13.5.sp,
-                fontWeight = FontWeight.SemiBold
+                fontWeight = FontWeight.Medium
             )
         }
     }

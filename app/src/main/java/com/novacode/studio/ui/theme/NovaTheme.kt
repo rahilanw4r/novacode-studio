@@ -12,49 +12,47 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
-// NovaCode Studio signature color palette
-val NovaObsidian = Color(0xFF090D16)
-val NovaSurface = Color(0xFF0F1626)
-val NovaSurfaceVariant = Color(0xFF162035)
-val NovaSurfaceElevated = Color(0xFF1C2842)
-val NovaBorder = Color(0xFF263554)
-val NovaBorderGlow = Color(0xFF3B507D)
+// NovaCode Studio Human Tone & Minimal Palette
+val NovaObsidian = Color(0xFF0F1218)
+val NovaSurface = Color(0xFF161A23)
+val NovaSurfaceVariant = Color(0xFF1D222E)
+val NovaSurfaceElevated = Color(0xFF242A38)
+val NovaBorder = Color(0xFF2D3342)
+val NovaBorderGlow = Color(0xFF3B4357)
 
-val NovaIndigo = Color(0xFF6366F1)
-val NovaIndigoGlow = Color(0xFF818CF8)
-val NovaCyan = Color(0xFF06B6D4)
-val NovaCyanGlow = Color(0xFF22D3EE)
-val NovaEmerald = Color(0xFF10B981)
-val NovaAmber = Color(0xFFF59E0B)
-val NovaRose = Color(0xFFF43F5E)
-val NovaPurple = Color(0xFFA855F7)
+val NovaEmerald = Color(0xFF10B981) // Clean Android Logo Green
+val NovaIndigo = Color(0xFF3B82F6)  // Clean Developer Blue
+val NovaCyan = Color(0xFF0EA5E9)    // Soft Ocean Blue
+val NovaAmber = Color(0xFFF59E0B)   // Warm Amber
+val NovaRose = Color(0xFFEF4444)    // Calm Rose
+val NovaPurple = Color(0xFF8B5CF6)  // Calm Violet
 
-val NovaTextPrimary = Color(0xFFF1F5F9)
-val NovaTextSecondary = Color(0xFF94A3B8)
-val NovaTextMuted = Color(0xFF64748B)
+val NovaTextPrimary = Color(0xFFF3F4F6)
+val NovaTextSecondary = Color(0xFF9CA3AF)
+val NovaTextMuted = Color(0xFF6B7280)
 
-// High-tech Gradients
+// Minimal, clean surface gradients (no neon or harsh color shifts)
 val NovaNeonGradient = Brush.linearGradient(
-    listOf(NovaIndigo, NovaCyan)
+    listOf(NovaIndigo, NovaIndigo)
 )
 val NovaCardGradient = Brush.linearGradient(
-    listOf(Color(0xFF131A2D), Color(0xFF0E1423))
+    listOf(NovaSurface, NovaSurface)
 )
 val NovaGlassGradient = Brush.linearGradient(
-    listOf(Color(0x226366F1), Color(0x1106B6D4))
+    listOf(NovaSurfaceVariant, NovaSurfaceVariant)
 )
 
 private val NovaDarkColors = darkColorScheme(
-    primary = NovaIndigo,
-    onPrimary = Color(0xFF0F1626),
-    primaryContainer = Color(0xFF2A3358),
-    onPrimaryContainer = Color(0xFFE0E7FF),
-    secondary = NovaCyan,
-    onSecondary = Color(0xFF042F2E),
-    secondaryContainer = Color(0xFF134E4A),
-    onSecondaryContainer = Color(0xFFCCFBF1),
+    primary = NovaEmerald,
+    onPrimary = Color(0xFF0F1218),
+    primaryContainer = Color(0xFF064E3B),
+    onPrimaryContainer = Color(0xFFD1FAE5),
+    secondary = NovaIndigo,
+    onSecondary = Color(0xFFFFFFFF),
+    secondaryContainer = Color(0xFF1E3A8A),
+    onSecondaryContainer = Color(0xFFDBEAFE),
     tertiary = NovaPurple,
-    onTertiary = Color(0xFF3B0764),
+    onTertiary = Color(0xFFFFFFFF),
     background = NovaObsidian,
     onBackground = NovaTextPrimary,
     surface = NovaSurface,
@@ -64,7 +62,7 @@ private val NovaDarkColors = darkColorScheme(
     outline = NovaBorder,
     outlineVariant = NovaBorderGlow,
     error = NovaRose,
-    onError = Color(0xFF4C0519),
+    onError = Color(0xFFFFFFFF),
 )
 
 private val NovaLightColors = lightColorScheme(
