@@ -820,6 +820,7 @@ fun AgentScreen(
                 .imePadding(),
             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 10.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
             // ── AI COPILOT WORKSPACE ──
             item {
                 Surface(

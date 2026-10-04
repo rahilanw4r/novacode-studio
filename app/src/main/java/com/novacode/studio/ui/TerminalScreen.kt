@@ -90,6 +90,8 @@ import androidx.compose.ui.unit.sp
 import com.novacode.studio.ui.theme.AppThemeMode
 import com.novacode.studio.ui.theme.NovaEmerald
 import com.novacode.studio.ui.theme.NovaIndigo
+import com.novacode.studio.ui.theme.NovaTextMuted
+import com.novacode.studio.ui.theme.NovaTextPrimary
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
