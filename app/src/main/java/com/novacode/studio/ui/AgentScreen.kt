@@ -113,6 +113,8 @@ import com.novacode.studio.ui.theme.NovaBorder
 import com.novacode.studio.ui.theme.NovaCyan
 import com.novacode.studio.ui.theme.NovaEmerald
 import com.novacode.studio.ui.theme.NovaIndigo
+import com.novacode.studio.ui.theme.NovaObsidian
+import com.novacode.studio.ui.theme.NovaSurface
 import com.novacode.studio.ui.theme.NovaSurfaceElevated
 import com.novacode.studio.ui.theme.NovaSurfaceVariant
 import com.novacode.studio.ui.theme.NovaTextMuted
