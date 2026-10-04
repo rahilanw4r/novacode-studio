@@ -567,8 +567,15 @@ class RuntimeInstaller(private val context: Context) {
             from = fraction,
             to = 0.995f,
             onProgress = onProgress,
-            forceEmbedded = true,
+            forceEmbedded = false,
         )
+        val agyBin = File(rootfs, AGY_GUEST_PATH.removePrefix("/"))
+        if (agyBin.exists()) {
+            runCatching {
+                agyBin.setExecutable(true, false)
+                Os.chmod(agyBin.absolutePath, 0b111101101)
+            }
+        }
         verifyGuest(proot, "$AGY_GUEST_PATH --version", "Antigravity CLI verification failed")
         agyMarker.writeText(AGY_VERSION)
         require(isAgentInstalled(com.novacode.studio.model.AgentKind.ANTIGRAVITY)) {
@@ -1788,7 +1795,7 @@ printf '%s\n' '{"hookSpecificOutput":{"hookEventName":"PermissionRequest","decis
     }
 
     private suspend fun downloadVerified(
-        url: String,
+        initialUrl: String,
         destination: File,
         expectedChecksum: String,
         algorithm: String = "SHA-256",
@@ -1801,48 +1808,102 @@ printf '%s\n' '{"hookSpecificOutput":{"hookEventName":"PermissionRequest","decis
         }
         val temporary = File(destination.parentFile, "${destination.name}.part")
         var existing = temporary.takeIf(File::isFile)?.length() ?: 0L
-        val connection = URL(url).openConnection() as HttpURLConnection
-        connection.connectTimeout = 20_000
-        connection.readTimeout = 120_000
-        connection.instanceFollowRedirects = true
-        if (existing > 0L) connection.setRequestProperty("Range", "bytes=$existing-")
-        check(connection.responseCode in 200..299) { "Download failed with HTTP ${connection.responseCode}" }
-        val resumed = connection.responseCode == HttpURLConnection.HTTP_PARTIAL && existing > 0L
-        if (!resumed) {
-            temporary.delete()
-            existing = 0L
-        }
-        val total = connection.contentLengthLong.takeIf { it >= 0L }?.plus(existing) ?: -1L
-        connection.inputStream.use { input ->
-            FileOutputStream(temporary, resumed).use { output ->
-                val buffer = ByteArray(128 * 1024)
-                var downloaded = existing
-                while (true) {
-                    val count = input.read(buffer)
-                    if (count < 0) break
-                    output.write(buffer, 0, count)
-                    downloaded += count
-                    onBytes(downloaded, total)
+
+        var currentUrl = initialUrl
+        var connection: HttpURLConnection? = null
+        var redirectCount = 0
+        while (redirectCount < 10) {
+            val conn = (URL(currentUrl).openConnection() as HttpURLConnection).apply {
+                connectTimeout = 25_000
+                readTimeout = 120_000
+                instanceFollowRedirects = true
+                setRequestProperty("User-Agent", "NovaCode-Studio/1.0 (Android)")
+                if (existing > 0L) setRequestProperty("Range", "bytes=$existing-")
+            }
+            val responseCode = conn.responseCode
+            if (responseCode in listOf(HttpURLConnection.HTTP_MOVED_PERM, HttpURLConnection.HTTP_MOVED_TEMP, HttpURLConnection.HTTP_SEE_OTHER, 307, 308)) {
+                val location = conn.getHeaderField("Location")
+                conn.disconnect()
+                if (!location.isNullOrBlank()) {
+                    currentUrl = if (location.startsWith("http://") || location.startsWith("https://")) {
+                        location
+                    } else {
+                        URL(URL(currentUrl), location).toString()
+                    }
+                    redirectCount++
+                    continue
                 }
             }
+            connection = conn
+            break
         }
-        connection.disconnect()
+        val finalConnection = connection ?: error("Too many redirects downloading $initialUrl")
+        try {
+            val responseCode = finalConnection.responseCode
+            check(responseCode in 200..299) { "Download failed with HTTP $responseCode" }
+            val resumed = responseCode == HttpURLConnection.HTTP_PARTIAL && existing > 0L
+            if (!resumed) {
+                temporary.delete()
+                existing = 0L
+            }
+            val total = finalConnection.contentLengthLong.takeIf { it >= 0L }?.plus(existing) ?: -1L
+            finalConnection.inputStream.use { input ->
+                FileOutputStream(temporary, resumed).use { output ->
+                    val buffer = ByteArray(128 * 1024)
+                    var downloaded = existing
+                    while (true) {
+                        val count = input.read(buffer)
+                        if (count < 0) break
+                        output.write(buffer, 0, count)
+                        downloaded += count
+                        onBytes(downloaded, total)
+                    }
+                }
+            }
+        } finally {
+            finalConnection.disconnect()
+        }
         val actual = digest(temporary, algorithm)
         if (!actual.equals(expectedChecksum, ignoreCase = true)) {
             temporary.delete()
-            error("Downloaded file checksum did not match")
+            error("Downloaded file checksum did not match (expected $expectedChecksum, got $actual)")
         }
         destination.delete()
         check(temporary.renameTo(destination)) { "Could not finish download" }
     }
 
     private fun fetchText(url: String): String {
-        val connection = URL(url).openConnection() as HttpURLConnection
-        connection.connectTimeout = 15_000
-        connection.readTimeout = 30_000
-        connection.setRequestProperty("Accept", "application/json")
-        check(connection.responseCode in 200..299) { "Request failed with HTTP ${connection.responseCode}" }
-        return connection.inputStream.bufferedReader().use { it.readText() }.also { connection.disconnect() }
+        var currentUrl = url
+        var connection: HttpURLConnection? = null
+        var redirectCount = 0
+        while (redirectCount < 10) {
+            val conn = (URL(currentUrl).openConnection() as HttpURLConnection).apply {
+                connectTimeout = 15_000
+                readTimeout = 30_000
+                instanceFollowRedirects = true
+                setRequestProperty("User-Agent", "NovaCode-Studio/1.0 (Android)")
+                setRequestProperty("Accept", "application/json, text/plain, */*")
+            }
+            val responseCode = conn.responseCode
+            if (responseCode in listOf(HttpURLConnection.HTTP_MOVED_PERM, HttpURLConnection.HTTP_MOVED_TEMP, HttpURLConnection.HTTP_SEE_OTHER, 307, 308)) {
+                val location = conn.getHeaderField("Location")
+                conn.disconnect()
+                if (!location.isNullOrBlank()) {
+                    currentUrl = if (location.startsWith("http://") || location.startsWith("https://")) {
+                        location
+                    } else {
+                        URL(URL(currentUrl), location).toString()
+                    }
+                    redirectCount++
+                    continue
+                }
+            }
+            connection = conn
+            break
+        }
+        val finalConn = connection ?: error("Too many redirects for $url")
+        check(finalConn.responseCode in 200..299) { "Request failed with HTTP ${finalConn.responseCode}" }
+        return finalConn.inputStream.bufferedReader().use { it.readText() }.also { finalConn.disconnect() }
     }
 
     private fun digest(file: File, algorithm: String): String {

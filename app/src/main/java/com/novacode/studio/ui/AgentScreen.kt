@@ -189,6 +189,7 @@ fun AgentScreen(
     onRefreshAntigravityModels: () -> Unit = {},
     onSetAntigravityModel: (String) -> Unit = {},
     onSetAntigravityEffort: (String) -> Unit = {},
+    onSendPrompt: (String) -> Unit = {},
 ) {
     val scope = rememberCoroutineScope()
     var selectedKind by rememberSaveable(state.provider.kind) { mutableStateOf(state.provider.kind) }
@@ -890,7 +891,7 @@ fun AgentScreen(
                                         val p = aiWorkspacePrompt.trim()
                                         if (p.isNotBlank()) {
                                             aiWorkspacePrompt = ""
-                                            onPing()
+                                            onSendPrompt(p)
                                         }
                                     },
                                 contentAlignment = Alignment.Center
@@ -1162,11 +1163,8 @@ fun AgentScreen(
                 }
             }
 
-            // ── 2. Primary Configuration Card (Antigravity OR Provider) ──
             item {
-                if (!viewedAgentInstalled || viewedAgent != state.agentKind) {
-                    // Installation/selection guidance is shown directly below the tabs.
-                } else if (state.agentKind == AgentKind.ANTIGRAVITY) {
+                if (viewedAgent == AgentKind.ANTIGRAVITY) {
                     AgentAntigravityCard(
                         state = state,
                         code = antigravityCode,
@@ -1378,7 +1376,9 @@ private fun AgentAntigravityCard(
     onTest: () -> Unit,
 ) {
     val clipboard = LocalClipboardManager.current
+    val context = androidx.compose.ui.platform.LocalContext.current
     val auth = state.antigravityAuth
+    val isInstalled = state.installedAgentVersions.containsKey(AgentKind.ANTIGRAVITY)
 
     Surface(
         color = MaterialTheme.colorScheme.surface,
@@ -1417,7 +1417,7 @@ private fun AgentAntigravityCard(
                         overflow = TextOverflow.Ellipsis,
                     )
                     Text(
-                        if (auth.status == AntigravityAuthStatus.SIGNED_IN) "Connected with Google" else "Required for Antigravity",
+                        if (auth.status == AntigravityAuthStatus.SIGNED_IN) "Connected with Google" else if (!isInstalled) "CLI installation & login required" else "Required for Antigravity",
                         fontSize = 11.sp,
                         color = if (auth.status == AntigravityAuthStatus.SIGNED_IN) NovaEmerald else NovaTextMuted,
                     )
@@ -1441,19 +1441,55 @@ private fun AgentAntigravityCard(
                 }
             }
 
+            // Authentication status message
+            auth.message?.takeIf { it.isNotBlank() }?.let { msg ->
+                Text(
+                    text = msg,
+                    fontSize = 12.sp,
+                    color = if (auth.status == AntigravityAuthStatus.ERROR) MaterialTheme.colorScheme.error else NovaEmerald,
+                    lineHeight = 16.sp,
+                )
+            }
+
             // Authentication actions if not signed in
             when (auth.status) {
                 AntigravityAuthStatus.STARTING, AntigravityAuthStatus.COMPLETING -> {
-                    LinearProgressIndicator(Modifier.fillMaxWidth())
+                    Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            CircularProgressIndicator(modifier = Modifier.size(16.dp), strokeWidth = 2.dp, color = NovaEmerald)
+                            Spacer(Modifier.width(8.dp))
+                            Text(auth.message ?: "Starting Google sign-in…", fontSize = 12.sp, color = NovaTextPrimary)
+                        }
+                        LinearProgressIndicator(Modifier.fillMaxWidth(), color = NovaEmerald, trackColor = NovaSurfaceVariant)
+                    }
                 }
                 AntigravityAuthStatus.AWAITING_CODE -> {
                     auth.authorizationUrl?.let { url ->
-                        OutlinedButton(
-                            onClick = { clipboard.setText(AnnotatedString(url)) },
+                        Row(
                             modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(12.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
                         ) {
-                            Text("Copy Google Sign-in URL")
+                            Button(
+                                onClick = {
+                                    runCatching {
+                                        context.startActivity(
+                                            android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(url))
+                                                .addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK),
+                                        )
+                                    }
+                                },
+                                modifier = Modifier.weight(1f),
+                                shape = RoundedCornerShape(12.dp),
+                            ) {
+                                Text("Open Browser", fontWeight = FontWeight.SemiBold)
+                            }
+                            OutlinedButton(
+                                onClick = { clipboard.setText(AnnotatedString(url)) },
+                                modifier = Modifier.weight(1f),
+                                shape = RoundedCornerShape(12.dp),
+                            ) {
+                                Text("Copy URL")
+                            }
                         }
                     }
                     OutlinedTextField(
@@ -1470,16 +1506,37 @@ private fun AgentAntigravityCard(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp),
                     ) {
-                        Text("Complete Sign-in")
+                        Text("Complete Sign-in", fontWeight = FontWeight.Bold)
                     }
                 }
                 AntigravityAuthStatus.SIGNED_OUT, AntigravityAuthStatus.ERROR -> {
-                    Button(
-                        onClick = onStartLogin,
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(12.dp),
-                    ) {
-                        Text(if (auth.status == AntigravityAuthStatus.ERROR) "Reconnect with Google" else "Sign in with Google")
+                    if (state.agentInstalling == AgentKind.ANTIGRAVITY) {
+                        Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                CircularProgressIndicator(modifier = Modifier.size(16.dp), strokeWidth = 2.dp, color = NovaEmerald)
+                                Spacer(Modifier.width(8.dp))
+                                Text(state.agentMessage ?: "Installing Antigravity CLI…", fontSize = 12.sp, color = NovaTextPrimary)
+                            }
+                            LinearProgressIndicator(
+                                progress = { state.agentProgress },
+                                modifier = Modifier.fillMaxWidth(),
+                                color = NovaEmerald,
+                                trackColor = NovaSurfaceVariant,
+                            )
+                        }
+                    } else {
+                        Button(
+                            onClick = onStartLogin,
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(12.dp),
+                        ) {
+                            Text(
+                                if (!isInstalled) "Install & Sign in with Google"
+                                else if (auth.status == AntigravityAuthStatus.ERROR) "Reconnect with Google"
+                                else "Sign in with Google",
+                                fontWeight = FontWeight.Bold,
+                            )
+                        }
                     }
                 }
                 AntigravityAuthStatus.SIGNED_IN -> {}

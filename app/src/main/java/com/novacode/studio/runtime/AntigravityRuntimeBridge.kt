@@ -44,9 +44,19 @@ internal sealed interface AntigravityParsedEvent {
     ) : AntigravityParsedEvent
 }
 
+internal fun cleanJsonLine(raw: String): String {
+    val stripped = raw.replace(Regex("\\u001B(?:\\][^\\u0007]*(?:\\u0007|\\u001B\\\\)|\\[[0-?]*[ -/]*[@-~]|[()][A-Z0-9])"), "").trim()
+    val start = stripped.indexOf('{')
+    val end = stripped.lastIndexOf('}')
+    return if (start in 0 until end) {
+        stripped.substring(start, end + 1)
+    } else stripped
+}
+
 internal object AntigravityEventParser {
     fun parse(line: String): AntigravityParsedEvent? {
-        val root = runCatching { JSONObject(line) }.getOrNull() ?: return null
+        val clean = cleanJsonLine(line)
+        val root = runCatching { JSONObject(clean) }.getOrNull() ?: return null
         return when (root.optString("event")) {
             "init" -> root.optString("conversation_id")
                 .takeIf(String::isNotBlank)

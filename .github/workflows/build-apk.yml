@@ -50,6 +50,6 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           APK_FILE=$(ls app/build/outputs/apk/online/debug/*.apk | head -n 1)
-          cp "$APK_FILE" NovaCode-Studio-v1.0.11.apk
-          gh release create v1.0.11 NovaCode-Studio-v1.0.11.apk --title "NovaCode Studio v1.0.11 — Dynamic Light & Dark Theme Support" --notes "NovaCode Studio v1.0.11 fixes light mode throughout the entire IDE: dynamic NovaColorPalette for both Dark (Obsidian #0D1014) and Light (Crisp #F6F8FA & #FFFFFF) themes, high-contrast light emerald accent, unified bottom dock colors in both modes, seamless status bar blending, and clean terminal presentation." || gh release upload v1.0.11 NovaCode-Studio-v1.0.11.apk --clobber
+          cp "$APK_FILE" NovaCode-Studio-v1.0.12.apk
+          gh release create v1.0.12 NovaCode-Studio-v1.0.12.apk --title "NovaCode Studio v1.0.12 — Antigravity Connection & AI Copilot Fixes" --notes "NovaCode Studio v1.0.12 fixes Antigravity connection and AI Copilot integration: automatic Antigravity CLI installation on sign-in, reliable cross-domain runtime downloads with redirect support, direct Google sign-in browser launcher, and wired AI Copilot prompt execution." || gh release upload v1.0.12 NovaCode-Studio-v1.0.12.apk --clobber
 

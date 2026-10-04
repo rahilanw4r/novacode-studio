@@ -48,10 +48,24 @@ class AntigravityAuthController(
         if (process?.isAlive == true) return@withContext
         if (!installer.isAgentInstalled(com.novacode.studio.model.AgentKind.ANTIGRAVITY)) {
             mutableState.value = AntigravityAuthState(
-                AntigravityAuthStatus.ERROR,
-                message = "Install Antigravity CLI before signing in.",
+                AntigravityAuthStatus.STARTING,
+                message = "Installing Antigravity CLI package…",
             )
-            return@withContext
+            val installResult = runCatching {
+                installer.ensureAgentInstalled(com.novacode.studio.model.AgentKind.ANTIGRAVITY) { progress ->
+                    mutableState.value = AntigravityAuthState(
+                        AntigravityAuthStatus.STARTING,
+                        message = progress.message,
+                    )
+                }
+            }
+            if (installResult.isFailure || !installer.isAgentInstalled(com.novacode.studio.model.AgentKind.ANTIGRAVITY)) {
+                mutableState.value = AntigravityAuthState(
+                    AntigravityAuthStatus.ERROR,
+                    message = installResult.exceptionOrNull()?.message?.take(220) ?: "Install Antigravity CLI before signing in.",
+                )
+                return@withContext
+            }
         }
         mutableState.value = AntigravityAuthState(AntigravityAuthStatus.STARTING, message = "Starting Google sign-in…")
         codeSubmitted = false
@@ -118,10 +132,9 @@ class AntigravityAuthController(
                     handshakeReplies++
                     lastHandshakeReplyLength = output.length
                 }
-                if (handshakeReplies > 0 &&
-                    !loginMenuAdvanced &&
+                if (!loginMenuAdvanced &&
                     clean.contains("Select login method", true) &&
-                    clean.contains("> 1. Google OAuth", true) &&
+                    (clean.contains("Google OAuth", true) || clean.contains("1.", true)) &&
                     extractGoogleOAuthUrl(clean) == null
                 ) {
                     // agy's TUI (Ink) runs the PTY in raw mode. In raw mode
@@ -302,13 +315,15 @@ class AntigravityAuthController(
 
 internal fun extractGoogleOAuthUrl(output: String): String? {
     val compact = output.replace(Regex("[\\r\\n\\t ]+"), "")
-    // agy's Ink renderer wraps the URL across terminal rows. Removing that
-    // whitespace reconstructs it, but the next rendered labels may then become
-    // adjacent to the URL. The PKCE `state` value is the final parameter emitted
-    // by agy, so terminate at its base64url-safe value instead of consuming TUI
-    // copy such as "Copy and paste the URL".
+    val googleMatches = Regex("https://accounts\\.google\\.com/[^\\s\"'<>]+").findAll(compact)
+    for (m in googleMatches) {
+        val candidate = m.value.trimEnd { char -> char !in URL_CHARACTERS }
+        if (("client_id=" in candidate && "code_challenge=" in candidate) || "oauth" in candidate) {
+            return candidate
+        }
+    }
     GOOGLE_OAUTH_URL.find(compact)?.value
-        ?.takeIf { "client_id=" in it && "code_challenge=" in it }
+        ?.takeIf { "client_id=" in it }
         ?.let { return it }
     // Fallback for post-menu screens that print the browser URL in a different
     // shape (wrapped lines, shortened query display). Only apply once the login

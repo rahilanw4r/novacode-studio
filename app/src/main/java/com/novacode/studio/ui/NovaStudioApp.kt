@@ -433,22 +433,41 @@ private fun AntigravityOnboardingScreen(
                 }
                 AntigravityAuthStatus.STARTING -> {
                     LinearProgressIndicator(Modifier.fillMaxWidth())
-                    Text("Starting the official Antigravity login…")
+                    Text(state.antigravityAuth.message ?: "Starting the official Antigravity login…")
                 }
                 AntigravityAuthStatus.COMPLETING -> {
                     LinearProgressIndicator(Modifier.fillMaxWidth())
-                    Text("Completing Google sign-in…")
+                    Text(state.antigravityAuth.message ?: "Completing Google sign-in…")
                 }
                 AntigravityAuthStatus.AWAITING_CODE -> {
                     Text("Google sign-in opened in your browser. Copy the one-time code shown after approval.")
                     state.antigravityAuth.authorizationUrl?.let { url ->
-                        OutlinedButton(
-                            onClick = { clipboard.setText(AnnotatedString(url)) },
+                        val currentContext = androidx.compose.ui.platform.LocalContext.current
+                        Row(
                             modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
                         ) {
-                            Icon(Icons.Default.ContentCopy, null, Modifier.size(18.dp))
-                            Spacer(Modifier.width(8.dp))
-                            Text("Copy sign-in URL")
+                            Button(
+                                onClick = {
+                                    runCatching {
+                                        currentContext.startActivity(
+                                            android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(url))
+                                                .addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK),
+                                        )
+                                    }
+                                },
+                                modifier = Modifier.weight(1f),
+                            ) {
+                                Text("Open Browser")
+                            }
+                            OutlinedButton(
+                                onClick = { clipboard.setText(AnnotatedString(url)) },
+                                modifier = Modifier.weight(1f),
+                            ) {
+                                Icon(Icons.Default.ContentCopy, null, Modifier.size(16.dp))
+                                Spacer(Modifier.width(6.dp))
+                                Text("Copy URL")
+                            }
                         }
                     }
                     OutlinedTextField(
@@ -2125,6 +2144,7 @@ private fun RootScreenHost(
                     onRefreshAntigravityModels = viewModel::refreshAntigravityModels,
                     onSetAntigravityModel = viewModel::setAntigravityModel,
                     onSetAntigravityEffort = viewModel::setAntigravityEffort,
+                    onSendPrompt = viewModel::startAiTaskFromPrompt,
                 )
                 RootScreen.TERMINAL -> TerminalScreen(
                     lines = terminalLines,

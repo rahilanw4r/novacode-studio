@@ -106,6 +106,18 @@ private fun antigravityModelWithEffort(model: String, effort: String): String? {
     return "${match.groupValues[1]}-$effort"
 }
 
+val DEFAULT_ANTIGRAVITY_MODELS = listOf(
+    "gemini-3.8-flash-high",
+    "gemini-3.8-flash-medium",
+    "gemini-3.8-flash-low",
+    "gemini-3.6-flash-high",
+    "gemini-3.6-flash-medium",
+    "gemini-3.1-pro-high",
+    "claude-sonnet-4-6",
+    "claude-opus-4-6-thinking",
+    "gpt-oss-120b-medium",
+)
+
 private data class ProjectTerminalSnapshot(
     val lines: List<TerminalOutputLine> = emptyList(),
     val cwd: String = "/workspace",
@@ -232,9 +244,9 @@ data class AppUiState(
     val agentUpdateTotalBytes: Long? = null,
     val agentUpdateBytesPerSecond: Long? = null,
     val antigravityAuth: AntigravityAuthState = AntigravityAuthState(),
-    val antigravityModel: String = "",
+    val antigravityModel: String = "gemini-3.8-flash-high",
     val antigravityEffort: String = "high",
-    val antigravityModels: List<String> = emptyList(),
+    val antigravityModels: List<String> = DEFAULT_ANTIGRAVITY_MODELS,
     val antigravityModelsLoading: Boolean = false,
     val androidBuildRunning: Boolean = false,
     val androidBuildMessage: String? = null,
@@ -308,8 +320,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 message = preferences.antigravityAccountEmail.takeIf(String::isNotBlank)?.let { "Connected as $it" },
                 accountEmail = preferences.antigravityAccountEmail.takeIf(String::isNotBlank),
             ),
-            antigravityModel = preferences.antigravityModel,
-            antigravityEffort = preferences.antigravityEffort,
+            antigravityModel = preferences.antigravityModel.ifBlank { "gemini-3.8-flash-high" },
+            antigravityEffort = preferences.antigravityEffort.ifBlank { "high" },
+            antigravityModels = DEFAULT_ANTIGRAVITY_MODELS,
             themeMode = runCatching { com.novacode.studio.ui.theme.AppThemeMode.valueOf(preferences.themeMode.uppercase()) }
                 .getOrDefault(com.novacode.studio.ui.theme.AppThemeMode.DARK),
             projects = preferences.loadProjects(),
@@ -1488,7 +1501,92 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun startAntigravityLogin() {
         if (_state.value.agentInstalling != null || _state.value.isRunning) return
         lastOpenedAntigravityAuthUrl = null
-        viewModelScope.launch { antigravityAuthController.beginLogin() }
+        viewModelScope.launch {
+            if (!installer.isAgentInstalled(AgentKind.ANTIGRAVITY)) {
+                _state.update {
+                    it.copy(
+                        agentInstalling = AgentKind.ANTIGRAVITY,
+                        agentMessage = "Preparing Antigravity CLI…",
+                        agentProgress = 0.05f,
+                        antigravityAuth = AntigravityAuthState(
+                            status = AntigravityAuthStatus.STARTING,
+                            message = "Downloading Antigravity CLI package…",
+                        ),
+                    )
+                }
+                var sampleBytes = 0L
+                var sampleAt = SystemClock.elapsedRealtime()
+                val installResult = runCatching {
+                    withContext(Dispatchers.IO) {
+                        agentRegistry.require(AgentKind.ANTIGRAVITY).install(installer) { progress ->
+                            val now = SystemClock.elapsedRealtime()
+                            val bytes = progress.downloadedBytes
+                            val elapsed = now - sampleAt
+                            val speed = if (bytes != null && elapsed >= 500L) {
+                                ((bytes - sampleBytes).coerceAtLeast(0L) * 1_000L / elapsed.coerceAtLeast(1L)).also {
+                                    sampleBytes = bytes
+                                    sampleAt = now
+                                }
+                            } else _state.value.agentBytesPerSecond
+                            _state.update { current ->
+                                current.copy(
+                                    agentMessage = progress.message,
+                                    agentProgress = progress.fraction,
+                                    agentDownloadedBytes = progress.downloadedBytes,
+                                    agentTotalBytes = progress.totalBytes,
+                                    agentBytesPerSecond = speed,
+                                    antigravityAuth = current.antigravityAuth.copy(
+                                        status = AntigravityAuthStatus.STARTING,
+                                        message = progress.message,
+                                    ),
+                                )
+                            }
+                        }
+                    }
+                }
+                _state.update { current ->
+                    current.copy(
+                        installedAgentVersions = installer.installedAgentVersions(),
+                        agentInstalling = null,
+                        agentMessage = null,
+                        agentProgress = 0f,
+                        agentDownloadedBytes = null,
+                        agentTotalBytes = null,
+                        agentBytesPerSecond = null,
+                    )
+                }
+                if (installResult.isFailure) {
+                    val errorMsg = installResult.exceptionOrNull()?.message ?: "Could not install Antigravity CLI"
+                    _state.update {
+                        it.copy(
+                            toastMessage = errorMsg,
+                            antigravityAuth = AntigravityAuthState(
+                                status = AntigravityAuthStatus.ERROR,
+                                message = errorMsg,
+                            ),
+                        )
+                    }
+                    return@launch
+                }
+                selectAgent(AgentKind.ANTIGRAVITY)
+            }
+            antigravityAuthController.beginLogin()
+        }
+    }
+
+    fun startAiTaskFromPrompt(prompt: String) {
+        val clean = prompt.trim()
+        if (clean.isBlank()) return
+        if (_state.value.activeProject == null) {
+            val existing = _state.value.projects.firstOrNull()
+            if (existing != null) {
+                openProject(existing)
+            } else {
+                createQuickProject()
+            }
+        }
+        _state.update { it.copy(workspaceVisible = true) }
+        sendPrompt(clean)
     }
 
     fun submitAntigravityCode(code: String) {
@@ -3012,7 +3110,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         val project = state.value.activeProject ?: return
         if (_state.value.agentKind == AgentKind.ANTIGRAVITY &&
             _state.value.antigravityAuth.status != AntigravityAuthStatus.SIGNED_IN) {
-            _state.update { it.copy(toastMessage = "Sign in to Antigravity from Settings before starting a task.") }
+            _state.update { it.copy(toastMessage = "Sign in to Antigravity from Copilot before starting a task.") }
             return
         }
         if (_state.value.agentKind == AgentKind.DEEPSEEK_CODER && _state.value.provider.kind == ProviderKind.CLAUDE) {
