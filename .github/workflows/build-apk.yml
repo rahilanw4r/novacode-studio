@@ -50,6 +50,6 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           APK_FILE=$(ls app/build/outputs/apk/online/debug/*.apk | head -n 1)
-          cp "$APK_FILE" NovaCode-Studio-v1.0.8.apk
-          gh release create v1.0.8 NovaCode-Studio-v1.0.8.apk --title "NovaCode Studio v1.0.8 — Apple Liquid AI, Creator Profile & Telegram Contact" --notes "NovaCode Studio v1.0.8 introduces Apple-style Liquid AI features (chromatic aura edge, tactile spring click physics, contextual assistant action bar), along with a dedicated Creator & Developer profile for Rahil Anwar (@RahilAnw4r), direct Telegram contact, and official GitHub repository integration." || gh release upload v1.0.8 NovaCode-Studio-v1.0.8.apk --clobber
+          cp "$APK_FILE" NovaCode-Studio-v1.0.9.apk
+          gh release create v1.0.9 NovaCode-Studio-v1.0.9.apk --title "NovaCode Studio v1.0.9 — UI Polish, Edge-to-Edge Safe Insets & Balanced Controls" --notes "NovaCode Studio v1.0.9 fixes all status bar & navigation bar collision insets, delivers an evenly balanced bottom navigation bar, refines button sizes and single-line typography, harmonizes the AI Copilot and reasoning controls into human-toned Emerald/Minimal palette, and optimizes template card proportions." || gh release upload v1.0.9 NovaCode-Studio-v1.0.9.apk --clobber
 

@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.AutoAwesome
@@ -130,22 +131,23 @@ fun NovaStatusPill(
             .clip(RoundedCornerShape(20.dp))
             .background(color.copy(alpha = 0.12f))
             .border(1.dp, color.copy(alpha = 0.35f), RoundedCornerShape(20.dp))
-            .padding(horizontal = 10.dp, vertical = 4.dp),
+            .padding(horizontal = 8.dp, vertical = 3.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(6.dp)
+        horizontalArrangement = Arrangement.spacedBy(5.dp)
     ) {
         Box(
             modifier = Modifier
-                .size(7.dp)
+                .size(6.dp)
                 .clip(CircleShape)
                 .background(color.copy(alpha = alpha))
         )
         Text(
             text = statusText,
             color = color,
-            fontSize = 11.sp,
+            fontSize = 10.sp,
             fontWeight = FontWeight.SemiBold,
-            fontFamily = FontFamily.Monospace
+            fontFamily = FontFamily.Monospace,
+            maxLines = 1
         )
     }
 }
@@ -424,7 +426,7 @@ fun NovaPrimaryButton(
     modifier: Modifier = Modifier,
     icon: ImageVector? = null,
     enabled: Boolean = true,
-    height: androidx.compose.ui.unit.Dp = 44.dp,
+    height: androidx.compose.ui.unit.Dp = 42.dp,
 ) {
     Box(
         modifier = modifier
@@ -434,7 +436,7 @@ fun NovaPrimaryButton(
             .background(
                 if (enabled) NovaEmerald else NovaEmerald.copy(alpha = 0.35f)
             )
-            .padding(horizontal = 16.dp),
+            .padding(horizontal = 10.dp),
         contentAlignment = Alignment.Center
     ) {
         Row(
@@ -446,16 +448,18 @@ fun NovaPrimaryButton(
                     imageVector = icon,
                     contentDescription = null,
                     tint = Color(0xFF0F172A),
-                    modifier = Modifier.size(17.dp)
+                    modifier = Modifier.size(16.dp)
                 )
-                Spacer(Modifier.width(8.dp))
+                Spacer(Modifier.width(6.dp))
             }
             Text(
                 text = text,
                 color = Color(0xFF0F172A),
-                fontSize = 13.5.sp,
+                fontSize = 12.5.sp,
                 fontWeight = FontWeight.SemiBold,
-                letterSpacing = 0.1.sp
+                letterSpacing = 0.1.sp,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
         }
     }
@@ -472,7 +476,7 @@ fun NovaSecondaryButton(
     modifier: Modifier = Modifier,
     icon: ImageVector? = null,
     enabled: Boolean = true,
-    height: androidx.compose.ui.unit.Dp = 44.dp,
+    height: androidx.compose.ui.unit.Dp = 42.dp,
 ) {
     Box(
         modifier = modifier
@@ -481,7 +485,7 @@ fun NovaSecondaryButton(
             .clip(RoundedCornerShape(10.dp))
             .background(NovaSurfaceVariant)
             .border(1.dp, NovaBorder, RoundedCornerShape(10.dp))
-            .padding(horizontal = 16.dp),
+            .padding(horizontal = 10.dp),
         contentAlignment = Alignment.Center
     ) {
         Row(
@@ -493,15 +497,17 @@ fun NovaSecondaryButton(
                     imageVector = icon,
                     contentDescription = null,
                     tint = NovaTextSecondary,
-                    modifier = Modifier.size(17.dp)
+                    modifier = Modifier.size(16.dp)
                 )
-                Spacer(Modifier.width(8.dp))
+                Spacer(Modifier.width(6.dp))
             }
             Text(
                 text = text,
                 color = NovaTextPrimary,
-                fontSize = 13.5.sp,
-                fontWeight = FontWeight.Medium
+                fontSize = 12.5.sp,
+                fontWeight = FontWeight.SemiBold,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
         }
     }

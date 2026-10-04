@@ -2,8 +2,10 @@ package com.novacode.studio.ui
 
 import com.novacode.studio.ui.screens.workspace.NovaMasterWorkspace
 import com.novacode.studio.ui.screens.developer.NovaDeveloperScreen
+import com.novacode.studio.ui.components.liquidBounceClick
 import com.novacode.studio.ui.components.NovaPrimaryButton
 import com.novacode.studio.ui.components.NovaSecondaryButton
+import androidx.compose.foundation.layout.statusBars
 import com.novacode.studio.ui.theme.NovaCyan
 import com.novacode.studio.ui.theme.NovaEmerald
 import com.novacode.studio.ui.theme.NovaIndigo
@@ -2002,53 +2004,54 @@ private fun RootScreenHost(
     val terminalCurrentCommand by viewModel.terminalCurrentCommand.collectAsStateWithLifecycle()
 
     Scaffold(
-        contentWindowInsets = WindowInsets(0, 0, 0, 0),
+        contentWindowInsets = WindowInsets.statusBars,
         bottomBar = {
             if (!keyboardVisible) {
                 Surface(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                        .navigationBarsPadding()
+                        .padding(horizontal = 16.dp, vertical = 6.dp),
                     shape = RoundedCornerShape(16.dp),
                     color = NovaSurface,
                     border = BorderStroke(1.dp, NovaBorder),
-                    shadowElevation = 3.dp
+                    shadowElevation = 4.dp
                 ) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = 5.dp, horizontal = 6.dp),
-                        horizontalArrangement = Arrangement.SpaceAround,
+                            .padding(vertical = 6.dp, horizontal = 4.dp),
+                        horizontalArrangement = Arrangement.SpaceEvenly,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         RootScreen.entries.forEach { tab ->
                             val selected = screen == tab
                             Box(
                                 modifier = Modifier
+                                    .weight(1f)
                                     .clip(RoundedCornerShape(10.dp))
                                     .background(if (selected) NovaSurfaceElevated else Color.Transparent)
-                                    .clickable { screen = tab }
-                                    .padding(horizontal = 14.dp, vertical = 7.dp),
+                                    .liquidBounceClick(onClick = { screen = tab })
+                                    .padding(vertical = 5.dp),
                                 contentAlignment = Alignment.Center
                             ) {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.spacedBy(2.dp)
                                 ) {
                                     Icon(
                                         imageVector = tab.icon,
                                         contentDescription = tab.label,
                                         tint = if (selected) NovaEmerald else NovaTextMuted,
-                                        modifier = Modifier.size(18.dp)
+                                        modifier = Modifier.size(19.dp)
                                     )
-                                    if (selected) {
-                                        Text(
-                                            text = tab.label,
-                                            color = NovaTextPrimary,
-                                            fontSize = 12.sp,
-                                            fontWeight = FontWeight.SemiBold
-                                        )
-                                    }
+                                    Text(
+                                        text = tab.label,
+                                        color = if (selected) NovaEmerald else NovaTextMuted,
+                                        fontSize = 10.5.sp,
+                                        fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Medium,
+                                        maxLines = 1
+                                    )
                                 }
                             }
                         }

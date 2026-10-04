@@ -59,6 +59,8 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Terminal
 import com.novacode.studio.ui.components.LiquidAiAssistantBar
 import com.novacode.studio.ui.components.liquidBounceClick
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -260,17 +262,33 @@ fun NovaProjectsScreen(
                     }
                 }
 
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                     NovaStatusPill(
-                        statusText = "ARM64 ISOLATED",
+                        statusText = if (state.isRunning) "RUNNING" else "ARM64",
                         isRunning = state.isRunning,
                         color = if (state.isRunning) NovaAmber else NovaEmerald
                     )
-                    IconButton(onClick = onOpenDeveloper) {
-                        Icon(Icons.Default.Person, contentDescription = "Developer Profile", tint = NovaEmerald, modifier = Modifier.size(20.dp))
+                    Box(
+                        modifier = Modifier
+                            .size(32.dp)
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(NovaSurfaceElevated)
+                            .border(1.dp, NovaBorder, RoundedCornerShape(8.dp))
+                            .liquidBounceClick(onClick = onOpenDeveloper),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(Icons.Default.Person, contentDescription = "Developer Profile", tint = NovaEmerald, modifier = Modifier.size(16.dp))
                     }
-                    IconButton(onClick = onSettings) {
-                        Icon(Icons.Default.Settings, contentDescription = "Preferences", tint = NovaTextSecondary, modifier = Modifier.size(20.dp))
+                    Box(
+                        modifier = Modifier
+                            .size(32.dp)
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(NovaSurfaceElevated)
+                            .border(1.dp, NovaBorder, RoundedCornerShape(8.dp))
+                            .liquidBounceClick(onClick = onSettings),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(Icons.Default.Settings, contentDescription = "Preferences", tint = NovaTextSecondary, modifier = Modifier.size(16.dp))
                     }
                 }
             }
@@ -328,8 +346,8 @@ fun NovaProjectsScreen(
                             text = "Instant Sandbox",
                             icon = Icons.Default.Bolt,
                             onClick = onCreateQuickProject,
-                            modifier = Modifier.weight(1.1f),
-                            height = 44.dp
+                            modifier = Modifier.weight(1f),
+                            height = 42.dp
                         )
                         NovaSecondaryButton(
                             text = "New Project",
@@ -338,8 +356,8 @@ fun NovaProjectsScreen(
                                 newProjectName = ""
                                 showCreateDialog = true
                             },
-                            modifier = Modifier.weight(0.9f),
-                            height = 44.dp
+                            modifier = Modifier.weight(1f),
+                            height = 42.dp
                         )
                     }
                 }
@@ -562,14 +580,17 @@ fun NovaProjectsScreen(
                     blueprints.forEach { blueprint ->
                         Box(
                             modifier = Modifier
-                                .width(200.dp)
+                                .width(168.dp)
                                 .clip(RoundedCornerShape(14.dp))
                                 .background(NovaSurfaceElevated)
                                 .border(1.dp, NovaBorder, RoundedCornerShape(14.dp))
                                 .clickable { onCreate(blueprint.defaultName) }
                                 .padding(12.dp)
                         ) {
-                            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                            Column(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalArrangement = Arrangement.spacedBy(6.dp)
+                            ) {
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
                                     verticalAlignment = Alignment.CenterVertically,
@@ -598,14 +619,18 @@ fun NovaProjectsScreen(
                                     text = blueprint.title,
                                     color = NovaTextPrimary,
                                     fontSize = 13.sp,
-                                    fontWeight = FontWeight.Bold
+                                    fontWeight = FontWeight.Bold,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
                                 )
                                 Text(
                                     text = blueprint.description,
                                     color = NovaTextMuted,
                                     fontSize = 11.sp,
                                     lineHeight = 15.sp,
-                                    maxLines = 2
+                                    minLines = 2,
+                                    maxLines = 2,
+                                    overflow = TextOverflow.Ellipsis
                                 )
                             }
                         }
@@ -694,30 +719,31 @@ fun NovaProjectsScreen(
                     ) {
                         Box(
                             modifier = Modifier
-                                .size(54.dp)
+                                .size(48.dp)
                                 .clip(CircleShape)
-                                .background(NovaIndigo.copy(alpha = 0.15f)),
+                                .background(NovaEmerald.copy(alpha = 0.12f)),
                             contentAlignment = Alignment.Center
                         ) {
-                            Icon(Icons.Default.Folder, contentDescription = null, tint = NovaCyan, modifier = Modifier.size(26.dp))
+                            Icon(Icons.Default.Folder, contentDescription = null, tint = NovaEmerald, modifier = Modifier.size(24.dp))
                         }
                         Text(
                             text = "No Projects Yet",
                             color = NovaTextPrimary,
                             fontSize = 15.sp,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.SemiBold
                         )
                         Text(
-                            text = "Launch an Instant Sandbox or pick a template above to start coding with your AI partner.",
+                            text = "Launch an Instant Sandbox or pick a blueprint above to start coding with your AI copilot.",
                             color = NovaTextMuted,
                             fontSize = 12.sp,
+                            textAlign = TextAlign.Center,
                             lineHeight = 17.sp,
-                            modifier = Modifier.padding(horizontal = 16.dp)
+                            modifier = Modifier.padding(horizontal = 20.dp)
                         )
                         Spacer(Modifier.height(4.dp))
                         NovaPrimaryButton(
                             text = "Launch Instant Sandbox",
-                            icon = Icons.Default.RocketLaunch,
+                            icon = Icons.Default.Bolt,
                             onClick = onCreateQuickProject,
                             height = 42.dp
                         )
