@@ -1,13 +1,13 @@
-package com.novacode.studio.runtime
+package com.pocketide.app.runtime
 
 import android.content.Context
 import androidx.core.content.ContextCompat
-import com.novacode.studio.model.ChatMessage
-import com.novacode.studio.model.ChangeItem
-import com.novacode.studio.model.ProjectKind
-import com.novacode.studio.model.ProviderProfile
-import com.novacode.studio.model.RuntimeEvent
-import com.novacode.studio.model.ToolRequest
+import com.pocketide.app.model.ChatMessage
+import com.pocketide.app.model.ChangeItem
+import com.pocketide.app.model.ProjectKind
+import com.pocketide.app.model.ProviderProfile
+import com.pocketide.app.model.RuntimeEvent
+import com.pocketide.app.model.ToolRequest
 import java.io.File
 import java.io.RandomAccessFile
 import java.util.UUID
@@ -169,7 +169,7 @@ class AntigravityRuntimeBridge(
      * The timeout is intentionally internal — callers only see success/failure.
      */
     suspend fun hello(timeoutMillis: Long = HELLO_TIMEOUT_MILLIS): String = withContext(Dispatchers.IO) {
-        if (!installer.isAgentInstalled(com.novacode.studio.model.AgentKind.ANTIGRAVITY)) {
+        if (!installer.isAgentInstalled(com.pocketide.app.model.AgentKind.ANTIGRAVITY)) {
             throw IllegalStateException("Antigravity CLI is not installed.")
         }
         try {
@@ -282,7 +282,7 @@ class AntigravityRuntimeBridge(
         foregroundResultPosted = false
         finished.remove(sessionId)
         eventBus.emit(RuntimeEvent.SessionStarted(sessionId))
-        if (!installer.isAgentInstalled(com.novacode.studio.model.AgentKind.ANTIGRAVITY)) {
+        if (!installer.isAgentInstalled(com.pocketide.app.model.AgentKind.ANTIGRAVITY)) {
             emitFailure(sessionId, "Antigravity CLI is not installed. Open Settings → Coding agent to install it.")
             return@withContext sessionId
         }
@@ -525,7 +525,7 @@ internal fun antigravityCommand(model: String, effort: String, conversationId: S
     addAll(listOf("--output-format", "stream-json"))
     addAll(listOf("--print-timeout", "60m"))
     // This is intentionally explicit and covered by tests. Antigravity tool calls
-    // do not pass through NovaCode approval dialogs while this mode is enabled.
+    // do not pass through PocketIDE approval dialogs while this mode is enabled.
     add("--dangerously-skip-permissions")
     addAntigravitySelection(model, effort)
     conversationId?.takeIf(String::isNotBlank)?.let {
