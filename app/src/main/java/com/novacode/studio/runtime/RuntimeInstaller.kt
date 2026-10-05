@@ -1,9 +1,9 @@
-package com.novacode.studio.runtime
+package com.pocketide.app.runtime
 
 import android.content.Context
 import android.net.ConnectivityManager
 import android.system.Os
-import com.novacode.studio.BuildConfig
+import com.pocketide.app.BuildConfig
 import java.io.BufferedInputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -16,7 +16,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withTimeout
 import kotlin.coroutines.coroutineContext
-import com.novacode.studio.model.DevStack
+import com.pocketide.app.model.DevStack
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream
@@ -166,7 +166,7 @@ class RuntimeInstaller(private val context: Context) {
 
     suspend fun ensureInstalled(
         selectedStacks: Set<DevStack> = emptySet(),
-        agent: com.novacode.studio.model.AgentKind = com.novacode.studio.model.AgentKind.CLAUDE_CODE,
+        agent: com.pocketide.app.model.AgentKind = com.pocketide.app.model.AgentKind.CLAUDE_CODE,
         onProgress: suspend (RuntimeInstallProgress) -> Unit,
     ): InstalledRuntime {
         require(
@@ -237,9 +237,9 @@ class RuntimeInstaller(private val context: Context) {
         }
 
         when (agent) {
-            com.novacode.studio.model.AgentKind.CLAUDE_CODE -> ensureClaudeInstalled(proot, 0.985f, onProgress)
-            com.novacode.studio.model.AgentKind.DEEPSEEK_CODER -> ensureDshInstalled(proot, 0.985f, onProgress)
-            com.novacode.studio.model.AgentKind.ANTIGRAVITY -> ensureAgyInstalled(proot, 0.985f, onProgress)
+            com.pocketide.app.model.AgentKind.CLAUDE_CODE -> ensureClaudeInstalled(proot, 0.985f, onProgress)
+            com.pocketide.app.model.AgentKind.DEEPSEEK_CODER -> ensureDshInstalled(proot, 0.985f, onProgress)
+            com.pocketide.app.model.AgentKind.ANTIGRAVITY -> ensureAgyInstalled(proot, 0.985f, onProgress)
         }
         onProgress(RuntimeInstallProgress("Setup complete", 1f))
         return InstalledRuntime(proot, rootfs)
@@ -251,31 +251,31 @@ class RuntimeInstaller(private val context: Context) {
      * separate overlay and is fetched or loaded only when selected.
      */
     suspend fun ensureAgentInstalled(
-        agent: com.novacode.studio.model.AgentKind,
+        agent: com.pocketide.app.model.AgentKind,
         onProgress: suspend (RuntimeInstallProgress) -> Unit,
     ) {
         val runtime = installedRuntime()
         when (agent) {
-            com.novacode.studio.model.AgentKind.CLAUDE_CODE -> ensureClaudeInstalled(runtime.proot, 0.05f, onProgress)
-            com.novacode.studio.model.AgentKind.DEEPSEEK_CODER -> ensureDshInstalled(runtime.proot, 0.05f, onProgress)
-            com.novacode.studio.model.AgentKind.ANTIGRAVITY -> ensureAgyInstalled(runtime.proot, 0.05f, onProgress)
+            com.pocketide.app.model.AgentKind.CLAUDE_CODE -> ensureClaudeInstalled(runtime.proot, 0.05f, onProgress)
+            com.pocketide.app.model.AgentKind.DEEPSEEK_CODER -> ensureDshInstalled(runtime.proot, 0.05f, onProgress)
+            com.pocketide.app.model.AgentKind.ANTIGRAVITY -> ensureAgyInstalled(runtime.proot, 0.05f, onProgress)
         }
         onProgress(RuntimeInstallProgress("${agent.title} is ready", 1f))
     }
 
-    fun isAgentInstalled(agent: com.novacode.studio.model.AgentKind): Boolean {
+    fun isAgentInstalled(agent: com.pocketide.app.model.AgentKind): Boolean {
         return when (agent) {
-            com.novacode.studio.model.AgentKind.CLAUDE_CODE -> {
+            com.pocketide.app.model.AgentKind.CLAUDE_CODE -> {
                 migrateLegacyClaudeMarker()
                 isInstalled() && File(rootfs, CLAUDE_GUEST_PATH.removePrefix("/")).canExecute() &&
                     !claudeMarker.readTextOrNull().isNullOrBlank()
             }
-            com.novacode.studio.model.AgentKind.DEEPSEEK_CODER -> isInstalled() &&
+            com.pocketide.app.model.AgentKind.DEEPSEEK_CODER -> isInstalled() &&
                 // /usr/local/bin/dsh is an absolute guest symlink. File.exists() follows it
                 // against Android's host root and therefore reports false outside PRoot.
                 File(rootfs, "usr/local/lib/dsh/node_modules/.bin/dsh").isFile &&
                 !dshMarker.readTextOrNull().isNullOrBlank()
-            com.novacode.studio.model.AgentKind.ANTIGRAVITY -> isInstalled() &&
+            com.pocketide.app.model.AgentKind.ANTIGRAVITY -> isInstalled() &&
                 File(rootfs, AGY_GUEST_PATH.removePrefix("/")).canExecute() &&
                 !agyMarker.readTextOrNull().isNullOrBlank()
         }
@@ -300,7 +300,7 @@ class RuntimeInstaller(private val context: Context) {
     suspend fun ensureGitHubCliInstalled(onProgress: suspend (RuntimeInstallProgress) -> Unit) {
         if (isGitHubCliInstalled()) return
         check(!BuildConfig.OFFLINE_RUNTIME_BUNDLES) {
-            "GitHub sign-in needs the NovaCode online APK."
+            "GitHub sign-in needs the PocketIDE online APK."
         }
         writeResolver()
         downloads.mkdirs()
@@ -349,61 +349,61 @@ class RuntimeInstaller(private val context: Context) {
      * This intentionally reports what is present in PRoot, even when a newer app build
      * would subsequently offer an agent update.
      */
-    fun installedAgentVersions(): Map<com.novacode.studio.model.AgentKind, String> = buildMap {
+    fun installedAgentVersions(): Map<com.pocketide.app.model.AgentKind, String> = buildMap {
         migrateLegacyClaudeMarker()
         claudeMarker.readTextOrNull()
             ?.trim()
-            ?.takeIf { isAgentInstalled(com.novacode.studio.model.AgentKind.CLAUDE_CODE) && it.matches(CLAUDE_VERSION_PATTERN) }
-            ?.let { put(com.novacode.studio.model.AgentKind.CLAUDE_CODE, it) }
+            ?.takeIf { isAgentInstalled(com.pocketide.app.model.AgentKind.CLAUDE_CODE) && it.matches(CLAUDE_VERSION_PATTERN) }
+            ?.let { put(com.pocketide.app.model.AgentKind.CLAUDE_CODE, it) }
 
         dshMarker.readTextOrNull()
             ?.trim()
             ?.takeIf { it.isNotEmpty() && File(rootfs, "usr/local/lib/dsh/node_modules/.bin/dsh").isFile }
-            ?.let { put(com.novacode.studio.model.AgentKind.DEEPSEEK_CODER, it) }
+            ?.let { put(com.pocketide.app.model.AgentKind.DEEPSEEK_CODER, it) }
 
         agyMarker.readTextOrNull()
             ?.trim()
             ?.takeIf { it.isNotEmpty() && File(rootfs, AGY_GUEST_PATH.removePrefix("/")).canExecute() }
-            ?.let { put(com.novacode.studio.model.AgentKind.ANTIGRAVITY, it) }
+            ?.let { put(com.pocketide.app.model.AgentKind.ANTIGRAVITY, it) }
     }
 
     /** Checks each installed agent against its own authoritative release source. */
-    suspend fun checkAgentUpdates(): Map<com.novacode.studio.model.AgentKind, AgentUpdateInfo> {
+    suspend fun checkAgentUpdates(): Map<com.pocketide.app.model.AgentKind, AgentUpdateInfo> {
         val installed = installedAgentVersions()
         return buildMap {
-            installed[com.novacode.studio.model.AgentKind.CLAUDE_CODE]?.let { current ->
+            installed[com.pocketide.app.model.AgentKind.CLAUDE_CODE]?.let { current ->
                 runCatching {
                     JSONObject(fetchText("https://registry.npmjs.org/@anthropic-ai/claude-code/latest")).getString("version")
                 }.getOrNull()?.takeIf { isVersionNewer(it, current) }?.let { latest ->
-                    put(com.novacode.studio.model.AgentKind.CLAUDE_CODE, AgentUpdateInfo(current, latest))
+                    put(com.pocketide.app.model.AgentKind.CLAUDE_CODE, AgentUpdateInfo(current, latest))
                 }
             }
-            installed[com.novacode.studio.model.AgentKind.DEEPSEEK_CODER]?.let { current ->
+            installed[com.pocketide.app.model.AgentKind.DEEPSEEK_CODER]?.let { current ->
                 runCatching {
                     JSONObject(fetchText("https://registry.npmjs.org/@deepseek-ai/dsh/latest")).getString("version")
                 }.getOrNull()?.takeIf { isVersionNewer(it, current) }?.let { latest ->
-                    put(com.novacode.studio.model.AgentKind.DEEPSEEK_CODER, AgentUpdateInfo(current, latest))
+                    put(com.pocketide.app.model.AgentKind.DEEPSEEK_CODER, AgentUpdateInfo(current, latest))
                 }
             }
-            installed[com.novacode.studio.model.AgentKind.ANTIGRAVITY]?.let { current ->
+            installed[com.pocketide.app.model.AgentKind.ANTIGRAVITY]?.let { current ->
                 runCatching { fetchAgyManifest().getString("version") }.getOrNull()
                     ?.takeIf { isVersionNewer(it, current) }?.let { latest ->
-                        put(com.novacode.studio.model.AgentKind.ANTIGRAVITY, AgentUpdateInfo(current, latest))
+                        put(com.pocketide.app.model.AgentKind.ANTIGRAVITY, AgentUpdateInfo(current, latest))
                     }
             }
         }
     }
 
     suspend fun updateAgent(
-        agent: com.novacode.studio.model.AgentKind,
+        agent: com.pocketide.app.model.AgentKind,
         expectedVersion: String,
         onProgress: suspend (RuntimeInstallProgress) -> Unit,
     ) {
         val runtime = installedRuntime()
         when (agent) {
-            com.novacode.studio.model.AgentKind.CLAUDE_CODE -> updateClaude(runtime, expectedVersion, onProgress)
-            com.novacode.studio.model.AgentKind.DEEPSEEK_CODER -> updateDsh(runtime, expectedVersion, onProgress)
-            com.novacode.studio.model.AgentKind.ANTIGRAVITY -> updateAgy(runtime, expectedVersion, onProgress)
+            com.pocketide.app.model.AgentKind.CLAUDE_CODE -> updateClaude(runtime, expectedVersion, onProgress)
+            com.pocketide.app.model.AgentKind.DEEPSEEK_CODER -> updateDsh(runtime, expectedVersion, onProgress)
+            com.pocketide.app.model.AgentKind.ANTIGRAVITY -> updateAgy(runtime, expectedVersion, onProgress)
         }
         onProgress(RuntimeInstallProgress("${agent.title} $expectedVersion is ready", 1f, event = RuntimeInstallEvent.COMPLETED))
     }
@@ -541,7 +541,7 @@ class RuntimeInstaller(private val context: Context) {
         onProgress: suspend (RuntimeInstallProgress) -> Unit,
     ) {
         migrateLegacyClaudeMarker()
-        if (isAgentInstalled(com.novacode.studio.model.AgentKind.CLAUDE_CODE)) return
+        if (isAgentInstalled(com.pocketide.app.model.AgentKind.CLAUDE_CODE)) return
         installRuntimeOverlay(
             bundle = CLAUDE_BUNDLE,
             message = "Installing Claude Code $CLAUDE_BUNDLED_VERSION",
@@ -560,7 +560,7 @@ class RuntimeInstaller(private val context: Context) {
         fraction: Float,
         onProgress: suspend (RuntimeInstallProgress) -> Unit,
     ) {
-        if (isAgentInstalled(com.novacode.studio.model.AgentKind.ANTIGRAVITY)) return
+        if (isAgentInstalled(com.pocketide.app.model.AgentKind.ANTIGRAVITY)) return
         installRuntimeOverlay(
             bundle = AGY_BUNDLE,
             message = "Installing Antigravity CLI $AGY_VERSION",
@@ -578,7 +578,7 @@ class RuntimeInstaller(private val context: Context) {
         }
         verifyGuest(proot, "$AGY_GUEST_PATH --version", "Antigravity CLI verification failed")
         agyMarker.writeText(AGY_VERSION)
-        require(isAgentInstalled(com.novacode.studio.model.AgentKind.ANTIGRAVITY)) {
+        require(isAgentInstalled(com.pocketide.app.model.AgentKind.ANTIGRAVITY)) {
             "Antigravity CLI installation is incomplete"
         }
     }
@@ -588,7 +588,7 @@ class RuntimeInstaller(private val context: Context) {
         fraction: Float,
         onProgress: suspend (RuntimeInstallProgress) -> Unit,
     ) {
-        if (isAgentInstalled(com.novacode.studio.model.AgentKind.DEEPSEEK_CODER)) {
+        if (isAgentInstalled(com.pocketide.app.model.AgentKind.DEEPSEEK_CODER)) {
             ensureDshAndroidCompatibility()
             return
         }
@@ -601,7 +601,7 @@ class RuntimeInstaller(private val context: Context) {
         )
         ensureDshAndroidCompatibility()
         verifyGuest(proot, "/usr/local/bin/dsh --profile headless --help", "DeepSeek Coder verification failed")
-        require(isAgentInstalled(com.novacode.studio.model.AgentKind.DEEPSEEK_CODER)) {
+        require(isAgentInstalled(com.pocketide.app.model.AgentKind.DEEPSEEK_CODER)) {
             "The DeepSeek Coder runtime bundle is incomplete"
         }
     }
@@ -616,7 +616,7 @@ class RuntimeInstaller(private val context: Context) {
      * no-clobber guarantee. Existing-file edits continue to use atomic rename.
      */
     fun ensureDshAndroidCompatibility() {
-        if (!isAgentInstalled(com.novacode.studio.model.AgentKind.DEEPSEEK_CODER)) return
+        if (!isAgentInstalled(com.pocketide.app.model.AgentKind.DEEPSEEK_CODER)) return
         val persistence = File(
             rootfs,
             "usr/local/lib/dsh/node_modules/@deepseek-ai/dsh-session-persistence-jsonl/lib/index.js",
@@ -653,7 +653,7 @@ class RuntimeInstaller(private val context: Context) {
         var source = file.readText()
         if (callAfter in source && importAfter in source) return
         check(callBefore in source && importBefore in source) {
-            "DeepSeek Coder $DSH_VERSION is not compatible with this NovaCode build"
+            "DeepSeek Coder $DSH_VERSION is not compatible with this PocketIDE build"
         }
         source = source.replace(importBefore, importAfter).replace(callBefore, callAfter)
         file.writeText(source)
@@ -1910,7 +1910,7 @@ printf '%s\n' '{"hookSpecificOutput":{"hookEventName":"PermissionRequest","decis
                 connectTimeout = 25_000
                 readTimeout = 120_000
                 instanceFollowRedirects = true
-                setRequestProperty("User-Agent", "NovaCode-Studio/1.0 (Android)")
+                setRequestProperty("User-Agent", "PocketIDE-Studio/1.0 (Android)")
                 if (existing > 0L) setRequestProperty("Range", "bytes=$existing-")
             }
             val responseCode = conn.responseCode
@@ -1983,7 +1983,7 @@ printf '%s\n' '{"hookSpecificOutput":{"hookEventName":"PermissionRequest","decis
                 connectTimeout = 15_000
                 readTimeout = 30_000
                 instanceFollowRedirects = true
-                setRequestProperty("User-Agent", "NovaCode-Studio/1.0 (Android)")
+                setRequestProperty("User-Agent", "PocketIDE-Studio/1.0 (Android)")
                 setRequestProperty("Accept", "application/json, text/plain, */*")
             }
             val responseCode = conn.responseCode
