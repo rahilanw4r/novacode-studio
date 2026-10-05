@@ -30,35 +30,11 @@
 
 ---
 
-## 📌 Table of Contents
-
-- [Overview](#-overview)
-- [Why NovaCode Studio?](#-why-novacode-studio)
-- [Key Features](#-key-features)
-- [Screenshots & Walkthrough](#-screenshots--walkthrough)
-- [Navigation Architecture](#-navigation-architecture)
-- [Supported Language Toolchains](#-supported-language-toolchains)
-- [Privacy, Security & Credential Storage](#-privacy-security--credential-storage)
-  - [Are Your Keys & Credentials Safe?](#-are-your-keys--credentials-safe)
-  - [Hardware-Backed AES-256-GCM Encryption](#1-hardware-backed-aes-256-gcm-key-storage)
-  - [Google AntiGravity Authentication](#2-google-antigravity-connection--oauth-security)
-  - [GitHub CLI Integration](#3-github-connect-official-oauth-device-flow)
-  - [Zero Intermediary Proxies or Cloud Telemetry](#4-zero-intermediary-proxies-or-cloud-telemetry)
-  - [Isolated Android PRoot Sandbox](#5-isolated-android-proot-sandbox)
-  - [Full Offline Capability](#6-full-offline-capability)
-- [System Requirements](#-system-requirements)
-- [Installation & Getting Started](#-installation--getting-started)
-- [Building From Source](#-building-from-source)
-- [Author & Credits](#-author--credits)
-- [License](#-license)
-
----
-
 ## 📖 Overview
 
 **NovaCode Studio** is an open-source, mobile-first Linux development environment and autonomous AI workspace designed specifically for Android devices. Unlike cloud-streamed containers or simple mobile code editors, NovaCode Studio operates **100% locally on your phone** using an isolated **PRoot Linux userspace (Ubuntu ARM64)**.
 
-Compile real programs, run local development servers, launch multi-tab Linux terminals, inspect side-by-side Git diffs, and collaborate with autonomous AI coding agents — including **Google AntiGravity (Gemini 3.8)**, **Claude Code (3.7 Sonnet)**, and **DeepSeek Coder** — with **zero root access** and **no PC tethering required**.
+Compile real programs, run local development servers, launch multi-tab Linux terminals, inspect side-by-side Git diffs, and collaborate with autonomous AI coding agents — including **Google AntiGravity (Gemini 3.8 / 3.6 / 3.1)**, **Claude Code (3.7 Sonnet)**, and **DeepSeek Coder** — with **zero root access** and **no PC tethering required**.
 
 ---
 
@@ -134,43 +110,6 @@ Compile real programs, run local development servers, launch multi-tab Linux ter
 
 ---
 
-## 📸 Screenshots & Walkthrough
-
-<div align="center">
-  <table>
-    <tr>
-      <td align="center" width="33%">
-        <img src="assets/readme/setup-provider.png" alt="AI Agent Setup" width="100%" />
-        <br /><strong>1. AI Agent Selection</strong>
-      </td>
-      <td align="center" width="33%">
-        <img src="assets/readme/setup-toolchains.png" alt="Development Toolchains" width="100%" />
-        <br /><strong>2. Language Toolchains</strong>
-      </td>
-      <td align="center" width="33%">
-        <img src="assets/readme/projects.png" alt="Project Workspace" width="100%" />
-        <br /><strong>3. Projects & Templates</strong>
-      </td>
-    </tr>
-    <tr>
-      <td align="center" width="33%">
-        <img src="assets/readme/terminal.png" alt="Linux Terminal" width="100%" />
-        <br /><strong>4. Multi-Tab Terminal</strong>
-      </td>
-      <td align="center" width="33%">
-        <img src="assets/readme/settings.png" alt="Preferences & Themes" width="100%" />
-        <br /><strong>5. Preferences & Themes</strong>
-      </td>
-      <td align="center" width="33%">
-        <img src="assets/readme/setup-notifications.png" alt="Background Service" width="100%" />
-        <br /><strong>6. Background Build Service</strong>
-      </td>
-    </tr>
-  </table>
-</div>
-
----
-
 ## 🗂️ Navigation Architecture
 
 NovaCode Studio organizes the development workflow into 5 streamlined destinations:
@@ -194,6 +133,60 @@ NovaCode Studio organizes the development workflow into 5 streamlined destinatio
    - 🔄 **Update Channel**: One-tap in-app updates for AI agent binaries and studio releases.
    - 🐙 **Git & GitHub**: Authentication status, SSH keys, and remote repository manager.
    - 👤 **About Creator**: Developer profile, Telegram contact, and release details.
+
+---
+
+## 🎯 How to Use NovaCode Studio
+
+Follow this step-by-step guide to get the most out of NovaCode Studio on your Android device:
+
+### Step 1: Initial Setup & Runtime Initialization
+1. Launch NovaCode Studio after installation.
+2. Grant notification permission when prompted (this keeps background compilers and terminal tasks alive while multitasking).
+3. The app will automatically unpack and verify the private **PRoot Linux (Ubuntu ARM64)** environment.
+4. Select the language toolchains you plan to use (e.g., Python, C/C++, or Android SDK) or keep the lightweight Core runtime.
+
+### Step 2: Connect Your AI Agent or Authentication
+NovaCode Studio supports multiple AI backends depending on your workflow:
+- **Google AntiGravity**: Navigate to **Copilot** or **More > AI Settings**, select **AntiGravity**, and tap **Sign In**. Your browser will open the official Google OAuth page. Sign in with your Google account, and your session token is securely passed back to the app.
+- **Claude Code**: Select **Claude** and input your Anthropic API key. The key is stored locally with hardware-backed encryption.
+- **DeepSeek / OpenAI**: Input your respective API key or configure an OpenRouter endpoint for community and open-weights models.
+- **GitHub Connect**: Go to **More > Git & GitHub** and tap **Connect GitHub**. Confirm the one-time device code in your browser via GitHub's official device flow.
+
+### Step 3: Create or Import a Project
+- **Starter Templates**: From the **Home** tab, tap any quick starter template (e.g., *React + Vite*, *FastAPI Python*, *Node.js*, or *C++ Hello World*) to scaffold a complete project instantly.
+- **Clone from GitHub**: Tap **Clone Repository**, paste your Git URL (or pick from your connected GitHub account), and NovaCode Studio will clone it directly into your workspace.
+- **Open Existing Directory**: Browse and open any folder inside your isolated workspace.
+
+### Step 4: Pair Program with the AI Copilot
+1. Open your project and switch to the **Copilot** tab.
+2. Ask the assistant to build features, write tests, or fix bugs (e.g., *"Add user authentication with JWT"* or *"Debug why the API endpoint returns 500"*).
+3. The AI agent inspects your workspace, searches files, and proposes code modifications.
+4. Switch to the **Diff Inspector** to review every line changed. Tap **Accept** to apply changes or **Revert** to discard them hunk by hunk.
+
+### Step 5: Run Code & Launch Terminals
+1. Switch to the **Terminal** tab for a full hardware-accelerated Linux shell.
+2. Use the **Floating Dev Toolbar** above your keyboard to quickly type symbols (`~`, `/`, `|`, `-`, `_`, `TAB`, `ESC`, `CTRL`).
+3. Run your development commands:
+   ```bash
+   # Start a web app
+   npm run dev
+
+   # Run Python scripts
+   python3 main.py
+
+   # Compile C/C++
+   gcc -O2 main.c -o app && ./app
+
+   # Build Android APK
+   gradle assembleDebug
+   ```
+4. Long-press the tab bar to open multiple concurrent terminal sessions or split tasks.
+
+### Step 6: Live Web Preview & Responsive Testing
+- If your project runs a local web server (e.g., Vite on port `5173` or FastAPI on port `8000`), tap the **Preview** button in the Projects or Copilot tab.
+- Toggle between **Mobile (375px)**, **Tablet (768px)**, and **Desktop (Full)** viewports to test responsiveness.
+- Open the built-in **Console Drawer** to inspect JavaScript errors and console output directly on your phone.
 
 ---
 
