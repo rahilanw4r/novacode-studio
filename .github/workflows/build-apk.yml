@@ -57,16 +57,17 @@ jobs:
           cp "$APK_FILE" "$APK_NAME"
 
           cat << 'EOF' > release_notes.md
-          ### Pocket IDE
+          ### Pocket IDE v1.0.18
 
           **Your on-device AI-powered development workspace.**
 
-          #### Highlights:
-          - **Official Rebrand**: Completely rebranded to **Pocket IDE** across all components, subsystems, packages, and assets.
-          - **Clean Package Migration**: Migrated to `com.pocketide.app`.
-          - **Restrained Dark Theme**: Serious, modern developer tool styling without neon/glass distractions.
-          - **AI Coding Workspace**: Native autonomous coding agent pair programming with Google AntiGravity, Claude Code, and DeepSeek Coder.
-          - **Isolated Linux Runtime**: On-device PRoot development environment with Git, Node, Python, and C/C++ toolchains operating 100% locally.
+          #### What's New:
+          - **Streamlined Mobile AI Workspace**: 4-dock container (Agent, Files, Terminal, Preview) with ambient state indicators and header run action.
+          - **Expandable Autonomous Tool Calls**: Tap any tool tile (Bash command, file edit/write, test runner) to inspect full terminal output and code diffs in monospace.
+          - **Project Conversation Switcher**: Switch between active conversations or start a new agent session within the same project.
+          - **In-Editor File Persistence & AI Context**: Save edited files directly to disk; trigger 1-tap contextual AI actions (`Fix`, `Explain`, `Refactor`, `Optimize`, `Test`).
+          - **Native Runtime Stability**: Process group cleanup, JNI spawn stability, and package migration to `com.pocketide.app`.
+          - **Restrained Dark Theme**: Serious, distraction-free developer tool aesthetics.
           EOF
 
           gh release create "$TAG" "$APK_NAME" \
