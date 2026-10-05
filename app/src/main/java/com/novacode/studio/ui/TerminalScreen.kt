@@ -1,4 +1,4 @@
-package com.novacode.studio.ui
+package com.pocketide.app.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -87,11 +87,11 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.novacode.studio.ui.theme.AppThemeMode
-import com.novacode.studio.ui.theme.NovaEmerald
-import com.novacode.studio.ui.theme.NovaIndigo
-import com.novacode.studio.ui.theme.NovaTextMuted
-import com.novacode.studio.ui.theme.NovaTextPrimary
+import com.pocketide.app.ui.theme.AppThemeMode
+import com.pocketide.app.ui.theme.PocketEmerald
+import com.pocketide.app.ui.theme.PocketIndigo
+import com.pocketide.app.ui.theme.PocketTextMuted
+import com.pocketide.app.ui.theme.PocketTextPrimary
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -206,10 +206,10 @@ fun TerminalScreen(
                         Box(
                             modifier = Modifier
                                 .size(34.dp)
-                                .background(NovaIndigo.copy(alpha = 0.12f), RoundedCornerShape(10.dp)),
+                                .background(PocketIndigo.copy(alpha = 0.12f), RoundedCornerShape(10.dp)),
                             contentAlignment = Alignment.Center,
                         ) {
-                            Icon(Icons.Default.Terminal, contentDescription = null, tint = NovaIndigo, modifier = Modifier.size(18.dp))
+                            Icon(Icons.Default.Terminal, contentDescription = null, tint = PocketIndigo, modifier = Modifier.size(18.dp))
                         }
                         Spacer(Modifier.width(11.dp))
                         Column(Modifier.weight(1f)) {
@@ -239,12 +239,12 @@ fun TerminalScreen(
                                 modifier = Modifier
                                     .size(32.dp)
                                     .background(
-                                        color = NovaEmerald.copy(alpha = 0.15f),
+                                        color = PocketEmerald.copy(alpha = 0.15f),
                                         shape = RoundedCornerShape(9.dp),
                                     )
                                     .border(
                                         width = 1.dp,
-                                        color = NovaEmerald.copy(alpha = 0.35f),
+                                        color = PocketEmerald.copy(alpha = 0.35f),
                                         shape = RoundedCornerShape(9.dp),
                                     ),
                                 contentAlignment = Alignment.Center,
@@ -252,7 +252,7 @@ fun TerminalScreen(
                                 Icon(
                                     imageVector = Icons.Default.Terminal,
                                     contentDescription = null,
-                                    tint = NovaEmerald,
+                                    tint = PocketEmerald,
                                     modifier = Modifier.size(17.dp),
                                 )
                             }
@@ -330,7 +330,7 @@ fun TerminalScreen(
                                     fontFamily = FontFamily.Monospace,
                                     fontSize = 11.sp,
                                     fontWeight = FontWeight.Bold,
-                                    color = NovaEmerald
+                                    color = PocketEmerald
                                 )
                             }
                         )
@@ -342,8 +342,8 @@ fun TerminalScreen(
                                 DropdownMenuItem(
                                     text = {
                                         Column {
-                                            Text(cmd, fontFamily = FontFamily.Monospace, fontSize = 12.sp, color = NovaTextPrimary)
-                                            Text(desc, fontSize = 10.sp, color = NovaTextMuted)
+                                            Text(cmd, fontFamily = FontFamily.Monospace, fontSize = 12.sp, color = PocketTextPrimary)
+                                            Text(desc, fontSize = 10.sp, color = PocketTextMuted)
                                         }
                                     },
                                     onClick = {
@@ -377,7 +377,7 @@ fun TerminalScreen(
                 AppThemeMode.SYSTEM -> isSystemInDarkTheme()
             }
             val terminalBg = if (isDark) Color(0xFF090D14) else MaterialTheme.colorScheme.surface
-            val promptGreen = if (isDark) NovaEmerald else Color(0xFF0D7A3E)
+            val promptGreen = if (isDark) PocketEmerald else Color(0xFF0D7A3E)
             val commandTextColor = if (isDark) Color(0xFFF0F6FC) else MaterialTheme.colorScheme.onSurface
             val outputTextColor = if (isDark) Color(0xFFC9D1D9) else MaterialTheme.colorScheme.onSurface
             val emptyStateColor = if (isDark) Color(0xFF6E7681) else MaterialTheme.colorScheme.onSurfaceVariant
@@ -573,12 +573,12 @@ private fun TerminalKeyButton(
         contentPadding = PaddingValues(horizontal = 10.dp, vertical = 0.dp),
         modifier = Modifier.height(34.dp).then(if (fixedWidth) Modifier.width(78.dp) else Modifier),
         colors = androidx.compose.material3.ButtonDefaults.outlinedButtonColors(
-            containerColor = if (active) NovaIndigo.copy(alpha = 0.18f) else Color.Transparent,
-            contentColor = if (active) NovaIndigo else MaterialTheme.colorScheme.onSurface,
+            containerColor = if (active) PocketIndigo.copy(alpha = 0.18f) else Color.Transparent,
+            contentColor = if (active) PocketIndigo else MaterialTheme.colorScheme.onSurface,
         ),
         border = androidx.compose.foundation.BorderStroke(
             1.dp,
-            if (active) NovaIndigo else MaterialTheme.colorScheme.outlineVariant,
+            if (active) PocketIndigo else MaterialTheme.colorScheme.outlineVariant,
         ),
     ) {
         Text(
@@ -599,7 +599,7 @@ private fun TerminalIconKeyButton(icon: androidx.compose.ui.graphics.vector.Imag
 
 @Composable
 private fun TerminalCommandPrompt(promptPath: String, command: String, isDark: Boolean = true) {
-    val promptGreen = if (isDark) NovaEmerald else Color(0xFF0D7A3E)
+    val promptGreen = if (isDark) PocketEmerald else Color(0xFF0D7A3E)
     val commandColor = if (isDark) Color(0xFFF0F6FC) else MaterialTheme.colorScheme.onSurface
     val promptText = remember(promptPath, command, isDark) {
         buildAnnotatedString {
