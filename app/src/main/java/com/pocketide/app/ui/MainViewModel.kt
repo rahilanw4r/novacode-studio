@@ -2931,6 +2931,30 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         _state.update { it.copy(openedFilePath = null, openedFileContent = null, fileContentLoading = false) }
     }
 
+    fun saveFile(relativePath: String, newContent: String) {
+        val project = _state.value.activeProject ?: return
+        viewModelScope.launch(Dispatchers.IO) {
+            val file = File(projectWorkspaceRoot(project), relativePath)
+            runCatching {
+                file.parentFile?.mkdirs()
+                file.writeText(newContent)
+                withContext(Dispatchers.Main) {
+                    _state.update {
+                        if (it.openedFilePath == relativePath) {
+                            it.copy(openedFileContent = newContent, toastMessage = "Saved ${relativePath.substringAfterLast('/')}")
+                        } else {
+                            it.copy(toastMessage = "Saved ${relativePath.substringAfterLast('/')}")
+                        }
+                    }
+                }
+            }.onFailure { error ->
+                withContext(Dispatchers.Main) {
+                    _state.update { it.copy(toastMessage = "Failed to save: ${error.message}") }
+                }
+            }
+        }
+    }
+
 
     private fun readWorkspace(project: Project): List<WorkspaceEntry> {
         val root = projectWorkspaceRoot(project)

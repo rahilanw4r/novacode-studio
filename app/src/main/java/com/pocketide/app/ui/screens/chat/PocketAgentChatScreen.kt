@@ -36,6 +36,7 @@ import androidx.compose.material.icons.filled.Code
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Psychology
 import androidx.compose.material.icons.filled.Stop
+import androidx.compose.material.icons.filled.Terminal
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -81,6 +82,7 @@ import com.pocketide.app.ui.theme.PocketSurfaceElevated
 import com.pocketide.app.ui.theme.PocketTextMuted
 import com.pocketide.app.ui.theme.PocketTextPrimary
 import com.pocketide.app.ui.theme.PocketTextSecondary
+import com.pocketide.app.ui.theme.PocketPrimaryBlue
 
 @Composable
 fun PocketAgentChatScreen(
@@ -104,10 +106,10 @@ fun PocketAgentChatScreen(
 
     val quickPrompts = listOf(
         "⚡ Run tests and fix errors",
-        "🔍 Audit project architecture",
-        "🚀 Start dev server and preview",
-        "📝 Generate git commit message",
-        "📱 Build on-device Android APK"
+        "🔍 Inspect project architecture",
+        "🚀 Start dev server",
+        "📝 Review git changes",
+        "📱 Build Android APK"
     )
 
     LaunchedEffect(messages.size, liveProcess.size, liveThinkingSummary) {
@@ -333,31 +335,32 @@ private fun EmptyChatGreeting(onSelectPrompt: (String) -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 24.dp, horizontal = 12.dp),
+            .padding(vertical = 20.dp, horizontal = 12.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         Box(
             modifier = Modifier
-                .size(54.dp)
-                .clip(CircleShape)
-                .background(PocketIndigo.copy(alpha = 0.15f))
-                .border(1.dp, PocketIndigo.copy(alpha = 0.4f), CircleShape),
+                .size(44.dp)
+                .clip(RoundedCornerShape(8.dp))
+                .background(PocketSurfaceElevated)
+                .border(1.dp, PocketBorder, RoundedCornerShape(8.dp)),
             contentAlignment = Alignment.Center
         ) {
-            Icon(Icons.Default.AutoAwesome, contentDescription = null, tint = PocketCyan, modifier = Modifier.size(28.dp))
+            Icon(Icons.Default.Terminal, contentDescription = null, tint = PocketPrimaryBlue, modifier = Modifier.size(22.dp))
         }
         Text(
-            text = "Pocket IDE Autonomous Agent",
+            text = "Autonomous Development Session",
             color = PocketTextPrimary,
-            fontSize = 17.sp,
+            fontSize = 15.sp,
             fontWeight = FontWeight.Bold
         )
         Text(
-            text = "Your AI-powered development workspace, anywhere.",
+            text = "Instruct the agent to inspect files, edit code, execute terminal commands, build, or fix errors.",
             color = PocketTextSecondary,
-            fontSize = 13.sp,
-            modifier = Modifier.padding(horizontal = 24.dp)
+            fontSize = 12.5.sp,
+            textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+            modifier = Modifier.padding(horizontal = 16.dp)
         )
     }
 }
@@ -375,24 +378,24 @@ private fun ChatMessageItem(message: ChatMessage) {
                 .fillMaxWidth(if (isUser) 0.85f else 0.95f)
                 .clip(
                     RoundedCornerShape(
-                        topStart = 14.dp,
-                        topEnd = 14.dp,
-                        bottomStart = if (isUser) 14.dp else 2.dp,
-                        bottomEnd = if (isUser) 2.dp else 14.dp
+                        topStart = 8.dp,
+                        topEnd = 8.dp,
+                        bottomStart = if (isUser) 8.dp else 2.dp,
+                        bottomEnd = if (isUser) 2.dp else 8.dp
                     )
                 )
-                .background(if (isUser) PocketIndigo.copy(alpha = 0.18f) else PocketSurfaceElevated)
+                .background(if (isUser) PocketPrimaryBlue.copy(alpha = 0.12f) else PocketSurfaceElevated)
                 .border(
                     width = 1.dp,
-                    color = if (isUser) PocketIndigo.copy(alpha = 0.4f) else PocketBorder,
+                    color = if (isUser) PocketPrimaryBlue.copy(alpha = 0.35f) else PocketBorder,
                     shape = RoundedCornerShape(
-                        topStart = 14.dp,
-                        topEnd = 14.dp,
-                        bottomStart = if (isUser) 14.dp else 2.dp,
-                        bottomEnd = if (isUser) 2.dp else 14.dp
+                        topStart = 8.dp,
+                        topEnd = 8.dp,
+                        bottomStart = if (isUser) 8.dp else 2.dp,
+                        bottomEnd = if (isUser) 2.dp else 8.dp
                     )
                 )
-                .padding(12.dp)
+                .padding(10.dp)
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 // Header (Sender title)
@@ -402,10 +405,11 @@ private fun ChatMessageItem(message: ChatMessage) {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = if (isUser) "You" else "Pocket Agent",
-                        color = if (isUser) PocketCyan else PocketIndigo,
-                        fontSize = 11.5.sp,
-                        fontWeight = FontWeight.Bold
+                        text = if (isUser) "You" else "Agent",
+                        color = if (isUser) PocketPrimaryBlue else PocketEmerald,
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        fontFamily = FontFamily.Monospace
                     )
                 }
 

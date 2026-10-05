@@ -352,52 +352,80 @@ fun ToolExecutionCard(
     isError: Boolean = false,
     modifier: Modifier = Modifier
 ) {
+    var expanded by remember { mutableStateOf(false) }
     val statusColor = when {
         isError -> PocketRose
         !isComplete -> PocketAmber
         else -> PocketEmerald
     }
 
-    Row(
+    Column(
         modifier = modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(10.dp))
+            .clip(RoundedCornerShape(8.dp))
             .background(PocketSurfaceElevated)
-            .border(1.dp, statusColor.copy(alpha = 0.3f), RoundedCornerShape(10.dp))
+            .border(1.dp, if (expanded) statusColor.copy(alpha = 0.5f) else PocketBorder, RoundedCornerShape(8.dp))
+            .clickable { expanded = !expanded }
             .padding(10.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(10.dp)
+        verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {
-        Icon(
-            imageVector = when {
-                toolName.contains("bash", ignoreCase = true) -> Icons.Default.Terminal
-                toolName.contains("file", ignoreCase = true) -> Icons.Default.Code
-                else -> Icons.Default.AutoAwesome
-            },
-            contentDescription = null,
-            tint = statusColor,
-            modifier = Modifier.size(16.dp)
-        )
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = toolName,
-                color = PocketTextPrimary,
-                fontSize = 12.sp,
-                fontWeight = FontWeight.SemiBold
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            Icon(
+                imageVector = when {
+                    toolName.contains("bash", ignoreCase = true) || toolName.contains("exec", ignoreCase = true) || toolName.contains("command", ignoreCase = true) -> Icons.Default.Terminal
+                    toolName.contains("file", ignoreCase = true) || toolName.contains("write", ignoreCase = true) || toolName.contains("edit", ignoreCase = true) -> Icons.Default.Code
+                    else -> Icons.Default.AutoAwesome
+                },
+                contentDescription = null,
+                tint = statusColor,
+                modifier = Modifier.size(16.dp)
             )
-            Text(
-                text = detail,
-                color = PocketTextSecondary,
-                fontSize = 11.sp,
-                fontFamily = FontFamily.Monospace,
-                maxLines = 2
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = toolName,
+                    color = PocketTextPrimary,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+                if (!expanded) {
+                    Text(
+                        text = detail,
+                        color = PocketTextSecondary,
+                        fontSize = 11.sp,
+                        fontFamily = FontFamily.Monospace,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+            }
+            PocketStatusPill(
+                statusText = if (isComplete) "DONE" else "RUNNING",
+                isRunning = !isComplete,
+                color = statusColor
             )
         }
-        PocketStatusPill(
-            statusText = if (isComplete) "DONE" else "RUNNING",
-            isRunning = !isComplete,
-            color = statusColor
-        )
+        if (expanded && detail.isNotBlank()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(6.dp))
+                    .background(PocketObsidian)
+                    .border(1.dp, PocketBorder, RoundedCornerShape(6.dp))
+                    .padding(8.dp)
+            ) {
+                Text(
+                    text = detail,
+                    color = PocketTextPrimary,
+                    fontSize = 11.sp,
+                    fontFamily = FontFamily.Monospace,
+                    lineHeight = 15.sp
+                )
+            }
+        }
     }
 }
 
