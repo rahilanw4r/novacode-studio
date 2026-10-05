@@ -1,6 +1,6 @@
-package com.novacode.studio.runtime
+package com.pocketide.app.runtime
 
-import com.novacode.studio.model.ChatMessage
+import com.pocketide.app.model.ChatMessage
 import java.nio.file.Files
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
