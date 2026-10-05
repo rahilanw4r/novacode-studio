@@ -1,4 +1,4 @@
-package com.novacode.studio.ui
+package com.pocketide.app.ui
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearEasing
@@ -97,29 +97,29 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.novacode.studio.data.ApiKeyInfo
-import com.novacode.studio.model.AgentKind
-import com.novacode.studio.model.DSH_PROTOCOL_PROVIDERS
-import com.novacode.studio.model.ProviderKind
-import com.novacode.studio.model.ProviderProfile
-import com.novacode.studio.model.defaultDshApiForProvider
-import com.novacode.studio.model.inferredDshApiForUrl
-import com.novacode.studio.model.providersForAgent
-import com.novacode.studio.network.ConnectionValidation
-import com.novacode.studio.network.DiscoveredModel
-import com.novacode.studio.network.ModelDiscoveryResult
-import com.novacode.studio.runtime.AntigravityAuthStatus
-import com.novacode.studio.ui.theme.NovaBorder
-import com.novacode.studio.ui.theme.NovaCyan
-import com.novacode.studio.ui.theme.NovaEmerald
-import com.novacode.studio.ui.theme.NovaIndigo
-import com.novacode.studio.ui.theme.NovaObsidian
-import com.novacode.studio.ui.theme.NovaSurface
-import com.novacode.studio.ui.theme.NovaSurfaceElevated
-import com.novacode.studio.ui.theme.NovaSurfaceVariant
-import com.novacode.studio.ui.theme.NovaTextMuted
-import com.novacode.studio.ui.theme.NovaTextPrimary
-import com.novacode.studio.ui.theme.NovaTextSecondary
+import com.pocketide.app.data.ApiKeyInfo
+import com.pocketide.app.model.AgentKind
+import com.pocketide.app.model.DSH_PROTOCOL_PROVIDERS
+import com.pocketide.app.model.ProviderKind
+import com.pocketide.app.model.ProviderProfile
+import com.pocketide.app.model.defaultDshApiForProvider
+import com.pocketide.app.model.inferredDshApiForUrl
+import com.pocketide.app.model.providersForAgent
+import com.pocketide.app.network.ConnectionValidation
+import com.pocketide.app.network.DiscoveredModel
+import com.pocketide.app.network.ModelDiscoveryResult
+import com.pocketide.app.runtime.AntigravityAuthStatus
+import com.pocketide.app.ui.theme.PocketBorder
+import com.pocketide.app.ui.theme.PocketCyan
+import com.pocketide.app.ui.theme.PocketEmerald
+import com.pocketide.app.ui.theme.PocketIndigo
+import com.pocketide.app.ui.theme.PocketObsidian
+import com.pocketide.app.ui.theme.PocketSurface
+import com.pocketide.app.ui.theme.PocketSurfaceElevated
+import com.pocketide.app.ui.theme.PocketSurfaceVariant
+import com.pocketide.app.ui.theme.PocketTextMuted
+import com.pocketide.app.ui.theme.PocketTextPrimary
+import com.pocketide.app.ui.theme.PocketTextSecondary
 import kotlinx.coroutines.launch
 
 private data class KeyConnectionStatus(
@@ -329,7 +329,7 @@ fun AgentScreen(
 
     val (dot, label, pillBg) = if (isAntigravity) {
         when {
-            antigravityTesting -> Triple(NovaIndigo, "Testing…", NovaIndigo.copy(alpha = 0.13f))
+            antigravityTesting -> Triple(PocketIndigo, "Testing…", PocketIndigo.copy(alpha = 0.13f))
             state.antigravityAuth.status != AntigravityAuthStatus.SIGNED_IN || antigravityHelloFailed ->
                 Triple(MaterialTheme.colorScheme.error, "Attention", MaterialTheme.colorScheme.error.copy(alpha = 0.12f))
             else -> Triple(Color(0xFF58C9A3), "Online", Color(0xFF58C9A3).copy(alpha = 0.13f))
@@ -338,7 +338,7 @@ fun AgentScreen(
         when (state.apiPingStatus) {
             ApiPingStatus.OK -> Triple(Color(0xFF58C9A3), "Online", Color(0xFF58C9A3).copy(alpha = 0.13f))
             ApiPingStatus.FAILED -> Triple(MaterialTheme.colorScheme.error, "Attention", MaterialTheme.colorScheme.error.copy(alpha = 0.12f))
-            ApiPingStatus.PINGING -> Triple(NovaIndigo, "Testing…", NovaIndigo.copy(alpha = 0.13f))
+            ApiPingStatus.PINGING -> Triple(PocketIndigo, "Testing…", PocketIndigo.copy(alpha = 0.13f))
             ApiPingStatus.IDLE -> Triple(MaterialTheme.colorScheme.onSurfaceVariant, "Not tested", MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f))
         }
     }
@@ -396,10 +396,10 @@ fun AgentScreen(
                             val isSelected = state.antigravityModel == modelId
                             Surface(
                                 shape = RoundedCornerShape(14.dp),
-                                color = if (isSelected) NovaIndigo.copy(alpha = 0.10f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.28f),
+                                color = if (isSelected) PocketIndigo.copy(alpha = 0.10f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.28f),
                                 border = BorderStroke(
                                     1.dp,
-                                    if (isSelected) NovaIndigo.copy(alpha = 0.45f) else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.45f),
+                                    if (isSelected) PocketIndigo.copy(alpha = 0.45f) else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.45f),
                                 ),
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -418,20 +418,20 @@ fun AgentScreen(
                                                 formatAntigravityModelName(modelId),
                                                 fontWeight = FontWeight.SemiBold,
                                                 fontSize = 14.sp,
-                                                color = if (isSelected) NovaIndigo else MaterialTheme.colorScheme.onSurface,
+                                                color = if (isSelected) PocketIndigo else MaterialTheme.colorScheme.onSurface,
                                             )
                                             val tier = formatAntigravityModelTier(modelId)
                                             if (tier.isNotEmpty()) {
                                                 Spacer(Modifier.width(8.dp))
                                                 Surface(
-                                                    color = if (isSelected) NovaIndigo.copy(alpha = 0.18f) else MaterialTheme.colorScheme.surfaceVariant,
+                                                    color = if (isSelected) PocketIndigo.copy(alpha = 0.18f) else MaterialTheme.colorScheme.surfaceVariant,
                                                     shape = RoundedCornerShape(4.dp),
                                                 ) {
                                                     Text(
                                                         tier,
                                                         fontSize = 9.sp,
                                                         fontWeight = FontWeight.Bold,
-                                                        color = if (isSelected) NovaIndigo else MaterialTheme.colorScheme.onSurfaceVariant,
+                                                        color = if (isSelected) PocketIndigo else MaterialTheme.colorScheme.onSurfaceVariant,
                                                         modifier = Modifier.padding(horizontal = 5.dp, vertical = 1.dp),
                                                     )
                                                 }
@@ -478,7 +478,7 @@ fun AgentScreen(
                     }
                     IconButton(onClick = ::discoverModels, enabled = !isDiscovering) {
                         if (isDiscovering) {
-                            CircularProgressIndicator(Modifier.size(18.dp), strokeWidth = 2.dp, color = NovaIndigo)
+                            CircularProgressIndicator(Modifier.size(18.dp), strokeWidth = 2.dp, color = PocketIndigo)
                         } else {
                             Icon(Icons.Default.Refresh, "Refresh models")
                         }
@@ -499,11 +499,11 @@ fun AgentScreen(
                 if (status != null) {
                     Surface(
                         shape = RoundedCornerShape(12.dp),
-                        color = if (statusOk) NovaIndigo.copy(alpha = 0.09f)
+                        color = if (statusOk) PocketIndigo.copy(alpha = 0.09f)
                         else MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.55f),
                         border = BorderStroke(
                             1.dp,
-                            if (statusOk) NovaIndigo.copy(alpha = 0.28f)
+                            if (statusOk) PocketIndigo.copy(alpha = 0.28f)
                             else MaterialTheme.colorScheme.error.copy(alpha = 0.35f),
                         ),
                         modifier = Modifier.fillMaxWidth(),
@@ -514,13 +514,13 @@ fun AgentScreen(
                                 CircularProgressIndicator(
                                     modifier = Modifier.size(15.dp),
                                     strokeWidth = 1.6.dp,
-                                    color = NovaIndigo,
+                                    color = PocketIndigo,
                                 )
                             } else {
                                 Icon(
                                     if (statusOk) Icons.Default.Info else Icons.Default.Warning,
                                     contentDescription = null,
-                                    tint = if (statusOk) NovaIndigo else MaterialTheme.colorScheme.error,
+                                    tint = if (statusOk) PocketIndigo else MaterialTheme.colorScheme.error,
                                     modifier = Modifier.size(15.dp),
                                 )
                             }
@@ -555,7 +555,7 @@ fun AgentScreen(
                         contentAlignment = Alignment.Center,
                     ) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            CircularProgressIndicator(Modifier.size(32.dp), color = NovaIndigo, strokeWidth = 3.dp)
+                            CircularProgressIndicator(Modifier.size(32.dp), color = PocketIndigo, strokeWidth = 3.dp)
                             Spacer(Modifier.height(14.dp))
                             Text(
                                 "Discovering models from ${selectedKind.title}…",
@@ -574,8 +574,8 @@ fun AgentScreen(
                         if (modelSearch.isNotBlank()) {
                             Surface(
                                 shape = RoundedCornerShape(14.dp),
-                                color = NovaIndigo.copy(alpha = 0.12f),
-                                border = BorderStroke(1.dp, NovaIndigo.copy(alpha = 0.5f)),
+                                color = PocketIndigo.copy(alpha = 0.12f),
+                                border = BorderStroke(1.dp, PocketIndigo.copy(alpha = 0.5f)),
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .clickable {
@@ -588,11 +588,11 @@ fun AgentScreen(
                                     Modifier.padding(horizontal = 14.dp, vertical = 12.dp),
                                     verticalAlignment = Alignment.CenterVertically,
                                 ) {
-                                    Icon(Icons.Default.Check, null, tint = NovaIndigo, modifier = Modifier.size(18.dp))
+                                    Icon(Icons.Default.Check, null, tint = PocketIndigo, modifier = Modifier.size(18.dp))
                                     Spacer(Modifier.width(10.dp))
                                     Column(Modifier.weight(1f)) {
                                         Text("Use custom model ID:", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                        Text(modelSearch.trim(), fontWeight = FontWeight.Bold, fontSize = 14.sp, color = NovaIndigo)
+                                        Text(modelSearch.trim(), fontWeight = FontWeight.Bold, fontSize = 14.sp, color = PocketIndigo)
                                     }
                                 }
                             }
@@ -622,10 +622,10 @@ fun AgentScreen(
                                 val isSelected = model == opt.id
                                 Surface(
                                     shape = RoundedCornerShape(14.dp),
-                                    color = if (isSelected) NovaIndigo.copy(alpha = 0.10f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.28f),
+                                    color = if (isSelected) PocketIndigo.copy(alpha = 0.10f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.28f),
                                     border = BorderStroke(
                                         1.dp,
-                                        if (isSelected) NovaIndigo.copy(alpha = 0.45f) else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.45f),
+                                        if (isSelected) PocketIndigo.copy(alpha = 0.45f) else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.45f),
                                     ),
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -644,7 +644,7 @@ fun AgentScreen(
                                                 opt.displayName,
                                                 fontWeight = FontWeight.SemiBold,
                                                 fontSize = 14.sp,
-                                                color = if (isSelected) NovaIndigo else MaterialTheme.colorScheme.onSurface,
+                                                color = if (isSelected) PocketIndigo else MaterialTheme.colorScheme.onSurface,
                                             )
                                             Text(
                                                 opt.id,
@@ -669,8 +669,8 @@ fun AgentScreen(
                             item {
                                 Surface(
                                     shape = RoundedCornerShape(14.dp),
-                                    color = NovaIndigo.copy(alpha = 0.12f),
-                                    border = BorderStroke(1.dp, NovaIndigo.copy(alpha = 0.5f)),
+                                    color = PocketIndigo.copy(alpha = 0.12f),
+                                    border = BorderStroke(1.dp, PocketIndigo.copy(alpha = 0.5f)),
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .clickable {
@@ -683,11 +683,11 @@ fun AgentScreen(
                                         Modifier.padding(horizontal = 14.dp, vertical = 12.dp),
                                         verticalAlignment = Alignment.CenterVertically,
                                     ) {
-                                        Icon(Icons.Default.Check, null, tint = NovaIndigo, modifier = Modifier.size(18.dp))
+                                        Icon(Icons.Default.Check, null, tint = PocketIndigo, modifier = Modifier.size(18.dp))
                                         Spacer(Modifier.width(10.dp))
                                         Column(Modifier.weight(1f)) {
                                             Text("Use custom model ID:", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                            Text(modelSearch.trim(), fontWeight = FontWeight.Bold, fontSize = 14.sp, color = NovaIndigo)
+                                            Text(modelSearch.trim(), fontWeight = FontWeight.Bold, fontSize = 14.sp, color = PocketIndigo)
                                         }
                                     }
                                 }
@@ -697,10 +697,10 @@ fun AgentScreen(
                             val isSelected = model == option.id
                             Surface(
                                 shape = RoundedCornerShape(14.dp),
-                                color = if (isSelected) NovaIndigo.copy(alpha = 0.10f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.28f),
+                                color = if (isSelected) PocketIndigo.copy(alpha = 0.10f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.28f),
                                 border = BorderStroke(
                                     1.dp,
-                                    if (isSelected) NovaIndigo.copy(alpha = 0.45f) else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.45f),
+                                    if (isSelected) PocketIndigo.copy(alpha = 0.45f) else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.45f),
                                 ),
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -720,7 +720,7 @@ fun AgentScreen(
                                                 option.displayName,
                                                 fontWeight = FontWeight.SemiBold,
                                                 fontSize = 14.sp,
-                                                color = if (isSelected) NovaIndigo else MaterialTheme.colorScheme.onSurface,
+                                                color = if (isSelected) PocketIndigo else MaterialTheme.colorScheme.onSurface,
                                                 maxLines = 1,
                                                 overflow = TextOverflow.Ellipsis,
                                             )
@@ -759,22 +759,22 @@ fun AgentScreen(
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Surface(
                             shape = RoundedCornerShape(9.dp),
-                            color = NovaEmerald.copy(alpha = 0.12f),
-                            border = BorderStroke(1.dp, NovaEmerald.copy(alpha = 0.25f)),
+                            color = PocketEmerald.copy(alpha = 0.12f),
+                            border = BorderStroke(1.dp, PocketEmerald.copy(alpha = 0.25f)),
                             modifier = Modifier.size(32.dp),
                         ) {
                             Box(contentAlignment = Alignment.Center) {
                                 Icon(
                                     imageVector = Icons.Default.SmartToy,
                                     contentDescription = null,
-                                    tint = NovaEmerald,
+                                    tint = PocketEmerald,
                                     modifier = Modifier.size(17.dp),
                                 )
                             }
                         }
                         Spacer(Modifier.width(10.dp))
                         Column {
-                            Text("AI Copilot", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = NovaTextPrimary)
+                            Text("AI Copilot", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = PocketTextPrimary)
                             Text(
                                 if (isAntigravity) {
                                     "Antigravity · ${formatAntigravityModelName(state.antigravityModel)}"
@@ -782,7 +782,7 @@ fun AgentScreen(
                                     "${state.agentKind.title} · ${model.ifBlank { selectedKind.title }}"
                                 },
                                 fontSize = 11.sp,
-                                color = NovaTextMuted,
+                                color = PocketTextMuted,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
                             )
@@ -828,8 +828,8 @@ fun AgentScreen(
             item {
                 Surface(
                     shape = RoundedCornerShape(14.dp),
-                    color = NovaSurface,
-                    border = BorderStroke(1.dp, NovaBorder),
+                    color = PocketSurface,
+                    border = BorderStroke(1.dp, PocketBorder),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Column(
@@ -840,19 +840,19 @@ fun AgentScreen(
                     ) {
                         Text(
                             text = "What do you want to build?",
-                            color = NovaTextPrimary,
+                            color = PocketTextPrimary,
                             fontSize = 15.sp,
                             fontWeight = FontWeight.SemiBold
                         )
 
-                        // Big Ask NovaCode Input Card
+                        // Big Ask PocketIDE Input Card
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(105.dp)
                                 .clip(RoundedCornerShape(10.dp))
-                                .background(NovaSurfaceElevated)
-                                .border(1.dp, NovaBorder, RoundedCornerShape(10.dp))
+                                .background(PocketSurfaceElevated)
+                                .border(1.dp, PocketBorder, RoundedCornerShape(10.dp))
                                 .padding(10.dp)
                         ) {
                             BasicTextField(
@@ -862,16 +862,16 @@ fun AgentScreen(
                                     .fillMaxWidth()
                                     .fillMaxHeight(0.70f),
                                 textStyle = TextStyle(
-                                    color = NovaTextPrimary,
+                                    color = PocketTextPrimary,
                                     fontSize = 13.sp,
                                     lineHeight = 18.sp
                                 ),
-                                cursorBrush = SolidColor(NovaEmerald),
+                                cursorBrush = SolidColor(PocketEmerald),
                                 decorationBox = { innerTextField ->
                                     if (aiWorkspacePrompt.isEmpty()) {
                                         Text(
                                             text = "Ask Pocket IDE to write, debug, explain, or refactor code…",
-                                            color = NovaTextMuted,
+                                            color = PocketTextMuted,
                                             fontSize = 12.5.sp,
                                             lineHeight = 17.sp
                                         )
@@ -886,7 +886,7 @@ fun AgentScreen(
                                     .align(Alignment.BottomEnd)
                                     .size(32.dp)
                                     .clip(RoundedCornerShape(8.dp))
-                                    .background(if (aiWorkspacePrompt.isNotBlank()) NovaEmerald else NovaSurfaceVariant)
+                                    .background(if (aiWorkspacePrompt.isNotBlank()) PocketEmerald else PocketSurfaceVariant)
                                     .clickable(enabled = aiWorkspacePrompt.isNotBlank()) {
                                         val p = aiWorkspacePrompt.trim()
                                         if (p.isNotBlank()) {
@@ -899,7 +899,7 @@ fun AgentScreen(
                                 Icon(
                                     imageVector = Icons.AutoMirrored.Filled.Send,
                                     contentDescription = "Send",
-                                    tint = if (aiWorkspacePrompt.isNotBlank()) NovaObsidian else NovaTextMuted,
+                                    tint = if (aiWorkspacePrompt.isNotBlank()) PocketObsidian else PocketTextMuted,
                                     modifier = Modifier.size(15.dp)
                                 )
                             }
@@ -915,8 +915,8 @@ fun AgentScreen(
                                     modifier = Modifier
                                         .weight(1f)
                                         .clip(RoundedCornerShape(6.dp))
-                                        .background(NovaSurfaceElevated)
-                                        .border(1.dp, NovaBorder, RoundedCornerShape(6.dp))
+                                        .background(PocketSurfaceElevated)
+                                        .border(1.dp, PocketBorder, RoundedCornerShape(6.dp))
                                         .clickable {
                                             aiWorkspacePrompt = "$action: "
                                         }
@@ -925,7 +925,7 @@ fun AgentScreen(
                                 ) {
                                     Text(
                                         text = action,
-                                        color = NovaTextPrimary,
+                                        color = PocketTextPrimary,
                                         fontSize = 11.5.sp,
                                         fontWeight = FontWeight.Medium,
                                         maxLines = 1
@@ -937,8 +937,8 @@ fun AgentScreen(
                         // Active Model Display
                         Surface(
                             shape = RoundedCornerShape(8.dp),
-                            color = NovaSurfaceElevated,
-                            border = BorderStroke(1.dp, NovaBorder),
+                            color = PocketSurfaceElevated,
+                            border = BorderStroke(1.dp, PocketBorder),
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Row(
@@ -950,14 +950,14 @@ fun AgentScreen(
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
                                 Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                                    Text("Active Model", color = NovaTextMuted, fontSize = 10.5.sp)
+                                    Text("Active Model", color = PocketTextMuted, fontSize = 10.5.sp)
                                     Text(
                                         text = if (isAntigravity) {
                                             "Antigravity • ${formatAntigravityModelName(state.antigravityModel)}"
                                         } else {
                                             "${state.agentKind.title} • ${model.ifBlank { selectedKind.title }}"
                                         },
-                                        color = NovaTextPrimary,
+                                        color = PocketTextPrimary,
                                         fontSize = 12.5.sp,
                                         fontWeight = FontWeight.SemiBold
                                     )
@@ -976,8 +976,8 @@ fun AgentScreen(
             item {
                 Surface(
                     shape = RoundedCornerShape(10.dp),
-                    color = NovaSurface,
-                    border = BorderStroke(1.dp, NovaBorder),
+                    color = PocketSurface,
+                    border = BorderStroke(1.dp, PocketBorder),
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable { configExpanded = !configExpanded }
@@ -997,20 +997,20 @@ fun AgentScreen(
                                 modifier = Modifier
                                     .size(28.dp)
                                     .clip(RoundedCornerShape(6.dp))
-                                    .background(NovaSurfaceElevated),
+                                    .background(PocketSurfaceElevated),
                                 contentAlignment = Alignment.Center
                             ) {
-                                Icon(Icons.Default.Settings, contentDescription = null, tint = NovaIndigo, modifier = Modifier.size(16.dp))
+                                Icon(Icons.Default.Settings, contentDescription = null, tint = PocketIndigo, modifier = Modifier.size(16.dp))
                             }
                             Column {
-                                Text("AI Configuration", color = NovaTextPrimary, fontSize = 13.5.sp, fontWeight = FontWeight.SemiBold)
-                                Text("Google Account, Provider, Models, Depth", color = NovaTextMuted, fontSize = 11.sp)
+                                Text("AI Configuration", color = PocketTextPrimary, fontSize = 13.5.sp, fontWeight = FontWeight.SemiBold)
+                                Text("Google Account, Provider, Models, Depth", color = PocketTextMuted, fontSize = 11.sp)
                             }
                         }
                         Icon(
                             imageVector = if (configExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
                             contentDescription = null,
-                            tint = NovaTextMuted,
+                            tint = PocketTextMuted,
                             modifier = Modifier.size(18.dp)
                         )
                     }
@@ -1023,8 +1023,8 @@ fun AgentScreen(
                 Column(modifier = Modifier.fillMaxWidth()) {
                     Surface(
                         shape = RoundedCornerShape(12.dp),
-                        color = NovaSurfaceVariant,
-                        border = BorderStroke(1.dp, NovaBorder),
+                        color = PocketSurfaceVariant,
+                        border = BorderStroke(1.dp, PocketBorder),
                         modifier = Modifier.fillMaxWidth(),
                     ) {
                         Row(
@@ -1042,8 +1042,8 @@ fun AgentScreen(
                                 }
                                 Surface(
                                     shape = RoundedCornerShape(9.dp),
-                                    color = if (isSelected) NovaSurfaceElevated else Color.Transparent,
-                                    border = if (isSelected) BorderStroke(1.dp, NovaBorder) else null,
+                                    color = if (isSelected) PocketSurfaceElevated else Color.Transparent,
+                                    border = if (isSelected) BorderStroke(1.dp, PocketBorder) else null,
                                     modifier = Modifier
                                         .weight(1f)
                                         .clickable(enabled = state.agentInstalling == null) {
@@ -1060,12 +1060,12 @@ fun AgentScreen(
                                                 shortTitle,
                                                 fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Medium,
                                                 fontSize = 12.sp,
-                                                color = if (isSelected) NovaTextPrimary else NovaTextMuted,
+                                                color = if (isSelected) PocketTextPrimary else PocketTextMuted,
                                                 maxLines = 1,
                                             )
                                             if (updateAvailable) {
                                                 Spacer(Modifier.width(3.dp))
-                                                Box(Modifier.size(5.dp).background(NovaEmerald, CircleShape))
+                                                Box(Modifier.size(5.dp).background(PocketEmerald, CircleShape))
                                             }
                                         }
                                     }
@@ -1383,14 +1383,14 @@ private fun AgentAntigravityCard(
     Surface(
         color = MaterialTheme.colorScheme.surface,
         shape = RoundedCornerShape(16.dp),
-        border = BorderStroke(1.dp, NovaBorder),
+        border = BorderStroke(1.dp, PocketBorder),
         modifier = Modifier.fillMaxWidth(),
     ) {
         Column(
             Modifier.padding(14.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            Text("Google Account", fontSize = 15.sp, fontWeight = FontWeight.SemiBold, color = NovaTextPrimary)
+            Text("Google Account", fontSize = 15.sp, fontWeight = FontWeight.SemiBold, color = PocketTextPrimary)
             // Google Account Row
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -1419,15 +1419,15 @@ private fun AgentAntigravityCard(
                     Text(
                         if (auth.status == AntigravityAuthStatus.SIGNED_IN) "Connected with Google" else if (!isInstalled) "CLI installation & login required" else "Required for Antigravity",
                         fontSize = 11.sp,
-                        color = if (auth.status == AntigravityAuthStatus.SIGNED_IN) NovaEmerald else NovaTextMuted,
+                        color = if (auth.status == AntigravityAuthStatus.SIGNED_IN) PocketEmerald else PocketTextMuted,
                     )
                 }
                 if (auth.status == AntigravityAuthStatus.SIGNED_IN) {
                     Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(8.dp))
-                            .background(NovaSurfaceElevated)
-                            .border(1.dp, NovaBorder, RoundedCornerShape(8.dp))
+                            .background(PocketSurfaceElevated)
+                            .border(1.dp, PocketBorder, RoundedCornerShape(8.dp))
                             .clickable { onLogout() }
                             .padding(horizontal = 10.dp, vertical = 5.dp)
                     ) {
@@ -1435,7 +1435,7 @@ private fun AgentAntigravityCard(
                             "Disconnect",
                             fontSize = 11.5.sp,
                             fontWeight = FontWeight.Medium,
-                            color = NovaTextSecondary,
+                            color = PocketTextSecondary,
                         )
                     }
                 }
@@ -1446,7 +1446,7 @@ private fun AgentAntigravityCard(
                 Text(
                     text = msg,
                     fontSize = 12.sp,
-                    color = if (auth.status == AntigravityAuthStatus.ERROR) MaterialTheme.colorScheme.error else NovaEmerald,
+                    color = if (auth.status == AntigravityAuthStatus.ERROR) MaterialTheme.colorScheme.error else PocketEmerald,
                     lineHeight = 16.sp,
                 )
             }
@@ -1456,11 +1456,11 @@ private fun AgentAntigravityCard(
                 AntigravityAuthStatus.STARTING, AntigravityAuthStatus.COMPLETING -> {
                     Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            CircularProgressIndicator(modifier = Modifier.size(16.dp), strokeWidth = 2.dp, color = NovaEmerald)
+                            CircularProgressIndicator(modifier = Modifier.size(16.dp), strokeWidth = 2.dp, color = PocketEmerald)
                             Spacer(Modifier.width(8.dp))
-                            Text(auth.message ?: "Starting Google sign-in…", fontSize = 12.sp, color = NovaTextPrimary)
+                            Text(auth.message ?: "Starting Google sign-in…", fontSize = 12.sp, color = PocketTextPrimary)
                         }
-                        LinearProgressIndicator(Modifier.fillMaxWidth(), color = NovaEmerald, trackColor = NovaSurfaceVariant)
+                        LinearProgressIndicator(Modifier.fillMaxWidth(), color = PocketEmerald, trackColor = PocketSurfaceVariant)
                     }
                 }
                 AntigravityAuthStatus.AWAITING_CODE -> {
@@ -1513,15 +1513,15 @@ private fun AgentAntigravityCard(
                     if (state.agentInstalling == AgentKind.ANTIGRAVITY) {
                         Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
-                                CircularProgressIndicator(modifier = Modifier.size(16.dp), strokeWidth = 2.dp, color = NovaEmerald)
+                                CircularProgressIndicator(modifier = Modifier.size(16.dp), strokeWidth = 2.dp, color = PocketEmerald)
                                 Spacer(Modifier.width(8.dp))
-                                Text(state.agentMessage ?: "Installing Antigravity CLI…", fontSize = 12.sp, color = NovaTextPrimary)
+                                Text(state.agentMessage ?: "Installing Antigravity CLI…", fontSize = 12.sp, color = PocketTextPrimary)
                             }
                             LinearProgressIndicator(
                                 progress = { state.agentProgress },
                                 modifier = Modifier.fillMaxWidth(),
-                                color = NovaEmerald,
-                                trackColor = NovaSurfaceVariant,
+                                color = PocketEmerald,
+                                trackColor = PocketSurfaceVariant,
                             )
                         }
                     } else {
@@ -1571,7 +1571,7 @@ private fun AgentAntigravityCard(
                             Text(
                                 "Sync",
                                 fontSize = 11.sp,
-                                color = NovaEmerald,
+                                color = PocketEmerald,
                                 fontWeight = FontWeight.SemiBold,
                             )
                         }
@@ -1592,13 +1592,13 @@ private fun AgentAntigravityCard(
                             Box(
                                 modifier = Modifier
                                     .size(32.dp)
-                                    .background(NovaEmerald.copy(alpha = 0.12f), RoundedCornerShape(9.dp)),
+                                    .background(PocketEmerald.copy(alpha = 0.12f), RoundedCornerShape(9.dp)),
                                 contentAlignment = Alignment.Center,
                             ) {
                                 Icon(
                                     Icons.Default.AutoAwesome,
                                     contentDescription = null,
-                                    tint = NovaEmerald,
+                                    tint = PocketEmerald,
                                     modifier = Modifier.size(16.dp),
                                 )
                             }
@@ -1657,7 +1657,7 @@ private fun AgentAntigravityCard(
                         Text(
                             effortCaption,
                             fontSize = 11.sp,
-                            color = NovaEmerald,
+                            color = PocketEmerald,
                             fontWeight = FontWeight.Medium,
                         )
                     }
@@ -1676,7 +1676,7 @@ private fun AgentAntigravityCard(
                                 val isSelected = state.antigravityEffort == effort
                                 Surface(
                                     shape = RoundedCornerShape(9.dp),
-                                    color = if (isSelected) NovaEmerald else Color.Transparent,
+                                    color = if (isSelected) PocketEmerald else Color.Transparent,
                                     modifier = Modifier
                                         .weight(1f)
                                         .clickable { onSetEffort(effort) },
@@ -1705,18 +1705,18 @@ private fun AgentAntigravityCard(
                     enabled = state.apiPingStatus != ApiPingStatus.PINGING,
                     modifier = Modifier.fillMaxWidth().height(42.dp),
                     shape = RoundedCornerShape(10.dp),
-                    border = BorderStroke(1.dp, NovaEmerald.copy(alpha = 0.6f)),
+                    border = BorderStroke(1.dp, PocketEmerald.copy(alpha = 0.6f)),
                 ) {
                     if (state.apiPingStatus == ApiPingStatus.PINGING) {
-                        CircularProgressIndicator(Modifier.size(15.dp), strokeWidth = 1.8.dp, color = NovaEmerald)
+                        CircularProgressIndicator(Modifier.size(15.dp), strokeWidth = 1.8.dp, color = PocketEmerald)
                         Spacer(Modifier.width(8.dp))
                     } else {
-                        Icon(Icons.Default.Refresh, null, Modifier.size(16.dp), tint = NovaEmerald)
+                        Icon(Icons.Default.Refresh, null, Modifier.size(16.dp), tint = PocketEmerald)
                         Spacer(Modifier.width(8.dp))
                     }
                     Text(
                         if (state.apiPingStatus == ApiPingStatus.PINGING) "Testing connection…" else "Test connection",
-                        color = NovaEmerald,
+                        color = PocketEmerald,
                         fontWeight = FontWeight.SemiBold,
                     )
                 }
@@ -1962,7 +1962,7 @@ private fun AgentProviderCard(
                         if (isDiscovering) "Discovering…" else if (models.isEmpty()) "Discover models" else "${models.size} models",
                         fontSize = 11.sp,
                         fontWeight = FontWeight.SemiBold,
-                        color = NovaIndigo,
+                        color = PocketIndigo,
                         modifier = Modifier.clickable(enabled = !isDiscovering, onClick = onDiscover).padding(6.dp),
                     )
                 }
@@ -1987,7 +1987,7 @@ private fun AgentProviderCard(
             if (status != null) {
                 Column(modifier = Modifier.padding(start = 48.dp, end = 8.dp, bottom = 8.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(if (statusOk) Icons.Default.Info else Icons.Default.Warning, null, tint = if (statusOk) NovaIndigo else MaterialTheme.colorScheme.error, modifier = Modifier.size(14.dp))
+                        Icon(if (statusOk) Icons.Default.Info else Icons.Default.Warning, null, tint = if (statusOk) PocketIndigo else MaterialTheme.colorScheme.error, modifier = Modifier.size(14.dp))
                         Spacer(Modifier.width(7.dp))
                         Text(status, fontSize = 10.sp, lineHeight = 14.sp, color = if (statusOk) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.error, modifier = Modifier.weight(1f))
                     }
@@ -2051,7 +2051,7 @@ private fun AgentProviderCard(
                         Text(
                             if (addKeyExpanded) "Cancel" else "+ Add key",
                             fontSize = 11.sp,
-                            color = NovaIndigo,
+                            color = PocketIndigo,
                             fontWeight = FontWeight.SemiBold,
                             modifier = Modifier.clickable { addKeyExpanded = !addKeyExpanded }.padding(6.dp),
                         )
@@ -2066,7 +2066,7 @@ private fun AgentProviderCard(
                                 ) {
                                     Column(Modifier.weight(1f)) {
                                         Text(key.name, fontWeight = FontWeight.Medium, fontSize = 13.sp)
-                                        Text(if (key.isActive) "Active" else "Tap to activate", fontSize = 10.sp, color = if (key.isActive) NovaIndigo else MaterialTheme.colorScheme.onSurfaceVariant)
+                                        Text(if (key.isActive) "Active" else "Tap to activate", fontSize = 10.sp, color = if (key.isActive) PocketIndigo else MaterialTheme.colorScheme.onSurfaceVariant)
                                     }
                                     AgentSelectionDot(key.isActive)
                                     IconButton(onClick = { onRemoveKey(key.id) }) {
@@ -2134,13 +2134,13 @@ private fun AgentProviderCard(
                     (selectedKind == ProviderKind.CLAUDE || (baseUrl.isNotBlank() && model.isNotBlank())),
                 modifier = Modifier.fillMaxWidth().height(46.dp),
                 shape = RoundedCornerShape(13.dp),
-                border = BorderStroke(1.dp, NovaIndigo.copy(alpha = 0.7f)),
+                border = BorderStroke(1.dp, PocketIndigo.copy(alpha = 0.7f)),
             ) {
                 if (isValidating) {
-                    CircularProgressIndicator(Modifier.size(15.dp), strokeWidth = 1.8.dp, color = NovaIndigo)
+                    CircularProgressIndicator(Modifier.size(15.dp), strokeWidth = 1.8.dp, color = PocketIndigo)
                     Spacer(Modifier.width(8.dp))
                 } else {
-                    Icon(if (selectedKind == ProviderKind.CLAUDE) Icons.Default.Check else Icons.Default.Refresh, null, Modifier.size(16.dp), tint = NovaIndigo)
+                    Icon(if (selectedKind == ProviderKind.CLAUDE) Icons.Default.Check else Icons.Default.Refresh, null, Modifier.size(16.dp), tint = PocketIndigo)
                     Spacer(Modifier.width(8.dp))
                 }
                 Text(
@@ -2150,7 +2150,7 @@ private fun AgentProviderCard(
                         selectedKind == ProviderKind.CLAUDE -> "Save subscription token"
                         else -> "Test connection"
                     },
-                    color = NovaIndigo,
+                    color = PocketIndigo,
                     fontWeight = FontWeight.SemiBold,
                 )
             }
@@ -2173,10 +2173,10 @@ private fun PremiumSummaryRow(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Box(
-            modifier = Modifier.size(38.dp).background(NovaIndigo.copy(alpha = 0.10f), RoundedCornerShape(11.dp)),
+            modifier = Modifier.size(38.dp).background(PocketIndigo.copy(alpha = 0.10f), RoundedCornerShape(11.dp)),
             contentAlignment = Alignment.Center,
         ) {
-            Icon(icon, null, tint = NovaIndigo, modifier = Modifier.size(19.dp))
+            Icon(icon, null, tint = PocketIndigo, modifier = Modifier.size(19.dp))
         }
         Spacer(Modifier.width(12.dp))
         Column(Modifier.weight(1f)) {
@@ -2235,12 +2235,12 @@ private fun AgentUpdateBlock(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 if (state.agentUpdatesChecking) {
-                    CircularProgressIndicator(Modifier.size(13.dp), strokeWidth = 1.6.dp, color = NovaEmerald)
+                    CircularProgressIndicator(Modifier.size(13.dp), strokeWidth = 1.6.dp, color = PocketEmerald)
                 } else {
-                    Icon(Icons.Default.Refresh, contentDescription = null, tint = NovaEmerald, modifier = Modifier.size(14.dp))
+                    Icon(Icons.Default.Refresh, contentDescription = null, tint = PocketEmerald, modifier = Modifier.size(14.dp))
                 }
                 Spacer(Modifier.width(5.dp))
-                Text("Check updates", color = NovaEmerald, fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
+                Text("Check updates", color = PocketEmerald, fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
             }
         }
 
@@ -2254,8 +2254,8 @@ private fun AgentUpdateBlock(
 
                 Surface(
                     shape = RoundedCornerShape(12.dp),
-                    color = NovaEmerald.copy(alpha = 0.08f),
-                    border = BorderStroke(1.dp, NovaEmerald.copy(alpha = 0.28f)),
+                    color = PocketEmerald.copy(alpha = 0.08f),
+                    border = BorderStroke(1.dp, PocketEmerald.copy(alpha = 0.28f)),
                 ) {
                     Column(Modifier.padding(10.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -2263,7 +2263,7 @@ private fun AgentUpdateBlock(
                                 Text(agent.title, fontWeight = FontWeight.Bold, fontSize = 13.sp)
                                 Text("v${update.installedVersion} → v${update.latestVersion}", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             }
-                            Text("UPDATE", color = NovaEmerald, fontSize = 10.sp, fontWeight = FontWeight.ExtraBold)
+                            Text("UPDATE", color = PocketEmerald, fontSize = 10.sp, fontWeight = FontWeight.ExtraBold)
                         }
                         if (updating) {
                             state.agentUpdateMessage?.let { Text(it, fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant) }
@@ -2319,10 +2319,10 @@ private fun AgentTypingDots(
 @Composable
 private fun AgentSelectionDot(selected: Boolean) {
     Box(
-        Modifier.size(22.dp).border(if (selected) 2.dp else 1.5.dp, if (selected) NovaIndigo else MaterialTheme.colorScheme.outline.copy(alpha = 0.6f), CircleShape),
+        Modifier.size(22.dp).border(if (selected) 2.dp else 1.5.dp, if (selected) PocketIndigo else MaterialTheme.colorScheme.outline.copy(alpha = 0.6f), CircleShape),
         contentAlignment = Alignment.Center,
     ) {
-        if (selected) Box(Modifier.size(10.dp).background(NovaIndigo, CircleShape))
+        if (selected) Box(Modifier.size(10.dp).background(PocketIndigo, CircleShape))
     }
 }
 
