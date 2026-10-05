@@ -1,13 +1,13 @@
-package com.novacode.studio.runtime
+package com.pocketide.app.runtime
 
-import com.novacode.studio.model.AgentKind
-import com.novacode.studio.model.DEEPSEEK_CODER_PROVIDERS
-import com.novacode.studio.model.ProviderKind
-import com.novacode.studio.model.ProviderProfile
-import com.novacode.studio.model.ProviderProtocol
-import com.novacode.studio.model.inferredDshApiForUrl
-import com.novacode.studio.model.providerProtocolForAgent
-import com.novacode.studio.model.providersForAgent
+import com.pocketide.app.model.AgentKind
+import com.pocketide.app.model.DEEPSEEK_CODER_PROVIDERS
+import com.pocketide.app.model.ProviderKind
+import com.pocketide.app.model.ProviderProfile
+import com.pocketide.app.model.ProviderProtocol
+import com.pocketide.app.model.inferredDshApiForUrl
+import com.pocketide.app.model.providerProtocolForAgent
+import com.pocketide.app.model.providersForAgent
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
