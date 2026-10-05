@@ -1,4 +1,4 @@
-package com.novacode.studio.network
+package com.pocketide.app.network
 
 import org.junit.Assert.assertEquals
 import org.junit.Test
