@@ -1,6 +1,6 @@
-package com.novacode.studio.runtime
+package com.pocketide.app.runtime
 
-import com.novacode.studio.model.ProviderProfile
+import com.pocketide.app.model.ProviderProfile
 import android.util.Log
 import java.io.BufferedInputStream
 import java.io.BufferedOutputStream
