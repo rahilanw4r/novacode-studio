@@ -1,4 +1,4 @@
-package com.novacode.studio.ui
+package com.pocketide.app.ui
 
 import android.content.Intent
 import android.net.Uri
@@ -89,21 +89,21 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.novacode.studio.BuildConfig
-import com.novacode.studio.data.ApiKeyInfo
-import com.novacode.studio.model.AgentKind
-import com.novacode.studio.model.DEEPSEEK_CODER_PROVIDERS
-import com.novacode.studio.model.DSH_PROTOCOL_PROVIDERS
-import com.novacode.studio.model.DevStack
-import com.novacode.studio.model.ProviderKind
-import com.novacode.studio.model.ProviderProfile
-import com.novacode.studio.model.providersForAgent
-import com.novacode.studio.network.ConnectionValidation
-import com.novacode.studio.network.DiscoveredModel
-import com.novacode.studio.network.ModelDiscoveryResult
-import com.novacode.studio.runtime.AntigravityAuthStatus
-import com.novacode.studio.ui.theme.AppThemeMode
-import com.novacode.studio.ui.theme.NovaIndigo
+import com.pocketide.app.BuildConfig
+import com.pocketide.app.data.ApiKeyInfo
+import com.pocketide.app.model.AgentKind
+import com.pocketide.app.model.DEEPSEEK_CODER_PROVIDERS
+import com.pocketide.app.model.DSH_PROTOCOL_PROVIDERS
+import com.pocketide.app.model.DevStack
+import com.pocketide.app.model.ProviderKind
+import com.pocketide.app.model.ProviderProfile
+import com.pocketide.app.model.providersForAgent
+import com.pocketide.app.network.ConnectionValidation
+import com.pocketide.app.network.DiscoveredModel
+import com.pocketide.app.network.ModelDiscoveryResult
+import com.pocketide.app.runtime.AntigravityAuthStatus
+import com.pocketide.app.ui.theme.AppThemeMode
+import com.pocketide.app.ui.theme.PocketIndigo
 import kotlinx.coroutines.launch
 
 private enum class SettingsSection { APPEARANCE, TOOLS, RUNTIME, UPDATE_CHANNEL }
@@ -249,7 +249,7 @@ fun SettingsScreen(
                             }
                             when {
                                 removing -> Text("Removing…", color = MaterialTheme.colorScheme.error, fontWeight = FontWeight.Bold, fontSize = 12.sp)
-                                installing -> Text("${(state.devStackProgress * 100).toInt()}%", color = NovaIndigo, fontWeight = FontWeight.Bold)
+                                installing -> Text("${(state.devStackProgress * 100).toInt()}%", color = PocketIndigo, fontWeight = FontWeight.Bold)
                                 installed && stack == DevStack.WEB -> Text("Included", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                 installed -> TextButton(
                                     onClick = { stackPendingRemoval = stack },
@@ -263,7 +263,7 @@ fun SettingsScreen(
                             LinearProgressIndicator(
                                 progress = { state.devStackProgress.coerceIn(0f, 1f) },
                                 modifier = Modifier.fillMaxWidth().height(7.dp),
-                                color = NovaIndigo,
+                                color = PocketIndigo,
                                 trackColor = MaterialTheme.colorScheme.surfaceVariant,
                             )
                             Spacer(Modifier.height(9.dp))
@@ -285,7 +285,7 @@ fun SettingsScreen(
                                                 Text(
                                                     "${formatTransferSpeed(speed)} · ${formatTransferEta(downloaded, total, speed)} left",
                                                     fontSize = 11.sp,
-                                                    color = NovaIndigo,
+                                                    color = PocketIndigo,
                                                     fontFamily = FontFamily.Monospace,
                                                 )
                                             }
@@ -392,7 +392,7 @@ fun SettingsScreen(
                     modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Default.Settings, null, Modifier.size(20.dp), tint = NovaIndigo)
+                        Icon(Icons.Default.Settings, null, Modifier.size(20.dp), tint = PocketIndigo)
                         Spacer(Modifier.width(12.dp))
                         Column(Modifier.weight(1f)) {
                             Text("Pocket IDE", fontWeight = FontWeight.SemiBold)
@@ -646,7 +646,7 @@ private fun ConnectionSettings(
                 when (state.apiPingStatus) {
                     ApiPingStatus.OK -> Color(0xFF58C9A3)
                     ApiPingStatus.FAILED -> MaterialTheme.colorScheme.error
-                    ApiPingStatus.PINGING -> NovaIndigo
+                    ApiPingStatus.PINGING -> PocketIndigo
                     ApiPingStatus.IDLE -> MaterialTheme.colorScheme.onSurfaceVariant
                 }, CircleShape,
             ))
@@ -655,7 +655,7 @@ private fun ConnectionSettings(
                 Text("Active connection", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Text(state.provider.model.ifBlank { "Not configured" }, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 state.activeApiKeyName?.let { name ->
-                    Text("Key: $name", fontSize = 11.sp, color = NovaIndigo, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    Text("Key: $name", fontSize = 11.sp, color = PocketIndigo, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 }
                 state.apiPingMessage?.let {
                     Text(it, fontSize = 11.sp, color = if (state.apiPingStatus == ApiPingStatus.FAILED) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 2, overflow = TextOverflow.Ellipsis)
@@ -672,7 +672,7 @@ private fun ConnectionSettings(
         modifier = Modifier.fillMaxWidth().clickable { providerExpanded = !providerExpanded },
         shape = RoundedCornerShape(14.dp),
         color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f),
-        border = BorderStroke(1.dp, if (providerExpanded) NovaIndigo else MaterialTheme.colorScheme.outlineVariant),
+        border = BorderStroke(1.dp, if (providerExpanded) PocketIndigo else MaterialTheme.colorScheme.outlineVariant),
     ) {
         Row(Modifier.padding(13.dp), verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
@@ -763,7 +763,7 @@ private fun ConnectionSettings(
                             Text(
                                 if (key.isActive) "Active now · tap another key to switch" else "Tap to make active",
                                 fontSize = 11.sp,
-                                color = if (key.isActive) NovaIndigo else MaterialTheme.colorScheme.onSurfaceVariant,
+                                color = if (key.isActive) PocketIndigo else MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                         }
                         SelectionDot(key.isActive)
@@ -831,10 +831,10 @@ private fun ConnectionSettings(
 @Composable
 private fun SelectionDot(selected: Boolean) {
     Box(
-        Modifier.size(20.dp).border(if (selected) 2.dp else 1.dp, if (selected) NovaIndigo else MaterialTheme.colorScheme.outline, CircleShape),
+        Modifier.size(20.dp).border(if (selected) 2.dp else 1.dp, if (selected) PocketIndigo else MaterialTheme.colorScheme.outline, CircleShape),
         contentAlignment = Alignment.Center,
     ) {
-        if (selected) Box(Modifier.size(9.dp).background(NovaIndigo, CircleShape))
+        if (selected) Box(Modifier.size(9.dp).background(PocketIndigo, CircleShape))
     }
 }
 
@@ -843,11 +843,11 @@ private fun ModernThemeChoice(title: String, icon: ImageVector, selected: Boolea
     Surface(
         modifier = modifier.clickable(onClick = onClick),
         shape = RoundedCornerShape(12.dp),
-        color = if (selected) NovaIndigo.copy(alpha = 0.12f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-        border = BorderStroke(if (selected) 1.5.dp else 1.dp, if (selected) NovaIndigo else MaterialTheme.colorScheme.outlineVariant),
+        color = if (selected) PocketIndigo.copy(alpha = 0.12f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+        border = BorderStroke(if (selected) 1.5.dp else 1.dp, if (selected) PocketIndigo else MaterialTheme.colorScheme.outlineVariant),
     ) {
         Column(Modifier.padding(vertical = 13.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-            Icon(icon, title, Modifier.size(20.dp), tint = if (selected) NovaIndigo else MaterialTheme.colorScheme.onSurfaceVariant)
+            Icon(icon, title, Modifier.size(20.dp), tint = if (selected) PocketIndigo else MaterialTheme.colorScheme.onSurfaceVariant)
             Spacer(Modifier.height(5.dp))
             Text(title, fontSize = 12.sp, fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal)
         }
