@@ -1,4 +1,4 @@
-package com.novacode.studio.ui.screens.terminal
+package com.pocketide.app.ui.screens.terminal
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -53,21 +53,21 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.novacode.studio.ui.TerminalOutputLine
-import com.novacode.studio.ui.components.DeveloperKeyToolbar
-import com.novacode.studio.ui.components.NovaStatusPill
-import com.novacode.studio.ui.theme.NovaAmber
-import com.novacode.studio.ui.theme.NovaBorder
-import com.novacode.studio.ui.theme.NovaCyan
-import com.novacode.studio.ui.theme.NovaEmerald
-import com.novacode.studio.ui.theme.NovaIndigo
-import com.novacode.studio.ui.theme.NovaObsidian
-import com.novacode.studio.ui.theme.NovaRose
-import com.novacode.studio.ui.theme.NovaSurface
-import com.novacode.studio.ui.theme.NovaSurfaceElevated
-import com.novacode.studio.ui.theme.NovaTextMuted
-import com.novacode.studio.ui.theme.NovaTextPrimary
-import com.novacode.studio.ui.theme.NovaTextSecondary
+import com.pocketide.app.ui.TerminalOutputLine
+import com.pocketide.app.ui.components.DeveloperKeyToolbar
+import com.pocketide.app.ui.components.PocketStatusPill
+import com.pocketide.app.ui.theme.PocketAmber
+import com.pocketide.app.ui.theme.PocketBorder
+import com.pocketide.app.ui.theme.PocketCyan
+import com.pocketide.app.ui.theme.PocketEmerald
+import com.pocketide.app.ui.theme.PocketIndigo
+import com.pocketide.app.ui.theme.PocketObsidian
+import com.pocketide.app.ui.theme.PocketRose
+import com.pocketide.app.ui.theme.PocketSurface
+import com.pocketide.app.ui.theme.PocketSurfaceElevated
+import com.pocketide.app.ui.theme.PocketTextMuted
+import com.pocketide.app.ui.theme.PocketTextPrimary
+import com.pocketide.app.ui.theme.PocketTextSecondary
 
 data class TerminalTabSession(
     val id: String,
@@ -76,7 +76,7 @@ data class TerminalTabSession(
 )
 
 @Composable
-fun NovaTerminalScreen(
+fun PocketTerminalScreen(
     outputLines: List<TerminalOutputLine>,
     activeCommand: String?,
     isProcessRunning: Boolean,
@@ -108,14 +108,14 @@ fun NovaTerminalScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(NovaObsidian)
+            .background(PocketObsidian)
             .imePadding()
     ) {
         // Multi-Tab Session Bar
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(NovaSurface)
+                .background(PocketSurface)
                 .padding(horizontal = 8.dp, vertical = 6.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
@@ -130,8 +130,8 @@ fun NovaTerminalScreen(
                     Row(
                         modifier = Modifier
                             .clip(RoundedCornerShape(8.dp))
-                            .background(if (isSelected) NovaSurfaceElevated else Color.Transparent)
-                            .border(1.dp, if (isSelected) NovaCyan else Color.Transparent, RoundedCornerShape(8.dp))
+                            .background(if (isSelected) PocketSurfaceElevated else Color.Transparent)
+                            .border(1.dp, if (isSelected) PocketCyan else Color.Transparent, RoundedCornerShape(8.dp))
                             .clickable { activeSessionId = session.id }
                             .padding(horizontal = 10.dp, vertical = 5.dp),
                         verticalAlignment = Alignment.CenterVertically,
@@ -141,11 +141,11 @@ fun NovaTerminalScreen(
                             modifier = Modifier
                                 .size(6.dp)
                                 .clip(CircleShape)
-                                .background(if (isProcessRunning) NovaEmerald else NovaTextMuted)
+                                .background(if (isProcessRunning) PocketEmerald else PocketTextMuted)
                         )
                         Text(
                             text = session.title,
-                            color = if (isSelected) NovaTextPrimary else NovaTextSecondary,
+                            color = if (isSelected) PocketTextPrimary else PocketTextSecondary,
                             fontSize = 11.5.sp,
                             fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
                             fontFamily = FontFamily.Monospace
@@ -158,16 +158,16 @@ fun NovaTerminalScreen(
             Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                 if (isProcessRunning) {
                     IconButton(onClick = onInterrupt, modifier = Modifier.size(28.dp)) {
-                        Icon(Icons.Default.Stop, contentDescription = "Interrupt", tint = NovaRose, modifier = Modifier.size(16.dp))
+                        Icon(Icons.Default.Stop, contentDescription = "Interrupt", tint = PocketRose, modifier = Modifier.size(16.dp))
                     }
                 }
                 IconButton(onClick = onClear, modifier = Modifier.size(28.dp)) {
-                    Icon(Icons.Default.Clear, contentDescription = "Clear", tint = NovaTextMuted, modifier = Modifier.size(16.dp))
+                    Icon(Icons.Default.Clear, contentDescription = "Clear", tint = PocketTextMuted, modifier = Modifier.size(16.dp))
                 }
             }
         }
 
-        HorizontalDivider(color = NovaBorder)
+        HorizontalDivider(color = PocketBorder)
 
         // Terminal Output Stream
         LazyColumn(
@@ -182,7 +182,7 @@ fun NovaTerminalScreen(
                 item {
                     Text(
                         text = "Pocket IDE Linux Subsystem (Ubuntu PRoot ARM64)\nType a command below or tap a quick snippet.\n",
-                        color = NovaCyan,
+                        color = PocketCyan,
                         fontSize = 12.sp,
                         fontFamily = FontFamily.Monospace
                     )
@@ -198,20 +198,20 @@ fun NovaTerminalScreen(
                     ) {
                         Text(
                             text = "ubuntu@phone:~$",
-                            color = NovaIndigo,
+                            color = PocketIndigo,
                             fontSize = 11.5.sp,
                             fontWeight = FontWeight.Bold,
                             fontFamily = FontFamily.Monospace
                         )
                         Text(
                             text = line.command,
-                            color = NovaTextPrimary,
+                            color = PocketTextPrimary,
                             fontSize = 11.5.sp,
                             fontWeight = FontWeight.SemiBold,
                             fontFamily = FontFamily.Monospace
                         )
                         if (line.exitCode != 0) {
-                            NovaStatusPill("exit ${line.exitCode}", color = NovaRose)
+                            PocketStatusPill("exit ${line.exitCode}", color = PocketRose)
                         }
                     }
 
@@ -219,7 +219,7 @@ fun NovaTerminalScreen(
                     if (line.output.isNotBlank()) {
                         Text(
                             text = line.output,
-                            color = NovaTextSecondary,
+                            color = PocketTextSecondary,
                             fontSize = 11.sp,
                             fontFamily = FontFamily.Monospace,
                             lineHeight = 15.sp,
@@ -235,15 +235,15 @@ fun NovaTerminalScreen(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(NovaSurfaceElevated)
+                    .background(PocketSurfaceElevated)
                     .padding(horizontal = 10.dp, vertical = 4.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                NovaStatusPill("RUNNING", isRunning = true, color = NovaCyan)
+                PocketStatusPill("RUNNING", isRunning = true, color = PocketCyan)
                 Text(
                     text = activeCommand,
-                    color = NovaTextSecondary,
+                    color = PocketTextSecondary,
                     fontSize = 11.sp,
                     fontFamily = FontFamily.Monospace,
                     maxLines = 1,
@@ -256,15 +256,15 @@ fun NovaTerminalScreen(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(NovaSurface)
-                .border(1.dp, NovaBorder)
+                .background(PocketSurface)
+                .border(1.dp, PocketBorder)
                 .padding(horizontal = 10.dp, vertical = 6.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Text(
                 text = "$",
-                color = NovaCyan,
+                color = PocketCyan,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,
                 fontFamily = FontFamily.Monospace
@@ -273,11 +273,11 @@ fun NovaTerminalScreen(
                 value = commandInput,
                 onValueChange = { commandInput = it },
                 textStyle = TextStyle(
-                    color = NovaTextPrimary,
+                    color = PocketTextPrimary,
                     fontSize = 13.sp,
                     fontFamily = FontFamily.Monospace
                 ),
-                cursorBrush = SolidColor(NovaCyan),
+                cursorBrush = SolidColor(PocketCyan),
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
                 keyboardActions = KeyboardActions(
@@ -316,7 +316,7 @@ fun NovaTerminalScreen(
                 Icon(
                     imageVector = Icons.Default.PlayArrow,
                     contentDescription = "Execute",
-                    tint = NovaCyan,
+                    tint = PocketCyan,
                     modifier = Modifier.size(18.dp)
                 )
             }
