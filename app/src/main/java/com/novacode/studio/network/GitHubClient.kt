@@ -1,4 +1,4 @@
-package com.novacode.studio.network
+package com.pocketide.app.network
 
 import java.net.HttpURLConnection
 import java.net.URLEncoder
@@ -107,7 +107,7 @@ class GitHubClient {
             doOutput = true
             setRequestProperty("Accept", "application/json")
             setRequestProperty("Content-Type", "application/x-www-form-urlencoded")
-            setRequestProperty("User-Agent", "NovaCode-Android")
+            setRequestProperty("User-Agent", "PocketIDE-Android")
         }
         connection.outputStream.use { it.write(body) }
         return readResponse(connection) as JSONObject
@@ -121,7 +121,7 @@ class GitHubClient {
             setRequestProperty("Accept", "application/vnd.github+json")
             setRequestProperty("Authorization", "Bearer $token")
             setRequestProperty("X-GitHub-Api-Version", "2026-03-10")
-            setRequestProperty("User-Agent", "NovaCode-Android")
+            setRequestProperty("User-Agent", "PocketIDE-Android")
         }
         return readResponse(connection)
     }
