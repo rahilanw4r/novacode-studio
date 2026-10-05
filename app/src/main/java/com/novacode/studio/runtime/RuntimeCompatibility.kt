@@ -1,4 +1,4 @@
-package com.novacode.studio.runtime
+package com.pocketide.app.runtime
 
 internal fun supportsArm64Runtime(supportedAbis: Array<String>, osArchitecture: String?): Boolean {
     val abiHasArm64 = supportedAbis.any { it.equals("arm64-v8a", ignoreCase = true) }
