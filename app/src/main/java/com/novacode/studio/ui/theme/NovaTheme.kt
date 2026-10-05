@@ -1,4 +1,4 @@
-package com.novacode.studio.ui.theme
+package com.pocketide.app.ui.theme
 
 import android.app.Activity
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -15,7 +15,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
-data class NovaColorPalette(
+data class PocketColorPalette(
     val background: Color,
     val surface: Color,
     val surfaceVariant: Color,
@@ -35,7 +35,7 @@ data class NovaColorPalette(
 )
 
 // Human-toned Obsidian Dark Developer-Tool Palette
-val NovaDarkPalette = NovaColorPalette(
+val PocketDarkPalette = PocketColorPalette(
     background = Color(0xFF0D1014),       // Background: #0D1014
     surface = Color(0xFF171B22),          // Surface: #171B22
     surfaceVariant = Color(0xFF1D222C),   // Elevated surface: #1D222C
@@ -55,7 +55,7 @@ val NovaDarkPalette = NovaColorPalette(
 )
 
 // Human-toned Crisp Light Developer-Tool Palette (VS Code / Android Studio / GitHub Light inspired)
-val NovaLightPalette = NovaColorPalette(
+val PocketLightPalette = PocketColorPalette(
     background = Color(0xFFF6F8FA),       // Background: Clean slate off-white #F6F8FA
     surface = Color(0xFFFFFFFF),          // Surface: Clean pure white #FFFFFF
     surfaceVariant = Color(0xFFEEF2F6),   // Elevated surface: #EEF2F6
@@ -74,99 +74,99 @@ val NovaLightPalette = NovaColorPalette(
     isDark = false,
 )
 
-val LocalNovaColors = staticCompositionLocalOf { NovaDarkPalette }
+val LocalPocketColors = staticCompositionLocalOf { PocketDarkPalette }
 
-val NovaObsidian: Color
+val PocketObsidian: Color
     @Composable
     @ReadOnlyComposable
-    get() = LocalNovaColors.current.background
+    get() = LocalPocketColors.current.background
 
-val NovaSurface: Color
+val PocketSurface: Color
     @Composable
     @ReadOnlyComposable
-    get() = LocalNovaColors.current.surface
+    get() = LocalPocketColors.current.surface
 
-val NovaSurfaceVariant: Color
+val PocketSurfaceVariant: Color
     @Composable
     @ReadOnlyComposable
-    get() = LocalNovaColors.current.surfaceVariant
+    get() = LocalPocketColors.current.surfaceVariant
 
-val NovaSurfaceElevated: Color
+val PocketSurfaceElevated: Color
     @Composable
     @ReadOnlyComposable
-    get() = LocalNovaColors.current.surfaceElevated
+    get() = LocalPocketColors.current.surfaceElevated
 
-val NovaBorder: Color
+val PocketBorder: Color
     @Composable
     @ReadOnlyComposable
-    get() = LocalNovaColors.current.border
+    get() = LocalPocketColors.current.border
 
-val NovaBorderGlow: Color
+val PocketBorderGlow: Color
     @Composable
     @ReadOnlyComposable
-    get() = LocalNovaColors.current.borderGlow
+    get() = LocalPocketColors.current.borderGlow
 
-val NovaTextPrimary: Color
+val PocketTextPrimary: Color
     @Composable
     @ReadOnlyComposable
-    get() = LocalNovaColors.current.textPrimary
+    get() = LocalPocketColors.current.textPrimary
 
-val NovaTextSecondary: Color
+val PocketTextSecondary: Color
     @Composable
     @ReadOnlyComposable
-    get() = LocalNovaColors.current.textSecondary
+    get() = LocalPocketColors.current.textSecondary
 
-val NovaTextMuted: Color
+val PocketTextMuted: Color
     @Composable
     @ReadOnlyComposable
-    get() = LocalNovaColors.current.textMuted
+    get() = LocalPocketColors.current.textMuted
 
-val NovaEmerald: Color
+val PocketEmerald: Color
     @Composable
     @ReadOnlyComposable
-    get() = LocalNovaColors.current.emerald
+    get() = LocalPocketColors.current.emerald
 
-val NovaIndigo: Color
+val PocketIndigo: Color
     @Composable
     @ReadOnlyComposable
-    get() = LocalNovaColors.current.indigo
+    get() = LocalPocketColors.current.indigo
 
-val NovaCyan: Color
+val PocketCyan: Color
     @Composable
     @ReadOnlyComposable
-    get() = LocalNovaColors.current.cyan
+    get() = LocalPocketColors.current.cyan
 
-val NovaAmber: Color
+val PocketAmber: Color
     @Composable
     @ReadOnlyComposable
-    get() = LocalNovaColors.current.amber
+    get() = LocalPocketColors.current.amber
 
-val NovaRose: Color
+val PocketRose: Color
     @Composable
     @ReadOnlyComposable
-    get() = LocalNovaColors.current.rose
+    get() = LocalPocketColors.current.rose
 
-val NovaPurple: Color
+val PocketPurple: Color
     @Composable
     @ReadOnlyComposable
-    get() = LocalNovaColors.current.purple
+    get() = LocalPocketColors.current.purple
 
-val NovaNeonGradient: Brush
+val PocketNeonGradient: Brush
     @Composable
     @ReadOnlyComposable
-    get() = Brush.linearGradient(listOf(LocalNovaColors.current.indigo, LocalNovaColors.current.indigo))
+    get() = Brush.linearGradient(listOf(LocalPocketColors.current.indigo, LocalPocketColors.current.indigo))
 
-val NovaCardGradient: Brush
+val PocketCardGradient: Brush
     @Composable
     @ReadOnlyComposable
-    get() = Brush.linearGradient(listOf(LocalNovaColors.current.surface, LocalNovaColors.current.surface))
+    get() = Brush.linearGradient(listOf(LocalPocketColors.current.surface, LocalPocketColors.current.surface))
 
-val NovaGlassGradient: Brush
+val PocketGlassGradient: Brush
     @Composable
     @ReadOnlyComposable
-    get() = Brush.linearGradient(listOf(LocalNovaColors.current.surfaceVariant, LocalNovaColors.current.surfaceVariant))
+    get() = Brush.linearGradient(listOf(LocalPocketColors.current.surfaceVariant, LocalPocketColors.current.surfaceVariant))
 
-private val NovaDarkColors = darkColorScheme(
+private val PocketDarkColors = darkColorScheme(
     primary = Color(0xFF18C78A),
     onPrimary = Color(0xFF0F1218),
     primaryContainer = Color(0xFF064E3B),
@@ -191,7 +191,7 @@ private val NovaDarkColors = darkColorScheme(
     onError = Color(0xFFFFFFFF),
 )
 
-private val NovaLightColors = lightColorScheme(
+private val PocketLightColors = lightColorScheme(
     primary = Color(0xFF0F9960),
     onPrimary = Color(0xFFFFFFFF),
     primaryContainer = Color(0xFFE6F9F0),
@@ -217,7 +217,7 @@ private val NovaLightColors = lightColorScheme(
 )
 
 @Composable
-fun NovaTheme(
+fun PocketTheme(
     themeMode: AppThemeMode = AppThemeMode.SYSTEM,
     content: @Composable () -> Unit
 ) {
@@ -227,8 +227,8 @@ fun NovaTheme(
         AppThemeMode.SYSTEM -> isSystemInDarkTheme()
     }
 
-    val palette = if (isDark) NovaDarkPalette else NovaLightPalette
-    val colorScheme = if (isDark) NovaDarkColors else NovaLightColors
+    val palette = if (isDark) PocketDarkPalette else PocketLightPalette
+    val colorScheme = if (isDark) PocketDarkColors else PocketLightColors
 
     val view = LocalView.current
     if (!view.isInEditMode) {
@@ -241,7 +241,7 @@ fun NovaTheme(
     }
 
     CompositionLocalProvider(
-        LocalNovaColors provides palette
+        LocalPocketColors provides palette
     ) {
         MaterialTheme(
             colorScheme = colorScheme,
