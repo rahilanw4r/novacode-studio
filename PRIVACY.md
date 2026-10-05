@@ -36,7 +36,7 @@ Pocket IDE does not sell personal information. It does not send projects or conv
 - **Document picker access:** Import only files and folders you explicitly select through Android's system picker.
 - **Install packages:** Submit an Android APK built in your selected project to Android's system installer. Android asks you to allow this source and confirm installation; Pocket IDE cannot silently install apps.
 
-Notification permission and battery-optimization exemption are requested in context and can be declined. Some background features may be less reliable without them.
+Notification permission and battery-optimization exemption are requested or guided in context and can be declined. Some background features may be less reliable without them.
 
 ## Retention and deletion
 
@@ -58,4 +58,4 @@ This policy may be updated as Pocket IDE changes. Material changes will be refle
 
 ## Contact
 
-For privacy questions or requests, open an issue at [github.com/rahilanw4r/novacode-studio/issues](https://github.com/rahilanw4r/novacode-studio/issues).
+For privacy questions or requests, open an issue at [github.com/rahilanw4r/pocket-ide/issues](https://github.com/rahilanw4r/pocket-ide/issues).
