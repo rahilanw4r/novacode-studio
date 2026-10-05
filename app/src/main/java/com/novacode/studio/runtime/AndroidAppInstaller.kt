@@ -1,4 +1,4 @@
-package com.novacode.studio.runtime
+package com.pocketide.app.runtime
 
 import android.app.PendingIntent
 import android.content.Context
@@ -72,7 +72,7 @@ object AndroidAppInstaller {
         }
     }
 
-    const val ACTION_INSTALL_RESULT = "com.novacode.studio.action.APK_INSTALL_RESULT"
+    const val ACTION_INSTALL_RESULT = "com.pocketide.app.action.APK_INSTALL_RESULT"
 
     private fun isMiuiDevice(): Boolean = android.os.Build.MANUFACTURER.lowercase() in
         setOf("xiaomi", "redmi", "poco")
