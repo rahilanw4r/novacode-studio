@@ -1,147 +1,253 @@
 <div align="center">
 
-  <img src="assets/readme/logo.svg" alt="NovaCode Studio" width="112" height="112" />
+  <img src="assets/readme/logo.svg" alt="NovaCode Studio Logo" width="128" height="128" />
 
-  <h1>⚡ NovaCode Studio</h1>
-  <h3>The Next-Generation Autonomous AI Mobile IDE for Android</h3>
-  <p><em>Engineered by Rahil Anwar (<a href="https://github.com/rahilanw4r">@rahilanw4r</a>)</em></p>
+  # ⚡ NovaCode Studio
+
+  ### Professional Mobile Linux IDE & Autonomous AI Coding Environment for Android
+  **Turn your Android smartphone into a complete, standalone AI software engineering workstation.**
 
   <br />
 
-  [![Android 9+](https://img.shields.io/badge/Android-9.0%2B-00E5FF?style=for-the-badge&logo=android&logoColor=black)](#requirements)
-  [![Architecture ARM64](https://img.shields.io/badge/Arch-ARM64--v8a-7C4DFF?style=for-the-badge&logo=arm&logoColor=white)](#requirements)
-  [![Build Status](https://img.shields.io/badge/Build-Passing-00E676?style=for-the-badge&logo=githubactions&logoColor=black)](#automated-builds)
-  [![License](https://img.shields.io/badge/License-Apache_2.0-FFAB00?style=for-the-badge)](LICENSE)
+  [![Android 9.0+](https://img.shields.io/badge/Android-9.0%2B-10B981?style=for-the-badge&logo=android&logoColor=white)](#requirements)
+  [![Architecture ARM64](https://img.shields.io/badge/Architecture-ARM64--v8a-6366F1?style=for-the-badge&logo=arm&logoColor=white)](#requirements)
+  [![Latest Release](https://img.shields.io/badge/Release-v1.0.14-06B6D4?style=for-the-badge&logo=github&logoColor=white)](https://github.com/rahilanw4r/novacode-studio/releases/latest)
+  [![Build Status](https://img.shields.io/badge/CI%2FCD-Passing-10B981?style=for-the-badge&logo=githubactions&logoColor=white)](https://github.com/rahilanw4r/novacode-studio/actions)
+  [![Telegram Contact](https://img.shields.io/badge/Telegram-@RahilAnw4r-229ED9?style=for-the-badge&logo=telegram&logoColor=white)](https://t.me/RahilAnw4r)
+  [![License Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-F59E0B?style=for-the-badge)](LICENSE)
 
-  <br /><br />
+  <br />
 
-  <strong>Turn your Android smartphone into a complete, standalone AI engineering workstation.</strong><br />
-  Execute real Linux commands, collaborate with autonomous AI agents, inspect live Git diffs, and preview web apps locally — with zero root and zero PC tethering required.
+  [**📥 Download Latest APK (v1.0.14)**](https://github.com/rahilanw4r/novacode-studio/releases/latest) • [**💬 Telegram Contact**](https://t.me/RahilAnw4r) • [**⭐ Star on GitHub**](https://github.com/rahilanw4r/novacode-studio) • [**🐛 Report Bug**](https://github.com/rahilanw4r/novacode-studio/issues)
 
-  <br /><br />
+  <br />
 
-  <a href="https://github.com/rahilanw4r/novacode-studio/releases/download/v1.0.0/NovaCode-Studio-v1.0.0-debug.apk">
-    <img src="https://img.shields.io/badge/Download-NovaCode_Studio_APK-6366F1?style=for-the-badge&logo=android&logoColor=white" height="42" />
-  </a>
+  <p align="center">
+    <em>Developed & Engineered with passion by <strong><a href="https://github.com/rahilanw4r">Rahil Anwar</a></strong> (Telegram: <a href="https://t.me/RahilAnw4r">@RahilAnw4r</a>)</em>
+  </p>
 
 </div>
 
-<br />
+---
+
+## 📖 Overview
+
+**NovaCode Studio** is an open-source, mobile-first Linux development environment and autonomous AI workspace designed specifically for Android devices. Unlike simple mobile text editors or cloud-streamed containers, NovaCode Studio operates **100% locally on your phone** using an isolated **PRoot Linux userspace (Ubuntu ARM64)**. 
+
+Compile real programs, run live web servers, launch multi-tab terminals, inspect side-by-side Git diffs, and collaborate with advanced coding agents like **Google AntiGravity (Gemini 3.8)**, **Claude Code (3.7 Sonnet)**, and **DeepSeek Coder** — all without root access and without a PC.
 
 ---
 
-## 🌟 What makes NovaCode Studio Unique?
-
-NovaCode Studio is completely redesigned from the ground up to bring desktop-class software development directly to mobile touchscreens:
+## ✨ Key Features
 
 <table>
   <tr>
     <td width="50%" valign="top">
-      <h3>⚡ Unified HUD & Studio Navigation</h3>
-      <p>Seamlessly switch between <strong>Agent Chat</strong>, <strong>Code Studio</strong>, <strong>Web Preview</strong>, and <strong>Multi-Tab Terminal</strong> without losing your state or execution context.</p>
+      <h3>🤖 Autonomous AI Coding Agents</h3>
+      <ul>
+        <li><strong>Google AntiGravity</strong>: Native integration with Google DeepMind's CLI agent with seamless browser OAuth login and full Gemini 3.8/3.6/3.1 reasoning models.</li>
+        <li><strong>Claude Code</strong>: Anthropic's autonomous software engineering CLI with tool-use, multi-file editing, and streaming reasoning chains.</li>
+        <li><strong>DeepSeek Coder & OpenAI</strong>: Support for DeepSeek Coder CLI, GPT-4o, and o3-mini via direct API keys or local OpenRouter routing.</li>
+      </ul>
     </td>
     <td width="50%" valign="top">
-      <h3>🧠 Multi-Provider AI Engine</h3>
-      <p>Connect to <strong>Google Gemini 2.5 (Pro & Flash)</strong>, <strong>OpenAI (GPT-4o & o3-mini)</strong>, <strong>Anthropic Claude 3.7</strong>, and local <strong>Ollama / LM Studio</strong> models with streaming reasoning chains.</p>
-    </td>
-  </tr>
-  <tr>
-    <td width="50%" valign="top">
-      <h3>⌨️ Virtual Developer Key Toolbar</h3>
-      <p>Quick-access bar floating right above the software keyboard providing one-tap access to <code>ESC</code>, <code>TAB</code>, <code>CTRL</code>, <code>ALT</code>, <code>|</code>, <code>~</code>, arrows, and code snippet expansion.</p>
-    </td>
-    <td width="50%" valign="top">
-      <h3>🔍 Live Hunk-by-Hunk Git Inspector</h3>
-      <p>Inspect AI-generated file modifications with full syntax highlighting. Review individual diff hunks with granular <strong>Accept</strong> and <strong>Revert</strong> controls before committing.</p>
+      <h3>🐧 Isolated Linux Runtime (PRoot)</h3>
+      <ul>
+        <li>Full <strong>Ubuntu ARM64</strong> userspace running safely inside Android app storage without requiring root.</li>
+        <li>Pre-installed with <strong>Node.js LTS</strong>, <strong>npm</strong>, and <strong>Git</strong>.</li>
+        <li>On-demand 1-click toolchains for <strong>Python</strong> (pip, venv), <strong>C/C++</strong> (gcc, g++, cmake), <strong>PHP</strong> (Composer), and native <strong>Android Compilation</strong> (SDK 36, Gradle 8.14.3, AAPT2).</li>
+      </ul>
     </td>
   </tr>
   <tr>
     <td width="50%" valign="top">
-      <h3>🌐 Responsive Web DevTools Preview</h3>
-      <p>Live reload server preview with instant viewport switching (Mobile 375px, Tablet 768px, Desktop Full) and an embedded real-time JavaScript console log monitor.</p>
+      <h3>🎨 Apple-Inspired Liquid AI Design</h3>
+      <ul>
+        <li>Modern developer-tool interface built with <strong>Jetpack Compose</strong>.</li>
+        <li>Refined <strong>Obsidian Dark</strong> and dynamic <strong>Light Palette</strong> modes with emerald/green accents (#18C78A).</li>
+        <li>Subtle glassmorphic cards, crisp typography, 48dp+ touch targets, and fluid gesture navigation.</li>
+      </ul>
     </td>
     <td width="50%" valign="top">
-      <h3>🐧 Isolated Linux Subsystem (PRoot)</h3>
-      <p>Runs a full Ubuntu userspace on ARM64 Android without root. Complete with <code>node</code>, <code>npm</code>, <code>python3</code>, <code>git</code>, and native compilers right in your pocket.</p>
+      <h3>🔍 Granular Git Diff Inspector</h3>
+      <ul>
+        <li>Review file changes generated by AI agents before applying them.</li>
+        <li>Syntax-highlighted unified and split diff views with individual <strong>Accept</strong> and <strong>Revert</strong> buttons per hunk.</li>
+        <li>Integrated GitHub CLI (<code>gh</code>) for signing in, cloning private repositories, and managing pull requests.</li>
+      </ul>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" valign="top">
+      <h3>⌨️ Floating Developer Key Toolbar</h3>
+      <ul>
+        <li>Ergonomic row hovering directly above the on-screen keyboard.</li>
+        <li>Instant single-tap access to critical developer keys: <code>ESC</code>, <code>TAB</code>, <code>CTRL</code>, <code>ALT</code>, <code>|</code>, <code>~</code>, <code>/</code>, <code>-</code>, <code>_</code>, and arrow navigation.</li>
+        <li>Customizable snippet expansion and terminal shortcuts.</li>
+      </ul>
+    </td>
+    <td width="50%" valign="top">
+      <h3>🌐 Multi-Device Web DevTools Preview</h3>
+      <ul>
+        <li>Built-in WebView browser emulator connected to local development servers (Vite, Next.js, FastAPI, Flask, etc.).</li>
+        <li>One-tap responsive viewport switching (Mobile 375px, Tablet 768px, Desktop Full).</li>
+        <li>Live console log viewer capturing JavaScript logs, warnings, and errors in real time.</li>
+      </ul>
     </td>
   </tr>
 </table>
 
-<br />
+---
 
-## 🚀 Key Modules & Architecture
+## 📸 Screenshots & Workflow
+
+<div align="center">
+  <table>
+    <tr>
+      <td align="center" width="33%">
+        <img src="assets/readme/setup-provider.png" alt="AI Agent Setup" width="100%" />
+        <br /><strong>AI Agent Selection</strong>
+      </td>
+      <td align="center" width="33%">
+        <img src="assets/readme/setup-toolchains.png" alt="Development Toolchains" width="100%" />
+        <br /><strong>Language Toolchains</strong>
+      </td>
+      <td align="center" width="33%">
+        <img src="assets/readme/projects.png" alt="Project Workspace" width="100%" />
+        <br /><strong>Projects & Templates</strong>
+      </td>
+    </tr>
+    <tr>
+      <td align="center" width="33%">
+        <img src="assets/readme/terminal.png" alt="Linux Terminal" width="100%" />
+        <br /><strong>Multi-Tab Terminal</strong>
+      </td>
+      <td align="center" width="33%">
+        <img src="assets/readme/settings.png" alt="Preferences & Themes" width="100%" />
+        <br /><strong>Theme & Developer Settings</strong>
+      </td>
+      <td align="center" width="33%">
+        <img src="assets/readme/setup-notifications.png" alt="Background Service" width="100%" />
+        <br /><strong>Background Tasks & Service</strong>
+      </td>
+    </tr>
+  </table>
+</div>
+
+---
+
+## 🗂️ Navigation Hierarchy
+
+NovaCode Studio organizes the development workflow into 5 streamlined destinations:
 
 ```
-┌────────────────────────────────────────────────────────┐
-│               NovaCode Studio Core (Compose)          │
-├──────────────┬──────────────┬────────────┬─────────────┤
-│  Agent HUD   │  Code Studio │  Web View  │  Terminal   │
-│  Streaming   │  File Tree   │  DevTools  │  Multi-Tab  │
-│  Reasoning   │  Diff Viewer │  Logger    │  ANSI / PTY │
-├──────────────┴──────────────┴────────────┴─────────────┤
-│            Virtual Dev Toolbar (ESC, TAB, CTRL)        │
-├────────────────────────────────────────────────────────┤
-│             Native JNI Bridge (pocket_spawn)           │
-├────────────────────────────────────────────────────────┤
-│           PRoot Linux Subsystem (Ubuntu ARM64)         │
-└────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────┐
+│                          NovaCode Studio                        │
+├───────────┬──────────────┬─────────────┬─────────────┬──────────┤
+│   Home    │   Projects   │   Copilot   │  Terminal   │   More   │
+└───────────┴──────────────┴─────────────┴─────────────┴──────────┘
 ```
 
-- **`NovaMasterWorkspace.kt`**: High-performance coordinator screen handling smooth transitions between work modes.
-- **`NovaCodeStudioScreen.kt`**: Hierarchical project file explorer and side-by-side patch reviewer.
-- **`NovaWebPreviewScreen.kt`**: Multi-resolution viewport emulator with JavaScript message bridge.
-- **`NovaTerminalScreen.kt`**: Multi-session terminal emulator with quick bash execution and persistent history.
-- **`NovaComponents.kt`**: Cyber-minimalist design system featuring OLED dark surfaces, neon cyan accents, and collapsible thinking chains.
+1. **Home**: Fast actions, active sandbox status, recent project shortcuts, and one-tap starter templates (React + Vite, FastAPI, Node.js, Python, Android).
+2. **Projects**: Comprehensive file tree, code editor with syntax highlighting, live preview panel, and hunk-by-hunk Git diff inspector.
+3. **Copilot**: Interactive AI pair programming chat, quick command chips (*Fix Code*, *Explain*, *Build*, *Refactor*), model selector, and execution logs.
+4. **Terminal**: Hardware-accelerated multi-session terminal emulator with ANSI color support, custom shell profiles, and dev toolbar.
+5. **More**: Extended tools and utilities:
+   - ⚙️ **Settings**: Appearance (Dark/Light), editor fonts, tab spacing, and keybindings.
+   - 🛠️ **Developer Tools**: Memory stats, PRoot virtualization inspection, and debug bridges.
+   - 🐧 **Linux Runtime**: Manage installed stacks, purge caches, or repair packages.
+   - 🔄 **Update Channel**: One-tap in-app updates for AI agent binaries and studio releases.
+   - 🐙 **Git & GitHub**: Authentication status, SSH keys, and remote repository manager.
+   - 👤 **About Creator**: Developer profile, Telegram contact, and release details.
 
-<br />
+---
 
-## 📱 Requirements
+## 🧰 Supported Languages & Toolchains
 
-- **Device**: Android 9.0 (API 28) or higher
-- **Architecture**: ARM64 (aarch64 / arm64-v8a)
-- **Storage**: At least 1.5 GB free storage recommended for runtime environment and toolchains
-- **Root Access**: **NOT REQUIRED** (runs completely in user space via PRoot)
+| Stack | Included Tools | Supported Project Types |
+| :--- | :--- | :--- |
+| **Core (Always On)** | Node.js LTS, npm, Git, bash, coreutils | JavaScript, TypeScript, Shell scripts, Git repos |
+| **Python** | Python 3, pip, venv, build tools | FastAPI, Flask, Django, automation, data science |
+| **Web Dev** | Node.js, Vite, npm, npx | React, Vue, Svelte, Next.js, HTML/CSS/JS |
+| **Android** | OpenJDK 17, Android SDK 36, AAPT2, Gradle 8.14.3, Offline Maven | Native Android Java & Kotlin applications |
+| **C / C++** | gcc, g++, make, cmake, gdb | C/C++ compiled binaries, algorithms, systems |
+| **PHP** | php-cli, common extensions, Composer | Classic PHP sites, Laravel, Composer packages |
 
-<br />
+---
 
-## 🛠️ Automated Cloud Builds
+## 📱 Hardware & Software Requirements
 
-Every push to this repository automatically triggers a GitHub Actions pipeline that compiles the native C/C++ libraries and Android APK:
+- **Operating System**: Android 9.0 (API Level 28) or higher
+- **Architecture**: **ARM64** (`aarch64` / `arm64-v8a`)
+- **Memory**: 3 GB RAM or more recommended
+- **Storage Space**:
+  - ~300 MB for Base Core Runtime (Node.js + Git + Linux base)
+  - ~1.5 GB recommended if enabling Python, C/C++, and Android toolchains
+- **Root Permissions**: **Zero Root Required** (runs safely in user space)
 
-1. Go to the **[Actions Tab](https://github.com/rahilanw4r/novacode-studio/actions)** in this repository.
-2. Select the latest build run.
-3. Scroll down to **Artifacts** to download `NovaCode-Studio-Debug-APK`.
-4. Install the `.apk` directly onto your Android device!
+---
 
-<br />
+## 🚀 Installation & Getting Started
 
-## 💻 Building from Source Locally
+### Method 1: Download Prebuilt APK (Recommended)
+1. Download the latest APK from the **[GitHub Releases Page](https://github.com/rahilanw4r/novacode-studio/releases/latest)** (`NovaCode-Studio-v1.0.14.apk`).
+2. Open the downloaded file on your Android device and confirm installation.
+3. Grant notification permissions when prompted to allow background build monitoring.
+4. Complete the 3-step onboarding setup to install the Linux environment and pick your preferred AI agent.
 
-To build the APK locally using the Android SDK and NDK:
+### Method 2: Build From Source
 
 ```bash
-# Clone the repository
+# 1. Clone the repository
 git clone https://github.com/rahilanw4r/novacode-studio.git
 cd novacode-studio
 
-# Build debug APK
+# 2. Compile native PRoot bindings and Android APK
 ./gradlew :app:assembleOnlineDebug
 
-# Locate generated APK
-ls -lh app/build/outputs/apk/online/debug/app-online-debug.apk
+# 3. Locate output APK
+ls -lh app/build/outputs/apk/online/debug/NovaCode-Studio-*.apk
 ```
 
-<br />
+---
 
-## 🛡️ Privacy & Security
+## 🔒 Privacy & Security First
 
-- **Direct Connections**: Your AI API keys and prompts are sent directly from your phone to your selected AI provider (Google, Anthropic, OpenAI, or local server). There are no intermediary cloud proxy servers or tracking telemetry.
-- **Hardware Encryption**: API keys are saved locally inside Android Keystore using AES-256-GCM encryption.
+- **Direct AI Provider Communication**: All requests to AI models (Gemini, Claude, DeepSeek, OpenAI) communicate directly between your device and the provider's API. No intermediate proxies or third-party servers see your code.
+- **Hardware-Backed Encryption**: Sensitive credentials such as GitHub tokens and AI API keys are stored securely using Android's `EncryptedSharedPreferences` backed by the **Android Keystore (AES-256-GCM)**.
+- **Isolated Sandbox**: The Linux environment runs within private application storage (`/data/data/com.novacode.studio/files/`), strictly isolated from other apps on your device.
 
-<br />
+---
 
-## 👤 Author & Credits
+## 👨‍💻 Author & Contact
 
-- **Developer & Maintainer**: [Rahil Anwar](https://github.com/rahilanw4r)
-- **Project**: NovaCode Studio
-- **License**: Apache License 2.0 (see [LICENSE](LICENSE))
+**NovaCode Studio** is designed, developed, and maintained by:
+
+<div align="left">
+  <table>
+    <tr>
+      <td><strong>Creator</strong></td>
+      <td><strong>Rahil Anwar</strong></td>
+    </tr>
+    <tr>
+      <td><strong>GitHub</strong></td>
+      <td><a href="https://github.com/rahilanw4r">@rahilanw4r</a></td>
+    </tr>
+    <tr>
+      <td><strong>Telegram</strong></td>
+      <td><a href="https://t.me/RahilAnw4r">@RahilAnw4r</a></td>
+    </tr>
+    <tr>
+      <td><strong>Repository</strong></td>
+      <td><a href="https://github.com/rahilanw4r/novacode-studio">rahilanw4r/novacode-studio</a></td>
+    </tr>
+  </table>
+</div>
+
+> *"Bringing desktop-grade engineering tools to the device you carry everywhere."*
+
+---
+
+## 📄 License
+
+This project is licensed under the **Apache License 2.0**. See the [LICENSE](LICENSE) file for details.
