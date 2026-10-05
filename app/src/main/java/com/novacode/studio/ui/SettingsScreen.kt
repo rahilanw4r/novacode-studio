@@ -26,12 +26,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.OpenInNew
+import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Code
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.DarkMode
+import com.novacode.studio.BuildConfig
 import androidx.compose.material.icons.filled.DeleteSweep
 import androidx.compose.material.icons.filled.Dns
 import androidx.compose.material.icons.filled.Key
@@ -753,7 +754,7 @@ private fun LegacySettingsScreen(
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
                             Text("NovaCode Studio", fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                            Text("v1.0.8", color = NovaEmerald, fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
+                            Text("v${BuildConfig.VERSION_NAME}", color = NovaEmerald, fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
                         }
                         Text(
                             "Autonomous on-device Linux development environment and Liquid AI copilot.",
@@ -776,7 +777,7 @@ private fun LegacySettingsScreen(
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
                             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                Icon(Icons.Default.Send, contentDescription = null, tint = NovaCyan, modifier = Modifier.size(16.dp))
+                                Icon(Icons.AutoMirrored.Filled.Send, contentDescription = null, tint = NovaCyan, modifier = Modifier.size(16.dp))
                                 Column {
                                     Text("Creator: Rahil Anwar", fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
                                     Text("Telegram: @RahilAnw4r", fontSize = 11.5.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)

@@ -98,6 +98,16 @@ class AntigravityBridgeTest {
     }
 
     @Test
+    fun `extracts google oauth url from OSC 8 hyperlink sequence`() {
+        val output = "\u001B]8;id=link1;https://accounts.google.com/o/oauth2/auth?client_id=myclient.apps.googleusercontent.com&response_type=code\u001B\\Authenticate here\u001B]8;;\u001B\\"
+        assertEquals(
+            "https://accounts.google.com/o/oauth2/auth?client_id=myclient.apps.googleusercontent.com&response_type=code",
+            extractGoogleOAuthUrl(output),
+        )
+    }
+
+
+    @Test
     fun `headless command uses exact model configuration without conflicting effort`() {
         val command = antigravityCommand("gemini-model", "high", "conversation-1")
         assertTrue(command.containsAll(listOf(

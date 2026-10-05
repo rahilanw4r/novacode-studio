@@ -38,6 +38,7 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.SystemUpdate
 import androidx.compose.material.icons.filled.Terminal
 import androidx.compose.material3.AlertDialog
+import com.novacode.studio.BuildConfig
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
@@ -172,7 +173,7 @@ fun NovaMoreScreen(
                     icon = Icons.Default.SystemUpdate,
                     iconTint = NovaEmerald,
                     title = "Update Channel",
-                    value = state.appUpdate?.let { "v${it.versionName} Available" } ?: "v1.0.10 Up to date",
+                    value = state.appUpdate?.let { "v${it.versionName} Available" } ?: "v${BuildConfig.VERSION_NAME} Up to date",
                     onClick = onInstallUpdate
                 )
                 HorizontalDivider(color = NovaBorder)
@@ -222,7 +223,7 @@ fun NovaMoreScreen(
                     icon = Icons.Default.Info,
                     iconTint = NovaIndigo,
                     title = "NovaCode Studio",
-                    value = "v1.0.10 (Build 11)",
+                    value = "v${BuildConfig.VERSION_NAME} (Build ${BuildConfig.VERSION_CODE})",
                     onClick = {}
                 )
                 HorizontalDivider(color = NovaBorder)

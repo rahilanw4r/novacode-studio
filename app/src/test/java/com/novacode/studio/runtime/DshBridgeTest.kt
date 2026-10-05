@@ -298,7 +298,7 @@ class AgentProviderPresetTest {
         assertTrue(ProviderKind.OPENCODE_ZEN in DEEPSEEK_CODER_PROVIDERS)
         assertTrue(ProviderKind.DEEPSEEK in DEEPSEEK_CODER_PROVIDERS)
         assertTrue(ProviderKind.NVIDIA_NIM in DEEPSEEK_CODER_PROVIDERS)
-        assertEquals(7, DEEPSEEK_CODER_PROVIDERS.size)
+        assertEquals(10, DEEPSEEK_CODER_PROVIDERS.size)
     }
 
     @Test

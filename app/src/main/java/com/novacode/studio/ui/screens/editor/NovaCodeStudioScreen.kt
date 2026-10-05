@@ -36,8 +36,7 @@ import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.AutoAwesome
-import androidx.compose.material.icons.filled.Send
-import androidx.compose.material.icons.filled.Undo
+import androidx.compose.material.icons.automirrored.filled.Undo
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
@@ -546,7 +545,7 @@ private fun DiffFileCard(
                         Icon(Icons.Default.Check, contentDescription = "Accept", tint = NovaEmerald, modifier = Modifier.size(16.dp))
                     }
                     IconButton(onClick = onUndo, modifier = Modifier.size(24.dp)) {
-                        Icon(Icons.Default.Undo, contentDescription = "Revert", tint = NovaRose, modifier = Modifier.size(16.dp))
+                        Icon(Icons.AutoMirrored.Filled.Undo, contentDescription = "Revert", tint = NovaRose, modifier = Modifier.size(16.dp))
                     }
                 }
             }

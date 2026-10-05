@@ -1,15 +1,14 @@
 package com.novacode.studio.ui.screens.splash
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -25,11 +24,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AutoAwesome
-import androidx.compose.material.icons.filled.Code
-import androidx.compose.material.icons.filled.Terminal
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -40,15 +34,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.novacode.studio.BuildConfig
+import com.novacode.studio.R
 import com.novacode.studio.ui.theme.NovaBorder
 import com.novacode.studio.ui.theme.NovaCyan
 import com.novacode.studio.ui.theme.NovaEmerald
@@ -56,6 +53,7 @@ import com.novacode.studio.ui.theme.NovaIndigo
 import com.novacode.studio.ui.theme.NovaObsidian
 import com.novacode.studio.ui.theme.NovaPurple
 import com.novacode.studio.ui.theme.NovaSurface
+import com.novacode.studio.ui.theme.NovaSurfaceElevated
 import com.novacode.studio.ui.theme.NovaTextMuted
 import com.novacode.studio.ui.theme.NovaTextPrimary
 import com.novacode.studio.ui.theme.NovaTextSecondary
@@ -66,43 +64,63 @@ fun NovaSplashScreen(
     onSplashFinished: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val scale = remember { Animatable(0.7f) }
+    val scale = remember { Animatable(0.72f) }
     val alpha = remember { Animatable(0f) }
     val progress = remember { Animatable(0f) }
     var bootStep by remember { mutableStateOf("Initializing Core Engine...") }
 
     val infiniteTransition = rememberInfiniteTransition(label = "pulse")
     val glowScale by infiniteTransition.animateFloat(
-        initialValue = 0.95f,
-        targetValue = 1.08f,
+        initialValue = 0.94f,
+        targetValue = 1.10f,
         animationSpec = infiniteRepeatable(
-            animation = tween(1400, easing = FastOutSlowInEasing),
+            animation = tween(1500, easing = FastOutSlowInEasing),
             repeatMode = RepeatMode.Reverse
         ),
         label = "glowScale"
     )
 
+    val glowAlpha by infiniteTransition.animateFloat(
+        initialValue = 0.28f,
+        targetValue = 0.55f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1500, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "glowAlpha"
+    )
+
+    val dotPulse by infiniteTransition.animateFloat(
+        initialValue = 0.4f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(600, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "dotPulse"
+    )
+
     LaunchedEffect(Unit) {
         // Entrance animation
-        scale.animateTo(1f, animationSpec = tween(700, easing = FastOutSlowInEasing))
-        alpha.animateTo(1f, animationSpec = tween(500))
+        scale.animateTo(1f, animationSpec = tween(650, easing = FastOutSlowInEasing))
+        alpha.animateTo(1f, animationSpec = tween(450))
 
-        // Progress sequence
-        bootStep = "[SYS] Initializing Linux userspace kernel..."
-        progress.animateTo(0.28f, animationSpec = tween(400))
-        delay(250)
+        // Sequential initialization
+        bootStep = "Loading Linux ARM64 userspace kernel..."
+        progress.animateTo(0.28f, animationSpec = tween(380))
+        delay(220)
 
-        bootStep = "[ISOLATION] ARM64 PRoot sandbox verified"
-        progress.animateTo(0.62f, animationSpec = tween(450))
-        delay(300)
+        bootStep = "Verifying PRoot isolated sandbox environment..."
+        progress.animateTo(0.62f, animationSpec = tween(420))
+        delay(260)
 
-        bootStep = "[NEURAL] Multi-Agent Orchestrator online"
-        progress.animateTo(0.92f, animationSpec = tween(350))
-        delay(250)
+        bootStep = "Connecting Multi-Agent Copilot orchestrator..."
+        progress.animateTo(0.90f, animationSpec = tween(360))
+        delay(220)
 
-        bootStep = "[READY] NovaCode Studio operational"
-        progress.animateTo(1f, animationSpec = tween(200))
-        delay(400)
+        bootStep = "NovaCode Studio ready"
+        progress.animateTo(1f, animationSpec = tween(220))
+        delay(380)
 
         onSplashFinished()
     }
@@ -113,17 +131,18 @@ fun NovaSplashScreen(
             .background(NovaObsidian),
         contentAlignment = Alignment.Center
     ) {
-        // Ambient background glow
+        // Multi-Layer Ambient Background Glow
         Box(
             modifier = Modifier
-                .size(280.dp)
+                .size(320.dp)
                 .scale(glowScale)
                 .clip(CircleShape)
                 .background(
                     Brush.radialGradient(
                         listOf(
-                            NovaIndigo.copy(alpha = 0.22f),
-                            NovaCyan.copy(alpha = 0.08f),
+                            NovaIndigo.copy(alpha = glowAlpha * 0.40f),
+                            NovaCyan.copy(alpha = glowAlpha * 0.25f),
+                            NovaPurple.copy(alpha = glowAlpha * 0.12f),
                             Color.Transparent
                         )
                     )
@@ -135,85 +154,98 @@ fun NovaSplashScreen(
             verticalArrangement = Arrangement.Center,
             modifier = Modifier.padding(32.dp)
         ) {
-            // High-Tech Cyber Logo Emblem
+            // Elegant Squircle Logo Card
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
-                    .size(110.dp)
+                    .size(116.dp)
                     .scale(scale.value)
                     .clip(RoundedCornerShape(28.dp))
                     .background(
                         Brush.linearGradient(
-                            listOf(Color(0xFF131D33), Color(0xFF090D16))
+                            listOf(
+                                Color(0xFF161F33),
+                                Color(0xFF0C1019)
+                            )
                         )
                     )
                     .border(
-                        width = 2.dp,
-                        brush = Brush.linearGradient(listOf(NovaIndigo, NovaCyan)),
+                        width = 1.5.dp,
+                        brush = Brush.linearGradient(
+                            listOf(NovaIndigo, NovaCyan, NovaEmerald)
+                        ),
                         shape = RoundedCornerShape(28.dp)
                     )
             ) {
-                // Inner emblem: glowing code lightning glyph
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Text(
-                        text = "⚡",
-                        fontSize = 42.sp
-                    )
-                }
+                // Official High-Resolution App Logo
+                Image(
+                    painter = painterResource(id = R.drawable.app_logo),
+                    contentDescription = "NovaCode Studio Logo",
+                    contentScale = ContentScale.Fit,
+                    modifier = Modifier
+                        .size(88.dp)
+                        .clip(RoundedCornerShape(20.dp))
+                )
             }
 
-            Spacer(modifier = Modifier.height(28.dp))
+            Spacer(modifier = Modifier.height(26.dp))
 
-            // App Brand Name
-            Text(
-                text = "NOVACODE",
-                color = NovaTextPrimary,
-                fontSize = 28.sp,
-                fontWeight = FontWeight.Black,
-                letterSpacing = 4.sp,
-                fontFamily = FontFamily.Monospace,
+            // App Brand Typography
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.alpha(alpha.value)
-            )
+            ) {
+                Text(
+                    text = "NOVACODE",
+                    color = NovaTextPrimary,
+                    fontSize = 26.sp,
+                    fontWeight = FontWeight.Black,
+                    letterSpacing = 3.5.sp,
+                    fontFamily = FontFamily.Monospace
+                )
+                Text(
+                    text = "STUDIO",
+                    color = NovaCyan,
+                    fontSize = 26.sp,
+                    fontWeight = FontWeight.Black,
+                    letterSpacing = 3.5.sp,
+                    fontFamily = FontFamily.Monospace
+                )
+            }
+
+            Spacer(modifier = Modifier.height(6.dp))
 
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(6.dp),
                 modifier = Modifier.alpha(alpha.value)
             ) {
+                Box(
+                    modifier = Modifier
+                        .size(5.dp)
+                        .clip(CircleShape)
+                        .background(NovaEmerald)
+                )
                 Text(
-                    text = "STUDIO",
-                    color = NovaCyan,
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Bold,
-                    letterSpacing = 5.sp,
+                    text = "AUTONOMOUS MOBILE AI IDE",
+                    color = NovaTextSecondary,
+                    fontSize = 10.5.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    letterSpacing = 2.sp,
                     fontFamily = FontFamily.Monospace
-                )
-                Text(
-                    text = "·",
-                    color = NovaTextMuted,
-                    fontSize = 14.sp
-                )
-                Text(
-                    text = "MOBILE AI IDE",
-                    color = NovaTextMuted,
-                    fontSize = 11.sp,
-                    fontWeight = FontWeight.Medium,
-                    letterSpacing = 2.sp
                 )
             }
 
-            Spacer(modifier = Modifier.height(48.dp))
+            Spacer(modifier = Modifier.height(44.dp))
 
-            // Futuristic Progress Bar
+            // Sleek Progress Bar
             Box(
                 modifier = Modifier
-                    .fillMaxWidth(0.68f)
+                    .fillMaxWidth(0.66f)
                     .height(4.dp)
                     .clip(RoundedCornerShape(2.dp))
-                    .background(Color(0xFF162035))
+                    .background(Color(0xFF141C2E))
             ) {
                 Box(
                     modifier = Modifier
@@ -221,29 +253,41 @@ fun NovaSplashScreen(
                         .height(4.dp)
                         .background(
                             Brush.horizontalGradient(
-                                listOf(NovaIndigo, NovaCyan)
+                                listOf(NovaIndigo, NovaCyan, NovaEmerald)
                             )
                         )
                 )
             }
 
-            Spacer(modifier = Modifier.height(18.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-            // Terminal Boot Step Text
-            Text(
-                text = bootStep,
-                color = NovaTextSecondary,
-                fontSize = 11.sp,
-                fontFamily = FontFamily.Monospace
-            )
+            // Boot Status with Animated Indicator
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(7.dp)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(6.dp)
+                        .scale(dotPulse)
+                        .clip(CircleShape)
+                        .background(NovaCyan)
+                )
+                Text(
+                    text = bootStep,
+                    color = NovaTextSecondary,
+                    fontSize = 11.5.sp,
+                    fontFamily = FontFamily.Monospace
+                )
+            }
         }
 
-        // Bottom system tags
+        // Bottom System Tag & Version
         Row(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .padding(bottom = 24.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                .padding(bottom = 28.dp),
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
@@ -251,12 +295,13 @@ fun NovaSplashScreen(
                     .clip(RoundedCornerShape(6.dp))
                     .background(NovaSurface)
                     .border(0.8.dp, NovaBorder, RoundedCornerShape(6.dp))
-                    .padding(horizontal = 8.dp, vertical = 3.dp)
+                    .padding(horizontal = 9.dp, vertical = 3.dp)
             ) {
                 Text(
-                    text = "v1.0.0",
-                    color = NovaTextMuted,
-                    fontSize = 10.sp,
+                    text = "v${BuildConfig.VERSION_NAME}",
+                    color = NovaEmerald,
+                    fontSize = 10.5.sp,
+                    fontWeight = FontWeight.SemiBold,
                     fontFamily = FontFamily.Monospace
                 )
             }
@@ -264,7 +309,8 @@ fun NovaSplashScreen(
             Text(
                 text = "ARM64 Autonomous Workspace",
                 color = NovaTextMuted,
-                fontSize = 10.5.sp
+                fontSize = 10.5.sp,
+                fontWeight = FontWeight.Medium
             )
         }
     }

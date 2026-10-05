@@ -117,7 +117,8 @@ class AntigravityAuthController(
                 if (count <= 0) continue
                 offset += count
                 output.append(bytes.decodeToString(0, count))
-                val clean = sanitizeTerminalOutput(output.toString()).takeLast(40_000)
+                val rawOutput = output.toString()
+                val clean = sanitizeTerminalOutput(rawOutput).takeLast(40_000)
                 // Antigravity's renderer asks a real terminal for DEC mode and
                 // Kitty keyboard-protocol status before it paints its UI, and it
                 // may ask again on every new screen. NativeSpawn is pipe-backed,
@@ -132,10 +133,11 @@ class AntigravityAuthController(
                     handshakeReplies++
                     lastHandshakeReplyLength = output.length
                 }
+                val currentUrl = extractGoogleOAuthUrl(rawOutput) ?: extractGoogleOAuthUrl(clean)
                 if (!loginMenuAdvanced &&
                     clean.contains("Select login method", true) &&
                     (clean.contains("Google OAuth", true) || clean.contains("1.", true)) &&
-                    extractGoogleOAuthUrl(clean) == null
+                    currentUrl == null
                 ) {
                     // agy's TUI (Ink) runs the PTY in raw mode. In raw mode
                     // the kernel does not translate CR to LF, so we must send
@@ -152,7 +154,7 @@ class AntigravityAuthController(
                         )
                     }
                 }
-                val url = extractGoogleOAuthUrl(clean)
+                val url = extractGoogleOAuthUrl(rawOutput) ?: extractGoogleOAuthUrl(clean)
                 if (url != null && mutableState.value.authorizationUrl == null) {
                     mutableState.value = AntigravityAuthState(
                         AntigravityAuthStatus.AWAITING_CODE,
@@ -314,52 +316,57 @@ class AntigravityAuthController(
 }
 
 internal fun extractGoogleOAuthUrl(output: String): String? {
-    // 1. Check OSC 8 hyperlink escape sequence first: \u001B]8;;(URL)\u001B\ or \u0007
-    val osc8Pattern = Regex("\\u001B\\]8;;(https://accounts\\.google\\.com/[^\\u0007\\u001B]+)")
-    osc8Pattern.find(output)?.let { match ->
+    // 1. Check OSC 8 hyperlink escape sequence first: \u001B]8;[params];(URL)\u001B\ or \u0007
+    val osc8Pattern = Regex("\\u001B\\]8;[^;]*;(https://accounts\\.google\\.com/[^\\u0007\\u001B]+)")
+    for (match in osc8Pattern.findAll(output)) {
         val candidate = cleanOAuthUrl(match.groupValues[1])
         if (isValidGoogleAuthUrl(candidate)) return candidate
     }
 
     // 2. Remove all ANSI escape codes and OSC sequences so control codes don't bleed into URLs
     val noAnsi = output
-        .replace(Regex("\\u001B\\]8;;[^\\u0007\\u001B]*(?:\\u0007|\\u001B\\\\)"), " ")
+        .replace(Regex("\\u001B\\]8;[^;]*;[^\\u0007\\u001B]*(?:\\u0007|\\u001B\\\\)"), " ")
         .replace(Regex("\\u001B\\[[0-?]*[ -/]*[@-~]"), " ")
         .replace(Regex("\\u001B(?:\\][^\\u0007]*(?:\\u0007|\\u001B\\\\)|[()][A-Z0-9])"), " ")
 
-    // 3. Match full direct accounts.google.com URL
-    val directPattern = Regex("https://accounts\\.google\\.com/[^\\s\"'<>\\u001B]+")
-    for (m in directPattern.findAll(noAnsi)) {
-        val candidate = cleanOAuthUrl(m.value)
-        if (isValidGoogleAuthUrl(candidate)) return candidate
-    }
+    // 3. Multiline URL reconstructor: terminal wrapping breaks long URLs across multiple lines.
+    // Assemble all consecutive query parameter chunks together into one complete URL.
+    if (noAnsi.contains("https://accounts.google.com")) {
+        val startIndex = noAnsi.indexOf("https://accounts.google.com")
+        val lines = noAnsi.substring(startIndex)
+            .lineSequence()
+            .map(String::trim)
+            .filter(String::isNotBlank)
+            .toList()
 
-    // 4. Fallback: Compact whitespace for multiline wrapped URLs
-    val lines = noAnsi.lineSequence().map(String::trim).filter(String::isNotBlank).toList()
-    val urlBuilder = StringBuilder()
-    var collecting = false
-    for (line in lines) {
-        if (line.contains("https://accounts.google.com")) {
-            collecting = true
-            urlBuilder.append(line.substring(line.indexOf("https://accounts.google.com")))
-        } else if (collecting) {
-            if (line.startsWith("http") || line.contains("Enter code") || line.contains("Select") || line.contains("paste")) {
-                collecting = false
-            } else if (line.contains("=") || line.contains("&") || line.contains("?") || line.matches(Regex("^[a-zA-Z0-9._~%/-]+$"))) {
+        val urlBuilder = StringBuilder()
+        for (line in lines) {
+            if (urlBuilder.isEmpty()) {
                 urlBuilder.append(line)
             } else {
-                collecting = false
+                val hasParam = line.contains("=") || line.contains("&") ||
+                    line.contains("code_") || line.contains("response_") ||
+                    line.contains("client_") || line.contains("redirect_") ||
+                    line.contains("state") || line.contains("scope") ||
+                    line.contains("prompt") || line.contains("access_type")
+                val isToken = line.matches(Regex("^[a-zA-Z0-9._~%/-]+$"))
+
+                if (hasParam || isToken) {
+                    urlBuilder.append(line)
+                } else {
+                    break
+                }
             }
         }
-    }
-    if (urlBuilder.isNotEmpty()) {
-        val candidate = cleanOAuthUrl(urlBuilder.toString())
-        if (isValidGoogleAuthUrl(candidate)) return candidate
+        if (urlBuilder.isNotEmpty()) {
+            val candidate = cleanOAuthUrl(urlBuilder.toString())
+            if (isValidGoogleAuthUrl(candidate)) return candidate
+        }
     }
 
-    // 5. Broad fallback for shortened queries
-    val fallbackCandidates = Regex("https://accounts\\.google\\.com/[^\\s\"'<>]+").findAll(output)
-    for (m in fallbackCandidates) {
+    // 4. Match full direct accounts.google.com URL (single-line fallback)
+    val directPattern = Regex("https://accounts\\.google\\.com/[^\\s\"'<>\\u001B]+")
+    for (m in directPattern.findAll(noAnsi)) {
         val candidate = cleanOAuthUrl(m.value)
         if (isValidGoogleAuthUrl(candidate)) return candidate
     }
@@ -385,7 +392,8 @@ private fun cleanOAuthUrl(raw: String): String {
 
 private fun isValidGoogleAuthUrl(url: String): Boolean =
     url.startsWith("https://accounts.google.com") &&
-    (url.contains("client_id=") || url.contains("code_challenge=") || url.contains("state=") || url.contains("oauth"))
+    url.contains("client_id=") &&
+    (url.contains("response_type=") || url.contains("code_challenge=") || url.contains("state="))
 
 private fun isSignedInScreen(output: String): Boolean =
     output.contains("for shortcuts", true) ||

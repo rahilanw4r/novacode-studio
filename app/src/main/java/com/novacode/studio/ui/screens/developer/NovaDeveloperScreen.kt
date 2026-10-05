@@ -25,13 +25,14 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.OpenInNew
+import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Code
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Memory
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material.icons.filled.Star
+import com.novacode.studio.BuildConfig
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -192,7 +193,7 @@ fun NovaDeveloperScreen(
                         ) {
                             NovaPrimaryButton(
                                 text = "Telegram",
-                                icon = Icons.Default.Send,
+                                icon = Icons.AutoMirrored.Filled.Send,
                                 onClick = {
                                     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(DEVELOPER_TELEGRAM_URL))
                                     context.startActivity(intent)
@@ -249,7 +250,7 @@ fun NovaDeveloperScreen(
                                             .background(NovaCyan.copy(alpha = 0.15f)),
                                         contentAlignment = Alignment.Center
                                     ) {
-                                        Icon(Icons.Default.Send, contentDescription = null, tint = NovaCyan, modifier = Modifier.size(16.dp))
+                                        Icon(Icons.AutoMirrored.Filled.Send, contentDescription = null, tint = NovaCyan, modifier = Modifier.size(16.dp))
                                     }
                                     Column {
                                         Text("Telegram Account", color = NovaTextPrimary, fontSize = 13.5.sp, fontWeight = FontWeight.SemiBold)
@@ -323,7 +324,7 @@ fun NovaDeveloperScreen(
 
                     NovaGlassCard(modifier = Modifier.fillMaxWidth()) {
                         Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                            SpecRow(icon = Icons.Default.Shield, label = "Studio Version", value = "v1.0.15 (Build 16)")
+                            SpecRow(icon = Icons.Default.Shield, label = "Studio Version", value = "v${BuildConfig.VERSION_NAME} (Build ${BuildConfig.VERSION_CODE})")
                             SpecRow(icon = Icons.Default.Memory, label = "Virtualization Runtime", value = "PRoot Isolated ARM64")
                             SpecRow(icon = Icons.Default.Person, label = "Lead Developer", value = "Rahil Anwar")
                             SpecRow(icon = Icons.Default.Code, label = "Linux Base", value = "Ubuntu 24.04 LTS")

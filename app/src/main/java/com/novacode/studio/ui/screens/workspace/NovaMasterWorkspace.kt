@@ -39,7 +39,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material.icons.filled.Undo
+import androidx.compose.material.icons.automirrored.filled.Undo
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.foundation.BorderStroke
@@ -232,7 +232,7 @@ fun NovaMasterWorkspace(
                         )
                         DropdownMenuItem(
                             text = { Text("Undo Last Changes") },
-                            leadingIcon = { Icon(Icons.Default.Undo, contentDescription = null, modifier = Modifier.size(16.dp)) },
+                            leadingIcon = { Icon(Icons.AutoMirrored.Filled.Undo, contentDescription = null, modifier = Modifier.size(16.dp)) },
                             onClick = {
                                 workspaceMenuOpen = false
                                 onUndoChanges()
