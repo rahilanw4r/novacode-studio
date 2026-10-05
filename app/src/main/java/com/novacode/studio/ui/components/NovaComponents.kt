@@ -1,4 +1,4 @@
-package com.novacode.studio.ui.components
+package com.pocketide.app.ui.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.RepeatMode
@@ -59,40 +59,40 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.novacode.studio.ui.theme.NovaAmber
-import com.novacode.studio.ui.theme.NovaBorder
-import com.novacode.studio.ui.theme.NovaBorderGlow
-import com.novacode.studio.ui.theme.NovaCardGradient
-import com.novacode.studio.ui.theme.NovaCyan
-import com.novacode.studio.ui.theme.NovaEmerald
-import com.novacode.studio.ui.theme.NovaIndigo
-import com.novacode.studio.ui.theme.NovaObsidian
-import com.novacode.studio.ui.theme.NovaPurple
-import com.novacode.studio.ui.theme.NovaRose
-import com.novacode.studio.ui.theme.NovaSurface
-import com.novacode.studio.ui.theme.NovaSurfaceVariant
-import com.novacode.studio.ui.theme.NovaSurfaceElevated
-import com.novacode.studio.ui.theme.NovaTextMuted
-import com.novacode.studio.ui.theme.NovaTextPrimary
-import com.novacode.studio.ui.theme.NovaTextSecondary
+import com.pocketide.app.ui.theme.PocketAmber
+import com.pocketide.app.ui.theme.PocketBorder
+import com.pocketide.app.ui.theme.PocketBorderGlow
+import com.pocketide.app.ui.theme.PocketCardGradient
+import com.pocketide.app.ui.theme.PocketCyan
+import com.pocketide.app.ui.theme.PocketEmerald
+import com.pocketide.app.ui.theme.PocketIndigo
+import com.pocketide.app.ui.theme.PocketObsidian
+import com.pocketide.app.ui.theme.PocketPurple
+import com.pocketide.app.ui.theme.PocketRose
+import com.pocketide.app.ui.theme.PocketSurface
+import com.pocketide.app.ui.theme.PocketSurfaceVariant
+import com.pocketide.app.ui.theme.PocketSurfaceElevated
+import com.pocketide.app.ui.theme.PocketTextMuted
+import com.pocketide.app.ui.theme.PocketTextPrimary
+import com.pocketide.app.ui.theme.PocketTextSecondary
 
 /**
  * Minimal tactile surface card with subtle neutral border.
  */
 @Composable
-fun NovaGlassCard(
+fun PocketGlassCard(
     modifier: Modifier = Modifier,
-    borderColor: Color = NovaBorder,
+    borderColor: Color = PocketBorder,
     glowEffect: Boolean = false,
     content: @Composable () -> Unit
 ) {
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(12.dp))
-            .background(NovaSurfaceVariant)
+            .background(PocketSurfaceVariant)
             .border(
                 width = 1.dp,
-                color = if (glowEffect) NovaBorderGlow else borderColor,
+                color = if (glowEffect) PocketBorderGlow else borderColor,
                 shape = RoundedCornerShape(12.dp)
             )
             .padding(14.dp)
@@ -105,10 +105,10 @@ fun NovaGlassCard(
  * Pulsing Status Indicator Badge for live Agent / Runtime states.
  */
 @Composable
-fun NovaStatusPill(
+fun PocketStatusPill(
     statusText: String,
     isRunning: Boolean = false,
-    color: Color = NovaEmerald,
+    color: Color = PocketEmerald,
     modifier: Modifier = Modifier
 ) {
     val infiniteTransition = rememberInfiniteTransition(label = "pulse")
@@ -193,10 +193,10 @@ fun DeveloperKeyToolbar(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .background(NovaSurface)
+            .background(PocketSurface)
             .border(
                 width = 1.dp,
-                color = NovaBorder,
+                color = PocketBorder,
                 shape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp)
             )
             .padding(vertical = 4.dp)
@@ -214,15 +214,15 @@ fun DeveloperKeyToolbar(
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(6.dp))
-                        .background(NovaSurfaceElevated)
-                        .border(1.dp, NovaBorder, RoundedCornerShape(6.dp))
+                        .background(PocketSurfaceElevated)
+                        .border(1.dp, PocketBorder, RoundedCornerShape(6.dp))
                         .clickable { onKeyPress(value) }
                         .padding(horizontal = 9.dp, vertical = 6.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
                         text = label,
-                        color = NovaCyan,
+                        color = PocketCyan,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
                         fontFamily = FontFamily.Monospace
@@ -244,8 +244,8 @@ fun DeveloperKeyToolbar(
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(12.dp))
-                        .background(NovaIndigo.copy(alpha = 0.15f))
-                        .border(1.dp, NovaIndigo.copy(alpha = 0.3f), RoundedCornerShape(12.dp))
+                        .background(PocketIndigo.copy(alpha = 0.15f))
+                        .border(1.dp, PocketIndigo.copy(alpha = 0.3f), RoundedCornerShape(12.dp))
                         .clickable { onSnippetRun(command) }
                         .padding(horizontal = 8.dp, vertical = 4.dp),
                     contentAlignment = Alignment.Center
@@ -257,12 +257,12 @@ fun DeveloperKeyToolbar(
                         Icon(
                             imageVector = Icons.Default.PlayArrow,
                             contentDescription = null,
-                            tint = NovaIndigo,
+                            tint = PocketIndigo,
                             modifier = Modifier.size(11.dp)
                         )
                         Text(
                             text = label,
-                            color = NovaTextPrimary,
+                            color = PocketTextPrimary,
                             fontSize = 11.sp,
                             fontFamily = FontFamily.Monospace
                         )
@@ -289,8 +289,8 @@ fun ReasoningChainBlock(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
-            .background(NovaPurple.copy(alpha = 0.08f))
-            .border(1.dp, NovaPurple.copy(alpha = 0.25f), RoundedCornerShape(12.dp))
+            .background(PocketPurple.copy(alpha = 0.08f))
+            .border(1.dp, PocketPurple.copy(alpha = 0.25f), RoundedCornerShape(12.dp))
             .padding(10.dp)
     ) {
         Row(
@@ -307,19 +307,19 @@ fun ReasoningChainBlock(
                 Icon(
                     imageVector = Icons.Default.Psychology,
                     contentDescription = null,
-                    tint = NovaPurple,
+                    tint = PocketPurple,
                     modifier = Modifier.size(18.dp)
                 )
                 Text(
                     text = if (isStreaming) "Thinking process…" else "Reasoning completed",
-                    color = NovaPurple,
+                    color = PocketPurple,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.SemiBold
                 )
                 if (tokenCount > 0) {
                     Text(
                         text = "($tokenCount tokens)",
-                        color = NovaTextMuted,
+                        color = PocketTextMuted,
                         fontSize = 11.sp,
                         fontFamily = FontFamily.Monospace
                     )
@@ -328,7 +328,7 @@ fun ReasoningChainBlock(
             Icon(
                 imageVector = if (expanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
                 contentDescription = null,
-                tint = NovaPurple,
+                tint = PocketPurple,
                 modifier = Modifier.size(18.dp)
             )
         }
@@ -339,12 +339,12 @@ fun ReasoningChainBlock(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(8.dp))
-                        .background(NovaObsidian)
+                        .background(PocketObsidian)
                         .padding(10.dp)
                 ) {
                     Text(
                         text = reasoningText.ifBlank { "Analyzing workspace context and planning actions..." },
-                        color = NovaTextSecondary,
+                        color = PocketTextSecondary,
                         fontSize = 11.5.sp,
                         fontFamily = FontFamily.Monospace,
                         lineHeight = 16.sp
@@ -367,16 +367,16 @@ fun ToolExecutionCard(
     modifier: Modifier = Modifier
 ) {
     val statusColor = when {
-        isError -> NovaRose
-        !isComplete -> NovaAmber
-        else -> NovaEmerald
+        isError -> PocketRose
+        !isComplete -> PocketAmber
+        else -> PocketEmerald
     }
 
     Row(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(10.dp))
-            .background(NovaSurfaceElevated)
+            .background(PocketSurfaceElevated)
             .border(1.dp, statusColor.copy(alpha = 0.3f), RoundedCornerShape(10.dp))
             .padding(10.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -395,19 +395,19 @@ fun ToolExecutionCard(
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = toolName,
-                color = NovaTextPrimary,
+                color = PocketTextPrimary,
                 fontSize = 12.sp,
                 fontWeight = FontWeight.SemiBold
             )
             Text(
                 text = detail,
-                color = NovaTextSecondary,
+                color = PocketTextSecondary,
                 fontSize = 11.sp,
                 fontFamily = FontFamily.Monospace,
                 maxLines = 2
             )
         }
-        NovaStatusPill(
+        PocketStatusPill(
             statusText = if (isComplete) "DONE" else "RUNNING",
             isRunning = !isComplete,
             color = statusColor
@@ -420,7 +420,7 @@ fun ToolExecutionCard(
  * Clean, solid, human-friendly button with no harsh gradients.
  */
 @Composable
-fun NovaPrimaryButton(
+fun PocketPrimaryButton(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -434,7 +434,7 @@ fun NovaPrimaryButton(
             .liquidBounceClick(onClick = onClick, enabled = enabled)
             .clip(RoundedCornerShape(10.dp))
             .background(
-                if (enabled) NovaEmerald else NovaEmerald.copy(alpha = 0.35f)
+                if (enabled) PocketEmerald else PocketEmerald.copy(alpha = 0.35f)
             )
             .padding(horizontal = 10.dp),
         contentAlignment = Alignment.Center
@@ -470,7 +470,7 @@ fun NovaPrimaryButton(
  * Clean neutral surface with subtle border and readable text.
  */
 @Composable
-fun NovaSecondaryButton(
+fun PocketSecondaryButton(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -483,8 +483,8 @@ fun NovaSecondaryButton(
             .height(height)
             .liquidBounceClick(onClick = onClick, enabled = enabled)
             .clip(RoundedCornerShape(10.dp))
-            .background(NovaSurfaceVariant)
-            .border(1.dp, NovaBorder, RoundedCornerShape(10.dp))
+            .background(PocketSurfaceVariant)
+            .border(1.dp, PocketBorder, RoundedCornerShape(10.dp))
             .padding(horizontal = 10.dp),
         contentAlignment = Alignment.Center
     ) {
@@ -496,14 +496,14 @@ fun NovaSecondaryButton(
                 Icon(
                     imageVector = icon,
                     contentDescription = null,
-                    tint = NovaTextSecondary,
+                    tint = PocketTextSecondary,
                     modifier = Modifier.size(16.dp)
                 )
                 Spacer(Modifier.width(6.dp))
             }
             Text(
                 text = text,
-                color = NovaTextPrimary,
+                color = PocketTextPrimary,
                 fontSize = 12.5.sp,
                 fontWeight = FontWeight.SemiBold,
                 maxLines = 1,
