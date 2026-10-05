@@ -1,17 +1,17 @@
-package com.novacode.studio.data
+package com.pocketide.app.data
 
 import android.content.Context
-import com.novacode.studio.model.AgentKind
-import com.novacode.studio.model.ChatMessage
-import com.novacode.studio.model.ChatAttachment
-import com.novacode.studio.model.Project
-import com.novacode.studio.model.ProjectKind
-import com.novacode.studio.model.ProjectChat
-import com.novacode.studio.model.ProviderKind
-import com.novacode.studio.model.ProviderProfile
-import com.novacode.studio.model.defaultDshApiForProvider
-import com.novacode.studio.model.projectSlug
-import com.novacode.studio.model.providersForAgent
+import com.pocketide.app.model.AgentKind
+import com.pocketide.app.model.ChatMessage
+import com.pocketide.app.model.ChatAttachment
+import com.pocketide.app.model.Project
+import com.pocketide.app.model.ProjectKind
+import com.pocketide.app.model.ProjectChat
+import com.pocketide.app.model.ProviderKind
+import com.pocketide.app.model.ProviderProfile
+import com.pocketide.app.model.defaultDshApiForProvider
+import com.pocketide.app.model.projectSlug
+import com.pocketide.app.model.providersForAgent
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
@@ -438,7 +438,7 @@ class AppPreferences(private val context: Context) {
                         (0 until workItems.length()).mapNotNull { index ->
                             runCatching {
                                 workItems.getJSONObject(index).let { item ->
-                                    com.novacode.studio.model.ActivityItem(
+                                    com.pocketide.app.model.ActivityItem(
                                         title = item.optString("title"),
                                         detail = item.optString("detail"),
                                         isComplete = item.optBoolean("isComplete", true),
