@@ -1,4 +1,4 @@
-package com.novacode.studio
+package com.pocketide.app
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -14,10 +14,10 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.novacode.studio.ui.MainViewModel
-import com.novacode.studio.ui.NovaCodeApp
-import com.novacode.studio.ui.screens.splash.NovaSplashScreen
-import com.novacode.studio.ui.theme.NovaTheme
+import com.pocketide.app.ui.MainViewModel
+import com.pocketide.app.ui.PocketIDEApp
+import com.pocketide.app.ui.screens.splash.PocketSplashScreen
+import com.pocketide.app.ui.theme.PocketTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,18 +28,18 @@ class MainActivity : ComponentActivity() {
             val state by vm.state.collectAsStateWithLifecycle()
             var showSplash by rememberSaveable { mutableStateOf(true) }
 
-            NovaTheme(themeMode = state.themeMode) {
+            PocketTheme(themeMode = state.themeMode) {
                 AnimatedContent(
                     targetState = showSplash,
                     transitionSpec = { fadeIn() togetherWith fadeOut() },
                     label = "AppScreenTransition"
                 ) { isSplash ->
                     if (isSplash) {
-                        NovaSplashScreen(
+                        PocketSplashScreen(
                             onSplashFinished = { showSplash = false }
                         )
                     } else {
-                        NovaCodeApp(vm)
+                        PocketIDEApp(vm)
                     }
                 }
             }
