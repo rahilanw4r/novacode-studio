@@ -1,7 +1,7 @@
-package com.novacode.studio.runtime
+package com.pocketide.app.runtime
 
-import com.novacode.studio.model.ProviderKind
-import com.novacode.studio.model.ProviderProfile
+import com.pocketide.app.model.ProviderKind
+import com.pocketide.app.model.ProviderProfile
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
