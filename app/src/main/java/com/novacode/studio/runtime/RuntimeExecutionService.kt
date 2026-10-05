@@ -1,4 +1,4 @@
-package com.novacode.studio.runtime
+package com.pocketide.app.runtime
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -8,8 +8,8 @@ import android.content.Intent
 import android.os.IBinder
 import android.os.PowerManager
 import androidx.core.app.NotificationCompat
-import com.novacode.studio.MainActivity
-import com.novacode.studio.R
+import com.pocketide.app.MainActivity
+import com.pocketide.app.R
 
 internal object RuntimeTaskController {
     @Volatile var stopAction: (() -> Unit)? = null
@@ -133,7 +133,7 @@ class RuntimeExecutionService : Service() {
     private fun acquireWakeLock() {
         if (wakeLock?.isHeld == true) return
         wakeLock = getSystemService(PowerManager::class.java)
-            .newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "com.novacode.studio:active-coding-task")
+            .newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "com.pocketide.app:active-coding-task")
             .apply { acquire(MAX_WAKE_LOCK_MS) }
     }
 
@@ -150,12 +150,12 @@ class RuntimeExecutionService : Service() {
     override fun onBind(intent: Intent?): IBinder? = null
 
     companion object {
-        const val ACTION_START = "com.novacode.studio.START_RUNTIME"
-        const val ACTION_STOP = "com.novacode.studio.STOP_RUNTIME"
-        const val ACTION_PROGRESS = "com.novacode.studio.PROGRESS_RUNTIME"
-        const val ACTION_COMPLETE = "com.novacode.studio.COMPLETE_RUNTIME"
-        const val ACTION_FAILED = "com.novacode.studio.FAIL_RUNTIME"
-        const val ACTION_CANCELLED = "com.novacode.studio.CANCEL_RUNTIME"
+        const val ACTION_START = "com.pocketide.app.START_RUNTIME"
+        const val ACTION_STOP = "com.pocketide.app.STOP_RUNTIME"
+        const val ACTION_PROGRESS = "com.pocketide.app.PROGRESS_RUNTIME"
+        const val ACTION_COMPLETE = "com.pocketide.app.COMPLETE_RUNTIME"
+        const val ACTION_FAILED = "com.pocketide.app.FAIL_RUNTIME"
+        const val ACTION_CANCELLED = "com.pocketide.app.CANCEL_RUNTIME"
         const val EXTRA_PROJECT_NAME = "project_name"
         const val EXTRA_DETAIL = "detail"
         const val EXTRA_TITLE = "title"
