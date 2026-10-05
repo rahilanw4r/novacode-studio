@@ -1,4 +1,4 @@
-package com.novacode.studio.ui.components
+package com.pocketide.app.ui.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -70,18 +70,18 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.novacode.studio.ui.theme.NovaBorder
-import com.novacode.studio.ui.theme.NovaBorderGlow
-import com.novacode.studio.ui.theme.NovaCyan
-import com.novacode.studio.ui.theme.NovaEmerald
-import com.novacode.studio.ui.theme.NovaIndigo
-import com.novacode.studio.ui.theme.NovaPurple
-import com.novacode.studio.ui.theme.NovaSurface
-import com.novacode.studio.ui.theme.NovaSurfaceElevated
-import com.novacode.studio.ui.theme.NovaSurfaceVariant
-import com.novacode.studio.ui.theme.NovaTextMuted
-import com.novacode.studio.ui.theme.NovaTextPrimary
-import com.novacode.studio.ui.theme.NovaTextSecondary
+import com.pocketide.app.ui.theme.PocketBorder
+import com.pocketide.app.ui.theme.PocketBorderGlow
+import com.pocketide.app.ui.theme.PocketCyan
+import com.pocketide.app.ui.theme.PocketEmerald
+import com.pocketide.app.ui.theme.PocketIndigo
+import com.pocketide.app.ui.theme.PocketPurple
+import com.pocketide.app.ui.theme.PocketSurface
+import com.pocketide.app.ui.theme.PocketSurfaceElevated
+import com.pocketide.app.ui.theme.PocketSurfaceVariant
+import com.pocketide.app.ui.theme.PocketTextMuted
+import com.pocketide.app.ui.theme.PocketTextPrimary
+import com.pocketide.app.ui.theme.PocketTextSecondary
 
 /**
  * Apple-style Liquid Chromatic Aura Border.
@@ -94,7 +94,7 @@ fun Modifier.liquidAuraBorder(
     strokeWidth: Dp = 2.dp,
     intensity: Float = 0.85f,
 ): Modifier {
-    if (!enabled) return this.border(1.dp, NovaBorder, shape)
+    if (!enabled) return this.border(1.dp, PocketBorder, shape)
 
     val infiniteTransition = rememberInfiniteTransition(label = "LiquidAuraTransition")
     val rotation by infiniteTransition.animateFloat(
@@ -108,11 +108,11 @@ fun Modifier.liquidAuraBorder(
     )
 
     val auraColors = listOf(
-        NovaEmerald.copy(alpha = 0.9f * intensity),
-        NovaCyan.copy(alpha = 0.85f * intensity),
-        NovaIndigo.copy(alpha = 0.9f * intensity),
-        NovaPurple.copy(alpha = 0.7f * intensity),
-        NovaEmerald.copy(alpha = 0.9f * intensity),
+        PocketEmerald.copy(alpha = 0.9f * intensity),
+        PocketCyan.copy(alpha = 0.85f * intensity),
+        PocketIndigo.copy(alpha = 0.9f * intensity),
+        PocketPurple.copy(alpha = 0.7f * intensity),
+        PocketEmerald.copy(alpha = 0.9f * intensity),
     )
 
     return this
@@ -128,7 +128,7 @@ fun Modifier.liquidAuraBorder(
                 )
             }
         }
-        .border(1.dp, NovaBorder.copy(alpha = 0.6f), shape)
+        .border(1.dp, PocketBorder.copy(alpha = 0.6f), shape)
 }
 
 /**
@@ -180,10 +180,10 @@ fun LiquidAiAssistantBar(
     modifier: Modifier = Modifier,
     isThinking: Boolean = false,
 ) {
-    val emerald = NovaEmerald
-    val indigo = NovaIndigo
-    val cyan = NovaCyan
-    val purple = NovaPurple
+    val emerald = PocketEmerald
+    val indigo = PocketIndigo
+    val cyan = PocketCyan
+    val purple = PocketPurple
     val actions = remember(emerald, indigo, cyan, purple) {
         listOf(
             LiquidAiAction(
@@ -225,8 +225,8 @@ fun LiquidAiAssistantBar(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(16.dp))
-            .background(NovaSurfaceVariant)
-            .border(1.dp, if (isThinking) NovaEmerald else NovaBorder, RoundedCornerShape(16.dp))
+            .background(PocketSurfaceVariant)
+            .border(1.dp, if (isThinking) PocketEmerald else PocketBorder, RoundedCornerShape(16.dp))
             .padding(10.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
@@ -246,20 +246,20 @@ fun LiquidAiAssistantBar(
                     modifier = Modifier
                         .size(26.dp)
                         .clip(CircleShape)
-                        .background(if (isThinking) NovaEmerald.copy(alpha = 0.25f) else NovaIndigo.copy(alpha = 0.2f)),
+                        .background(if (isThinking) PocketEmerald.copy(alpha = 0.25f) else PocketIndigo.copy(alpha = 0.2f)),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         imageVector = Icons.Default.AutoAwesome,
                         contentDescription = null,
-                        tint = if (isThinking) NovaEmerald else NovaIndigo,
+                        tint = if (isThinking) PocketEmerald else PocketIndigo,
                         modifier = Modifier.size(15.dp)
                     )
                 }
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = if (isThinking) "Liquid AI · Processing…" else "Liquid AI Assistant",
-                        color = NovaTextPrimary,
+                        color = PocketTextPrimary,
                         fontSize = 13.sp,
                         fontWeight = FontWeight.SemiBold,
                         maxLines = 1,
@@ -267,7 +267,7 @@ fun LiquidAiAssistantBar(
                     )
                     Text(
                         text = if (isThinking) "Generating solution on ARM64 runtime" else "Tap a quick action to trigger copilot",
-                        color = NovaTextMuted,
+                        color = PocketTextMuted,
                         fontSize = 11.sp,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
@@ -282,12 +282,12 @@ fun LiquidAiAssistantBar(
                 horizontalArrangement = Arrangement.spacedBy(2.dp),
                 modifier = Modifier
                     .clip(RoundedCornerShape(8.dp))
-                    .background(NovaEmerald.copy(alpha = 0.12f))
+                    .background(PocketEmerald.copy(alpha = 0.12f))
                     .padding(horizontal = 8.dp, vertical = 5.dp)
             ) {
                 Text(
                     text = if (expanded) "Hide" else "Actions",
-                    color = NovaEmerald,
+                    color = PocketEmerald,
                     fontSize = 11.5.sp,
                     fontWeight = FontWeight.SemiBold,
                     maxLines = 1
@@ -295,7 +295,7 @@ fun LiquidAiAssistantBar(
                 Icon(
                     imageVector = if (expanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
                     contentDescription = null,
-                    tint = NovaEmerald,
+                    tint = PocketEmerald,
                     modifier = Modifier.size(14.dp)
                 )
             }
@@ -318,8 +318,8 @@ fun LiquidAiAssistantBar(
                     Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(10.dp))
-                            .background(NovaSurfaceElevated)
-                            .border(1.dp, NovaBorder, RoundedCornerShape(10.dp))
+                            .background(PocketSurfaceElevated)
+                            .border(1.dp, PocketBorder, RoundedCornerShape(10.dp))
                             .liquidBounceClick(onClick = {
                                 onTriggerAction(action.prompt)
                             })
@@ -337,7 +337,7 @@ fun LiquidAiAssistantBar(
                             )
                             Text(
                                 text = action.title,
-                                color = NovaTextPrimary,
+                                color = PocketTextPrimary,
                                 fontSize = 11.5.sp,
                                 fontWeight = FontWeight.Medium
                             )
