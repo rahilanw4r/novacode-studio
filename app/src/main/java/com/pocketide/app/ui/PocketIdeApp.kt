@@ -2100,6 +2100,8 @@ private fun RootScreenHost(
                     onViewAllProjects = { screen = RootScreen.PROJECTS },
                     onOpenCommandCenter = { showCommandCenter = true },
                     onOpenDeveloper = { showDeveloperScreen = true },
+                    onOpenTerminal = { screen = RootScreen.TERMINAL },
+                    onOpenMore = { screen = RootScreen.MORE },
                     onAskCopilot = { _ ->
                         viewModel.createQuickProject()
                     },

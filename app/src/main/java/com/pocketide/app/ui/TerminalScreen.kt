@@ -104,8 +104,8 @@ fun TerminalScreen(
     onClear: () -> Unit,
     onToggleTheme: () -> Unit,
     themeMode: AppThemeMode,
-    title: String = "Linux Terminal",
-    subtitle: String = "Ubuntu 24.04 · PRoot Sandbox",
+    title: String = "Terminal",
+    subtitle: String? = null,
     liveOutput: String = "",
     currentCommand: String? = null,
     commandDraft: String? = null,
@@ -214,7 +214,9 @@ fun TerminalScreen(
                         Spacer(Modifier.width(11.dp))
                         Column(Modifier.weight(1f)) {
                             Text(title, fontWeight = FontWeight.Bold, fontSize = 15.sp)
-                            Text(subtitle, fontSize = 10.5.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            if (!subtitle.isNullOrBlank()) {
+                                Text(subtitle, fontSize = 10.5.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            }
                         }
                         IconButton(onClick = onClear, modifier = Modifier.size(38.dp)) {
                             Icon(Icons.Default.DeleteOutline, contentDescription = "Clear output", modifier = Modifier.size(20.dp))
@@ -258,8 +260,10 @@ fun TerminalScreen(
                             }
                             Spacer(Modifier.width(10.dp))
                             Column {
-                                Text("Linux Terminal", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleLarge)
-                                Text("Ubuntu 24.04 • ARM64", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                Text(title, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
+                                if (!subtitle.isNullOrBlank()) {
+                                    Text(subtitle, fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                }
                             }
                         }
                     },

@@ -101,7 +101,7 @@ fun CommandCenterDialog(
                     CommandActionItem(
                         id = "run",
                         title = "Run Project",
-                        subtitle = "Execute current active workspace on ARM64 Linux",
+                        subtitle = "Execute current active workspace",
                         icon = Icons.Default.PlayArrow,
                         tag = "Run",
                         action = { onDismissRequest(); onRunProject() }
@@ -140,8 +140,8 @@ fun CommandCenterDialog(
             add(
                 CommandActionItem(
                     id = "terminal",
-                    title = "Open Linux Terminal",
-                    subtitle = "Interactive Bash session in Ubuntu 24.04 ARM64",
+                    title = "Open Terminal",
+                    subtitle = "Interactive Bash session in Linux environment",
                     icon = Icons.Default.Terminal,
                     tag = "CLI",
                     action = { onDismissRequest(); onOpenTerminal() }

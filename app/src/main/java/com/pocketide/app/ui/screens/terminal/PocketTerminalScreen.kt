@@ -61,6 +61,7 @@ import com.pocketide.app.ui.theme.PocketBorder
 import com.pocketide.app.ui.theme.PocketCyan
 import com.pocketide.app.ui.theme.PocketEmerald
 import com.pocketide.app.ui.theme.PocketIndigo
+import com.pocketide.app.ui.theme.PocketPrimaryBlue
 import com.pocketide.app.ui.theme.PocketObsidian
 import com.pocketide.app.ui.theme.PocketRose
 import com.pocketide.app.ui.theme.PocketSurface
@@ -181,8 +182,8 @@ fun PocketTerminalScreen(
             if (outputLines.isEmpty()) {
                 item {
                     Text(
-                        text = "Pocket IDE Linux Subsystem (Ubuntu PRoot ARM64)\nType a command below or tap a quick snippet.\n",
-                        color = PocketCyan,
+                        text = "Pocket IDE Terminal\nType a command below or tap a quick snippet.\n",
+                        color = PocketPrimaryBlue,
                         fontSize = 12.sp,
                         fontFamily = FontFamily.Monospace
                     )

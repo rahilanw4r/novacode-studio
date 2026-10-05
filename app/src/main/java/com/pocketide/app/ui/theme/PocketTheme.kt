@@ -25,6 +25,9 @@ data class PocketColorPalette(
     val textPrimary: Color,
     val textSecondary: Color,
     val textMuted: Color,
+    val primaryBlue: Color,
+    val bluePressed: Color,
+    val blueSurface: Color,
     val emerald: Color,
     val indigo: Color,
     val cyan: Color,
@@ -34,43 +37,49 @@ data class PocketColorPalette(
     val isDark: Boolean,
 )
 
-// Human-toned Obsidian Dark Developer-Tool Palette
+// Restrained Professional Dark Developer-Tool Palette
 val PocketDarkPalette = PocketColorPalette(
-    background = Color(0xFF0D1014),       // Background: #0D1014
-    surface = Color(0xFF171B22),          // Surface: #171B22
-    surfaceVariant = Color(0xFF1D222C),   // Elevated surface: #1D222C
-    surfaceElevated = Color(0xFF222834),  // High elevated surface
-    border = Color(0xFF2A303C),           // Borders: #2A303C
+    background = Color(0xFF111315),       // Background: #111315
+    surface = Color(0xFF191C20),          // Surface: #191C20
+    surfaceVariant = Color(0xFF20242A),   // Elevated: #20242A
+    surfaceElevated = Color(0xFF20242A),  // Elevated: #20242A
+    border = Color(0xFF2B3037),           // Border: #2B3037
     borderGlow = Color(0xFF353D4C),
-    textPrimary = Color(0xFFF3F5F7),      // Primary text: #F3F5F7
-    textSecondary = Color(0xFF9299A6),    // Secondary text: #9299A6
-    textMuted = Color(0xFF5E6571),        // Disabled text: #5E6571
-    emerald = Color(0xFF18C78A),          // Primary accent: #18C78A
-    indigo = Color(0xFF3B82F6),           // Developer Blue
-    cyan = Color(0xFF0EA5E9),             // Soft Ocean Blue
-    amber = Color(0xFFF59E0B),            // Warm Amber
-    rose = Color(0xFFEF4444),             // Calm Rose
-    purple = Color(0xFF8B5CF6),           // Calm Violet
+    textPrimary = Color(0xFFF1F3F5),      // Primary text: #F1F3F5
+    textSecondary = Color(0xFFA4A9B1),    // Secondary text: #A4A9B1
+    textMuted = Color(0xFF747A83),        // Tertiary text: #747A83
+    primaryBlue = Color(0xFF4F8CFF),      // Primary blue: #4F8CFF
+    bluePressed = Color(0xFF2E5FAF),      // Blue pressed: #2E5FAF
+    blueSurface = Color(0xFF1D2A40),      // Blue surface: #1D2A40
+    emerald = Color(0xFF3FA66B),          // Success: #3FA66B
+    indigo = Color(0xFF4F8CFF),           // Interaction blue: #4F8CFF
+    cyan = Color(0xFF4F8CFF),             // Primary action blue: #4F8CFF
+    amber = Color(0xFFD69A3A),            // Warning: #D69A3A
+    rose = Color(0xFFD85C5C),             // Error: #D85C5C
+    purple = Color(0xFF8B5CF6),           // Secondary accent
     isDark = true,
 )
 
-// Human-toned Crisp Light Developer-Tool Palette (VS Code / Android Studio / GitHub Light inspired)
+// Clean Light Developer-Tool Palette
 val PocketLightPalette = PocketColorPalette(
-    background = Color(0xFFF6F8FA),       // Background: Clean slate off-white #F6F8FA
-    surface = Color(0xFFFFFFFF),          // Surface: Clean pure white #FFFFFF
-    surfaceVariant = Color(0xFFEEF2F6),   // Elevated surface: #EEF2F6
-    surfaceElevated = Color(0xFFE2E7ED),  // High elevated surface / input background
-    border = Color(0xFFD0D7DE),           // Borders: Clean 1dp boundary #D0D7DE
+    background = Color(0xFFF6F8FA),
+    surface = Color(0xFFFFFFFF),
+    surfaceVariant = Color(0xFFEEF2F6),
+    surfaceElevated = Color(0xFFE2E7ED),
+    border = Color(0xFFD0D7DE),
     borderGlow = Color(0xFFB8C2CC),
-    textPrimary = Color(0xFF1F2328),      // Primary text: #1F2328 (high legibility)
-    textSecondary = Color(0xFF59636E),    // Secondary text: #59636E
-    textMuted = Color(0xFF8C959F),        // Disabled/muted text: #8C959F
-    emerald = Color(0xFF0F9960),          // Primary accent: High-contrast emerald #0F9960
-    indigo = Color(0xFF0969DA),           // Developer Blue
-    cyan = Color(0xFF057A9E),             // Ocean Blue
-    amber = Color(0xFF9A6700),            // Accessible Amber
-    rose = Color(0xFFCF222E),             // Accessible Rose
-    purple = Color(0xFF8250DF),           // Calm Violet
+    textPrimary = Color(0xFF1F2328),
+    textSecondary = Color(0xFF59636E),
+    textMuted = Color(0xFF8C959F),
+    primaryBlue = Color(0xFF0969DA),
+    bluePressed = Color(0xFF064EAA),
+    blueSurface = Color(0xFFDDF4FF),
+    emerald = Color(0xFF0F9960),
+    indigo = Color(0xFF0969DA),
+    cyan = Color(0xFF0969DA),
+    amber = Color(0xFF9A6700),
+    rose = Color(0xFFCF222E),
+    purple = Color(0xFF8250DF),
     isDark = false,
 )
 
@@ -151,10 +160,25 @@ val PocketPurple: Color
     @ReadOnlyComposable
     get() = LocalPocketColors.current.purple
 
+val PocketPrimaryBlue: Color
+    @Composable
+    @ReadOnlyComposable
+    get() = LocalPocketColors.current.primaryBlue
+
+val PocketBluePressed: Color
+    @Composable
+    @ReadOnlyComposable
+    get() = LocalPocketColors.current.bluePressed
+
+val PocketBlueSurface: Color
+    @Composable
+    @ReadOnlyComposable
+    get() = LocalPocketColors.current.blueSurface
+
 val PocketNeonGradient: Brush
     @Composable
     @ReadOnlyComposable
-    get() = Brush.linearGradient(listOf(LocalPocketColors.current.indigo, LocalPocketColors.current.indigo))
+    get() = Brush.linearGradient(listOf(LocalPocketColors.current.primaryBlue, LocalPocketColors.current.primaryBlue))
 
 val PocketCardGradient: Brush
     @Composable
@@ -167,27 +191,27 @@ val PocketGlassGradient: Brush
     get() = Brush.linearGradient(listOf(LocalPocketColors.current.surfaceVariant, LocalPocketColors.current.surfaceVariant))
 
 private val PocketDarkColors = darkColorScheme(
-    primary = Color(0xFF18C78A),
-    onPrimary = Color(0xFF0F1218),
-    primaryContainer = Color(0xFF064E3B),
-    onPrimaryContainer = Color(0xFFD1FAE5),
-    secondary = Color(0xFF3B82F6),
+    primary = Color(0xFF4F8CFF),
+    onPrimary = Color(0xFFFFFFFF),
+    primaryContainer = Color(0xFF1D2A40),
+    onPrimaryContainer = Color(0xFFD1E4FF),
+    secondary = Color(0xFF3FA66B),
     onSecondary = Color(0xFFFFFFFF),
-    secondaryContainer = Color(0xFF1E3A8A),
-    onSecondaryContainer = Color(0xFFDBEAFE),
+    secondaryContainer = Color(0xFF1D2A40),
+    onSecondaryContainer = Color(0xFFD1E4FF),
     tertiary = Color(0xFF8B5CF6),
     onTertiary = Color(0xFFFFFFFF),
-    background = Color(0xFF0D1014),
-    onBackground = Color(0xFFF3F5F7),
-    surface = Color(0xFF171B22),
-    onSurface = Color(0xFFF3F5F7),
-    surfaceVariant = Color(0xFF1D222C),
-    onSurfaceVariant = Color(0xFF9299A6),
-    surfaceContainer = Color(0xFF1D222C),
-    surfaceContainerHigh = Color(0xFF222834),
-    outline = Color(0xFF2A303C),
+    background = Color(0xFF111315),
+    onBackground = Color(0xFFF1F3F5),
+    surface = Color(0xFF191C20),
+    onSurface = Color(0xFFF1F3F5),
+    surfaceVariant = Color(0xFF20242A),
+    onSurfaceVariant = Color(0xFFA4A9B1),
+    surfaceContainer = Color(0xFF20242A),
+    surfaceContainerHigh = Color(0xFF2B3037),
+    outline = Color(0xFF2B3037),
     outlineVariant = Color(0xFF353D4C),
-    error = Color(0xFFEF4444),
+    error = Color(0xFFD85C5C),
     onError = Color(0xFFFFFFFF),
 )
 

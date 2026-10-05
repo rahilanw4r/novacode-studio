@@ -67,6 +67,7 @@ import com.pocketide.app.ui.theme.PocketCyan
 import com.pocketide.app.ui.theme.PocketEmerald
 import com.pocketide.app.ui.theme.PocketIndigo
 import com.pocketide.app.ui.theme.PocketObsidian
+import com.pocketide.app.ui.theme.PocketPrimaryBlue
 import com.pocketide.app.ui.theme.PocketPurple
 import com.pocketide.app.ui.theme.PocketRose
 import com.pocketide.app.ui.theme.PocketSurface
@@ -77,7 +78,7 @@ import com.pocketide.app.ui.theme.PocketTextPrimary
 import com.pocketide.app.ui.theme.PocketTextSecondary
 
 /**
- * Minimal tactile surface card with subtle neutral border.
+ * Clean developer surface card with subtle neutral border.
  */
 @Composable
 fun PocketGlassCard(
@@ -88,21 +89,21 @@ fun PocketGlassCard(
 ) {
     Box(
         modifier = modifier
-            .clip(RoundedCornerShape(12.dp))
-            .background(PocketSurfaceVariant)
+            .clip(RoundedCornerShape(8.dp))
+            .background(PocketSurface)
             .border(
                 width = 1.dp,
-                color = if (glowEffect) PocketBorderGlow else borderColor,
-                shape = RoundedCornerShape(12.dp)
+                color = borderColor,
+                shape = RoundedCornerShape(8.dp)
             )
-            .padding(14.dp)
+            .padding(12.dp)
     ) {
         content()
     }
 }
 
 /**
- * Pulsing Status Indicator Badge for live Agent / Runtime states.
+ * Clean Status Indicator Badge for live Agent / Runtime states.
  */
 @Composable
 fun PocketStatusPill(
@@ -111,27 +112,12 @@ fun PocketStatusPill(
     color: Color = PocketEmerald,
     modifier: Modifier = Modifier
 ) {
-    val infiniteTransition = rememberInfiniteTransition(label = "pulse")
-    val alpha by if (isRunning) {
-        infiniteTransition.animateFloat(
-            initialValue = 0.4f,
-            targetValue = 1.0f,
-            animationSpec = infiniteRepeatable(
-                animation = tween(800),
-                repeatMode = RepeatMode.Reverse
-            ),
-            label = "pulseAlpha"
-        )
-    } else {
-        remember { mutableStateOf(1.0f) }
-    }
-
     Row(
         modifier = modifier
-            .clip(RoundedCornerShape(20.dp))
+            .clip(RoundedCornerShape(6.dp))
             .background(color.copy(alpha = 0.12f))
-            .border(1.dp, color.copy(alpha = 0.35f), RoundedCornerShape(20.dp))
-            .padding(horizontal = 8.dp, vertical = 3.dp),
+            .border(1.dp, color.copy(alpha = 0.35f), RoundedCornerShape(6.dp))
+            .padding(horizontal = 7.dp, vertical = 2.5.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(5.dp)
     ) {
@@ -139,15 +125,15 @@ fun PocketStatusPill(
             modifier = Modifier
                 .size(6.dp)
                 .clip(CircleShape)
-                .background(color.copy(alpha = alpha))
+                .background(color)
         )
         Text(
             text = statusText,
             color = color,
-            fontSize = 10.sp,
+            fontSize = 10.5.sp,
             fontWeight = FontWeight.SemiBold,
             fontFamily = FontFamily.Monospace,
-            maxLines = 1
+            letterSpacing = 0.3.sp
         )
     }
 }
@@ -417,7 +403,7 @@ fun ToolExecutionCard(
 
 /**
  * Minimal, Tactile Solid Primary Action Button.
- * Clean, solid, human-friendly button with no harsh gradients.
+ * Primary blue action button with crisp text and high accessibility.
  */
 @Composable
 fun PocketPrimaryButton(
@@ -426,17 +412,17 @@ fun PocketPrimaryButton(
     modifier: Modifier = Modifier,
     icon: ImageVector? = null,
     enabled: Boolean = true,
-    height: androidx.compose.ui.unit.Dp = 42.dp,
+    height: androidx.compose.ui.unit.Dp = 40.dp,
 ) {
     Box(
         modifier = modifier
             .height(height)
             .liquidBounceClick(onClick = onClick, enabled = enabled)
-            .clip(RoundedCornerShape(10.dp))
+            .clip(RoundedCornerShape(8.dp))
             .background(
-                if (enabled) PocketEmerald else PocketEmerald.copy(alpha = 0.35f)
+                if (enabled) PocketPrimaryBlue else PocketPrimaryBlue.copy(alpha = 0.35f)
             )
-            .padding(horizontal = 10.dp),
+            .padding(horizontal = 14.dp),
         contentAlignment = Alignment.Center
     ) {
         Row(
@@ -447,15 +433,15 @@ fun PocketPrimaryButton(
                 Icon(
                     imageVector = icon,
                     contentDescription = null,
-                    tint = Color(0xFF0F172A),
+                    tint = Color.White,
                     modifier = Modifier.size(16.dp)
                 )
                 Spacer(Modifier.width(6.dp))
             }
             Text(
                 text = text,
-                color = Color(0xFF0F172A),
-                fontSize = 12.5.sp,
+                color = Color.White,
+                fontSize = 13.sp,
                 fontWeight = FontWeight.SemiBold,
                 letterSpacing = 0.1.sp,
                 maxLines = 1,
@@ -467,7 +453,7 @@ fun PocketPrimaryButton(
 
 /**
  * Minimal, Tactile Secondary Action Button.
- * Clean neutral surface with subtle border and readable text.
+ * Clean neutral elevated surface with subtle border and readable text.
  */
 @Composable
 fun PocketSecondaryButton(
@@ -476,16 +462,16 @@ fun PocketSecondaryButton(
     modifier: Modifier = Modifier,
     icon: ImageVector? = null,
     enabled: Boolean = true,
-    height: androidx.compose.ui.unit.Dp = 42.dp,
+    height: androidx.compose.ui.unit.Dp = 40.dp,
 ) {
     Box(
         modifier = modifier
             .height(height)
             .liquidBounceClick(onClick = onClick, enabled = enabled)
-            .clip(RoundedCornerShape(10.dp))
+            .clip(RoundedCornerShape(8.dp))
             .background(PocketSurfaceVariant)
-            .border(1.dp, PocketBorder, RoundedCornerShape(10.dp))
-            .padding(horizontal = 10.dp),
+            .border(1.dp, PocketBorder, RoundedCornerShape(8.dp))
+            .padding(horizontal = 14.dp),
         contentAlignment = Alignment.Center
     ) {
         Row(
@@ -504,8 +490,8 @@ fun PocketSecondaryButton(
             Text(
                 text = text,
                 color = PocketTextPrimary,
-                fontSize = 12.5.sp,
-                fontWeight = FontWeight.SemiBold,
+                fontSize = 13.sp,
+                fontWeight = FontWeight.Medium,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )

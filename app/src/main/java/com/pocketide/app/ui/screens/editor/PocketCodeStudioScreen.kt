@@ -1,6 +1,7 @@
 package com.pocketide.app.ui.screens.editor
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -25,6 +26,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Undo
+import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Code
@@ -35,16 +38,14 @@ import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.AutoAwesome
-import androidx.compose.material.icons.automirrored.filled.Undo
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -67,9 +68,8 @@ import com.pocketide.app.model.DiffLine
 import com.pocketide.app.model.DiffLineType
 import com.pocketide.app.model.WorkspaceEntry
 import com.pocketide.app.ui.components.PocketGlassCard
-import com.pocketide.app.ui.components.PocketStatusPill
+import com.pocketide.app.ui.components.PocketPrimaryButton
 import com.pocketide.app.ui.theme.*
-import com.pocketide.app.ui.theme.PocketTextSecondary
 
 enum class CodeStudioTab { FILES, DIFFS, EDITOR }
 
@@ -101,7 +101,7 @@ fun PocketIDEStudioScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(PocketObsidian)
+            .background(PocketDarkPalette.background)
     ) {
         // Studio Top Bar
         Row(
@@ -127,7 +127,7 @@ fun PocketIDEStudioScreen(
                     title = "Diffs",
                     icon = Icons.Default.Difference,
                     count = changes.size,
-                    badgeColor = if (changes.isNotEmpty()) PocketCyan else null,
+                    badgeColor = if (changes.isNotEmpty()) PocketPrimaryBlue else null,
                     isSelected = selectedTab == CodeStudioTab.DIFFS,
                     onClick = { selectedTab = CodeStudioTab.DIFFS }
                 )
@@ -145,7 +145,7 @@ fun PocketIDEStudioScreen(
                 Icon(
                     imageVector = Icons.Default.Refresh,
                     contentDescription = "Refresh",
-                    tint = PocketCyan,
+                    tint = PocketPrimaryBlue,
                     modifier = Modifier.size(18.dp)
                 )
             }
@@ -189,29 +189,23 @@ fun PocketIDEStudioScreen(
                             if (openedFilePath != null) {
                                 onSaveFile?.invoke(openedFilePath, updated)
                             }
+                        },
+                        onAiAction = { action ->
+                            val fileName = openedFilePath?.substringAfterLast('/') ?: "file"
+                            val fileSnippet = openedFileContent?.take(1500) ?: ""
+                            val prompt = when (action) {
+                                "Fix" -> "Fix all syntax, runtime, and logic errors in $fileName:\n```\n$fileSnippet\n```"
+                                "Explain" -> "Explain the architecture, logic flow, and patterns in $fileName:\n```\n$fileSnippet\n```"
+                                "Refactor" -> "Refactor $fileName for clean architecture, idiomatic patterns, and readability:\n```\n$fileSnippet\n```"
+                                "Optimize" -> "Optimize performance, algorithmic complexity, and memory efficiency in $fileName:\n```\n$fileSnippet\n```"
+                                "Generate" -> "Generate complete production implementation for missing parts in $fileName:\n```\n$fileSnippet\n```"
+                                "Test" -> "Write comprehensive unit tests with edge cases for $fileName:\n```\n$fileSnippet\n```"
+                                "Review" -> "Perform a thorough code review for $fileName focusing on correctness, edge cases, and security:\n```\n$fileSnippet\n```"
+                                else -> "$action on $fileName:\n```\n$fileSnippet\n```"
+                            }
+                            onAskCopilotContextual?.invoke(prompt)
                         }
                     )
-
-                    // Floating Contextual AI Button ✦
-                    if (openedFilePath != null) {
-                        Box(
-                            modifier = Modifier
-                                .align(Alignment.BottomEnd)
-                                .padding(16.dp)
-                                .size(44.dp)
-                                .clip(CircleShape)
-                                .background(PocketEmerald)
-                                .clickable { showContextualAi = true },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.AutoAwesome,
-                                contentDescription = "AI Actions",
-                                tint = PocketObsidian,
-                                modifier = Modifier.size(20.dp)
-                            )
-                        }
-                    }
                 }
             }
         }
@@ -225,8 +219,8 @@ fun PocketIDEStudioScreen(
             onDismissRequest = { showContextualAi = false },
             title = {
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Icon(Icons.Default.AutoAwesome, contentDescription = null, tint = PocketEmerald, modifier = Modifier.size(18.dp))
-                    Text("Pocket IDE Copilot", color = PocketTextPrimary, fontWeight = FontWeight.Bold)
+                    Icon(Icons.Default.AutoAwesome, contentDescription = null, tint = PocketPrimaryBlue, modifier = Modifier.size(18.dp))
+                    Text("Pocket IDE AI", color = PocketTextPrimary, fontWeight = FontWeight.Bold)
                 }
             },
             text = {
@@ -234,11 +228,13 @@ fun PocketIDEStudioScreen(
                     Text("Context: $fileName", color = PocketTextMuted, fontSize = 12.sp, fontFamily = FontFamily.Monospace)
 
                     val contextualActions = listOf(
-                        "Explain this code" to "Explain the logic, architecture, and potential pitfalls of $fileName:\n```\n$fileSnippet\n```",
-                        "Fix this error" to "Diagnose syntax, runtime, and logic errors in $fileName and provide the corrected code:\n```\n$fileSnippet\n```",
+                        "Fix" to "Fix all syntax, runtime, and logic errors in $fileName:\n```\n$fileSnippet\n```",
+                        "Explain" to "Explain the logic, architecture, and potential pitfalls of $fileName:\n```\n$fileSnippet\n```",
+                        "Refactor" to "Refactor $fileName for clean architecture, idiomatic patterns, and readability:\n```\n$fileSnippet\n```",
                         "Optimize" to "Optimize performance, algorithmic complexity, and memory usage for $fileName:\n```\n$fileSnippet\n```",
-                        "Add feature" to "Suggest and implement production-ready features for $fileName:\n```\n$fileSnippet\n```",
-                        "Write tests" to "Generate comprehensive unit tests with edge cases for $fileName:\n```\n$fileSnippet\n```"
+                        "Generate" to "Generate production-ready implementation for $fileName:\n```\n$fileSnippet\n```",
+                        "Test" to "Generate comprehensive unit tests with edge cases for $fileName:\n```\n$fileSnippet\n```",
+                        "Review" to "Perform a thorough code review for $fileName focusing on bugs, security, and edge cases:\n```\n$fileSnippet\n```"
                     )
 
                     Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -246,9 +242,9 @@ fun PocketIDEStudioScreen(
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .clip(RoundedCornerShape(8.dp))
+                                    .clip(RoundedCornerShape(6.dp))
                                     .background(PocketSurfaceElevated)
-                                    .border(1.dp, PocketBorder, RoundedCornerShape(8.dp))
+                                    .border(1.dp, PocketBorder, RoundedCornerShape(6.dp))
                                     .clickable {
                                         showContextualAi = false
                                         onAskCopilotContextual?.invoke(prompt)
@@ -263,25 +259,33 @@ fun PocketIDEStudioScreen(
                     OutlinedTextField(
                         value = customAiPrompt,
                         onValueChange = { customAiPrompt = it },
-                        placeholder = { Text("Ask anything about this file…", fontSize = 12.sp) },
+                        placeholder = { Text("Or ask a custom question...", color = PocketTextMuted, fontSize = 12.sp) },
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedTextColor = PocketTextPrimary,
+                            unfocusedTextColor = PocketTextPrimary,
+                            focusedBorderColor = PocketPrimaryBlue,
+                            unfocusedBorderColor = PocketBorder,
+                            focusedLabelColor = PocketPrimaryBlue,
+                            unfocusedLabelColor = PocketTextSecondary
+                        ),
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
             },
             confirmButton = {
-                if (customAiPrompt.isNotBlank()) {
-                    TextButton(
-                        onClick = {
-                            val p = customAiPrompt.trim()
+                PocketPrimaryButton(
+                    text = "Ask AI",
+                    onClick = {
+                        val p = customAiPrompt.trim()
+                        if (p.isNotBlank()) {
                             showContextualAi = false
+                            onAskCopilotContextual?.invoke("$p\n\nFile: $fileName\n```\n$fileSnippet\n```")
                             customAiPrompt = ""
-                            onAskCopilotContextual?.invoke("Regarding $fileName:\n$p\n\nFile code:\n```\n$fileSnippet\n```")
                         }
-                    ) {
-                        Text("Send", color = PocketEmerald, fontWeight = FontWeight.Bold)
-                    }
-                }
+                    },
+                    height = 36.dp
+                )
             },
             dismissButton = {
                 TextButton(onClick = { showContextualAi = false }) {
@@ -289,7 +293,7 @@ fun PocketIDEStudioScreen(
                 }
             },
             containerColor = PocketSurface,
-            shape = RoundedCornerShape(14.dp)
+            shape = RoundedCornerShape(10.dp)
         )
     }
 }
@@ -303,45 +307,43 @@ private fun StudioTabButton(
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    val bg = if (isSelected) PocketIndigo.copy(alpha = 0.2f) else Color.Transparent
-    val border = if (isSelected) PocketIndigo else Color.Transparent
-    val textColor = if (isSelected) PocketIndigo else PocketTextSecondary
-
-    Row(
+    Box(
         modifier = Modifier
-            .clip(RoundedCornerShape(8.dp))
-            .background(bg)
-            .border(1.dp, border, RoundedCornerShape(8.dp))
+            .clip(RoundedCornerShape(6.dp))
+            .background(if (isSelected) PocketSurfaceElevated else Color.Transparent)
+            .border(1.dp, if (isSelected) PocketBorder else Color.Transparent, RoundedCornerShape(6.dp))
             .clickable(onClick = onClick)
             .padding(horizontal = 10.dp, vertical = 6.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(6.dp)
+        contentAlignment = Alignment.Center
     ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            tint = textColor,
-            modifier = Modifier.size(15.dp)
-        )
-        Text(
-            text = title,
-            color = textColor,
-            fontSize = 12.sp,
-            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium
-        )
-        if (count != null && count > 0) {
-            Box(
-                modifier = Modifier
-                    .clip(CircleShape)
-                    .background(badgeColor ?: PocketSurfaceElevated)
-                    .padding(horizontal = 6.dp, vertical = 2.dp)
-            ) {
-                Text(
-                    text = count.toString(),
-                    color = if (badgeColor != null) PocketObsidian else PocketTextSecondary,
-                    fontSize = 10.sp,
-                    fontWeight = FontWeight.Bold
-                )
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = if (isSelected) PocketPrimaryBlue else PocketTextSecondary,
+                modifier = Modifier.size(15.dp)
+            )
+            Text(
+                text = title,
+                color = if (isSelected) PocketTextPrimary else PocketTextSecondary,
+                fontSize = 12.sp,
+                fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Medium
+            )
+            if (count != null && count > 0) {
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(4.dp))
+                        .background(badgeColor ?: PocketSurface)
+                        .padding(horizontal = 5.dp, vertical = 1.dp)
+                ) {
+                    Text(
+                        text = "$count",
+                        color = if (badgeColor != null) Color.White else PocketTextMuted,
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.Bold,
+                        fontFamily = FontFamily.Monospace
+                    )
+                }
             }
         }
     }
@@ -356,46 +358,35 @@ private fun FileBrowserView(
 ) {
     val filtered = remember(files, searchQuery) {
         if (searchQuery.isBlank()) files
-        else files.filter { it.name.contains(searchQuery, ignoreCase = true) }
+        else files.filter { it.name.contains(searchQuery, ignoreCase = true) || it.path.contains(searchQuery, ignoreCase = true) }
     }
 
-    Column(modifier = Modifier.fillMaxSize().padding(12.dp)) {
-        // Search Bar
+    Column(modifier = Modifier.fillMaxSize().padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        // Search
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(10.dp))
-                .background(PocketSurfaceElevated)
-                .border(1.dp, PocketBorder, RoundedCornerShape(10.dp))
-                .padding(horizontal = 10.dp, vertical = 8.dp),
+                .clip(RoundedCornerShape(6.dp))
+                .background(PocketSurface)
+                .border(1.dp, PocketBorder, RoundedCornerShape(6.dp))
+                .padding(horizontal = 10.dp, vertical = 7.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            horizontalArrangement = Arrangement.spacedBy(6.dp)
         ) {
-            Icon(Icons.Default.Search, contentDescription = null, tint = PocketTextMuted, modifier = Modifier.size(16.dp))
+            Icon(Icons.Default.Search, contentDescription = null, tint = PocketTextMuted, modifier = Modifier.size(15.dp))
             BasicTextField(
                 value = searchQuery,
                 onValueChange = onSearchChange,
-                textStyle = TextStyle(color = PocketTextPrimary, fontSize = 13.sp),
-                cursorBrush = SolidColor(PocketCyan),
                 modifier = Modifier.weight(1f),
+                textStyle = TextStyle(color = PocketTextPrimary, fontSize = 12.sp),
+                cursorBrush = SolidColor(PocketPrimaryBlue),
+                singleLine = true,
                 decorationBox = { inner ->
-                    if (searchQuery.isEmpty()) {
-                        Text("Search project files…", color = PocketTextMuted, fontSize = 13.sp)
-                    }
+                    if (searchQuery.isEmpty()) Text("Filter files…", color = PocketTextMuted, fontSize = 12.sp)
                     inner()
                 }
             )
-            if (searchQuery.isNotEmpty()) {
-                Icon(
-                    imageVector = Icons.Default.Close,
-                    contentDescription = "Clear",
-                    tint = PocketTextMuted,
-                    modifier = Modifier.size(16.dp).clickable { onSearchChange("") }
-                )
-            }
         }
-
-        Spacer(modifier = Modifier.height(10.dp))
 
         if (filtered.isEmpty()) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -421,8 +412,8 @@ private fun FileTreeItem(entry: WorkspaceEntry, onOpen: () -> Unit) {
         else -> Icons.Default.Description
     }
     val tint = when {
-        entry.isDirectory -> PocketCyan
-        entry.name.endsWith(".kt") -> PocketPurple
+        entry.isDirectory -> PocketPrimaryBlue
+        entry.name.endsWith(".kt") -> PocketPrimaryBlue
         entry.name.endsWith(".py") -> PocketAmber
         else -> PocketTextSecondary
     }
@@ -430,7 +421,7 @@ private fun FileTreeItem(entry: WorkspaceEntry, onOpen: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(8.dp))
+            .clip(RoundedCornerShape(6.dp))
             .clickable(enabled = !entry.isDirectory, onClick = onOpen)
             .padding(start = indent, top = 6.dp, bottom = 6.dp, end = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -528,7 +519,7 @@ private fun DiffFileCard(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
-                    Icon(Icons.Default.Code, contentDescription = null, tint = PocketCyan, modifier = Modifier.size(15.dp))
+                    Icon(Icons.Default.Code, contentDescription = null, tint = PocketPrimaryBlue, modifier = Modifier.size(15.dp))
                     Text(
                         text = change.path,
                         color = PocketTextPrimary,
@@ -554,8 +545,8 @@ private fun DiffFileCard(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(PocketObsidian)
+                        .clip(RoundedCornerShape(6.dp))
+                        .background(PocketDarkPalette.background)
                         .horizontalScroll(rememberScrollState())
                         .padding(8.dp)
                 ) {
@@ -563,7 +554,7 @@ private fun DiffFileCard(
                         val (lineBg, lineText) = when (line.type) {
                             DiffLineType.ADDITION -> Pair(PocketEmerald.copy(alpha = 0.15f), PocketEmerald)
                             DiffLineType.DELETION -> Pair(PocketRose.copy(alpha = 0.15f), PocketRose)
-                            DiffLineType.INFO -> Pair(PocketPurple.copy(alpha = 0.12f), PocketPurple)
+                            DiffLineType.INFO -> Pair(PocketPrimaryBlue.copy(alpha = 0.12f), PocketPrimaryBlue)
                             DiffLineType.CONTEXT -> Pair(Color.Transparent, PocketTextSecondary)
                         }
                         Row(
@@ -593,12 +584,13 @@ private fun CodeEditorView(
     initialContent: String,
     isLoading: Boolean,
     onClose: () -> Unit,
-    onSave: (String) -> Unit
+    onSave: (String) -> Unit,
+    onAiAction: (String) -> Unit = {}
 ) {
     var content by remember(initialContent) { mutableStateOf(initialContent) }
 
-    Column(modifier = Modifier.fillMaxSize().background(PocketObsidian)) {
-        // Editor Bar
+    Column(modifier = Modifier.fillMaxSize().background(PocketDarkPalette.background)) {
+        // Editor Top Bar
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -620,48 +612,104 @@ private fun CodeEditorView(
                 )
             }
             IconButton(onClick = { onSave(content) }, modifier = Modifier.size(28.dp)) {
-                Icon(Icons.Default.Save, contentDescription = "Save", tint = PocketCyan, modifier = Modifier.size(16.dp))
+                Icon(Icons.Default.Save, contentDescription = "Save", tint = PocketPrimaryBlue, modifier = Modifier.size(16.dp))
             }
         }
 
         if (isLoading) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator(color = PocketCyan)
+                CircularProgressIndicator(color = PocketPrimaryBlue)
             }
         } else {
             val lines = remember(content) { content.lines() }
-            Row(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(8.dp)
-                    .verticalScroll(rememberScrollState())
-                    .horizontalScroll(rememberScrollState())
-            ) {
-                // Line numbers
-                Column(modifier = Modifier.padding(end = 12.dp)) {
-                    lines.indices.forEach { idx ->
-                        Text(
-                            text = "${idx + 1}",
-                            color = PocketTextMuted,
+            Box(modifier = Modifier.weight(1f)) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(8.dp)
+                        .verticalScroll(rememberScrollState())
+                        .horizontalScroll(rememberScrollState())
+                ) {
+                    // Line numbers
+                    Column(modifier = Modifier.padding(end = 12.dp)) {
+                        lines.indices.forEach { idx ->
+                            Text(
+                                text = "${idx + 1}",
+                                color = PocketTextMuted,
+                                fontSize = 11.5.sp,
+                                fontFamily = FontFamily.Monospace,
+                                lineHeight = 18.sp
+                            )
+                        }
+                    }
+                    // Editable Content
+                    BasicTextField(
+                        value = content,
+                        onValueChange = { content = it },
+                        textStyle = TextStyle(
+                            color = PocketTextPrimary,
                             fontSize = 11.5.sp,
                             fontFamily = FontFamily.Monospace,
                             lineHeight = 18.sp
+                        ),
+                        cursorBrush = SolidColor(PocketPrimaryBlue),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            }
+
+            // Contextual AI Quick Bar in Editor: Fix, Explain, Refactor, Optimize, Generate, Test, Review
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                color = PocketSurface,
+                border = BorderStroke(1.dp, PocketBorder)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState())
+                        .padding(horizontal = 8.dp, vertical = 6.dp),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        modifier = Modifier.padding(end = 4.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.AutoAwesome,
+                            contentDescription = null,
+                            tint = PocketPrimaryBlue,
+                            modifier = Modifier.size(13.dp)
+                        )
+                        Text(
+                            text = "AI:",
+                            color = PocketPrimaryBlue,
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold
                         )
                     }
+
+                    listOf("Fix", "Explain", "Refactor", "Optimize", "Generate", "Test", "Review").forEach { action ->
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(6.dp))
+                                .background(PocketSurfaceElevated)
+                                .border(1.dp, PocketBorder, RoundedCornerShape(6.dp))
+                                .clickable { onAiAction(action) }
+                                .padding(horizontal = 8.dp, vertical = 4.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = action,
+                                color = PocketTextPrimary,
+                                fontSize = 11.5.sp,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+                    }
                 }
-                // Editable Content
-                BasicTextField(
-                    value = content,
-                    onValueChange = { content = it },
-                    textStyle = TextStyle(
-                        color = PocketTextPrimary,
-                        fontSize = 11.5.sp,
-                        fontFamily = FontFamily.Monospace,
-                        lineHeight = 18.sp
-                    ),
-                    cursorBrush = SolidColor(PocketCyan),
-                    modifier = Modifier.fillMaxWidth()
-                )
             }
         }
     }

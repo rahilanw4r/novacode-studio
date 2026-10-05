@@ -30,6 +30,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.automirrored.filled.CallSplit
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.Close
@@ -39,9 +40,9 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.StarBorder
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -52,6 +53,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -77,19 +79,19 @@ import com.pocketide.app.model.Project
 import com.pocketide.app.ui.AppUiState
 import com.pocketide.app.ui.components.PocketPrimaryButton
 import com.pocketide.app.ui.components.PocketSecondaryButton
-import com.pocketide.app.ui.components.PocketStatusPill
+import com.pocketide.app.ui.theme.PocketAmber
 import com.pocketide.app.ui.theme.PocketBorder
-import com.pocketide.app.ui.theme.PocketCyan
+import com.pocketide.app.ui.theme.PocketDarkPalette
 import com.pocketide.app.ui.theme.PocketEmerald
-import com.pocketide.app.ui.theme.PocketIndigo
-import com.pocketide.app.ui.theme.PocketObsidian
+import com.pocketide.app.ui.theme.PocketPrimaryBlue
 import com.pocketide.app.ui.theme.PocketRose
 import com.pocketide.app.ui.theme.PocketSurface
 import com.pocketide.app.ui.theme.PocketSurfaceElevated
-import com.pocketide.app.ui.theme.PocketSurfaceVariant
 import com.pocketide.app.ui.theme.PocketTextMuted
 import com.pocketide.app.ui.theme.PocketTextPrimary
 import com.pocketide.app.ui.theme.PocketTextSecondary
+
+enum class ProjectFilterTab { ALL, RECENT, FAVORITES }
 
 @Composable
 fun PocketProjectsScreen(
@@ -111,6 +113,9 @@ fun PocketProjectsScreen(
     modifier: Modifier = Modifier
 ) {
     var searchQuery by remember { mutableStateOf("") }
+    var filterTab by remember { mutableStateOf(ProjectFilterTab.ALL) }
+    var favoriteIds by remember { mutableStateOf(setOf<String>()) }
+
     var showCreateDialog by remember { mutableStateOf(false) }
     var newProjectName by remember { mutableStateOf("") }
     var showGitDialog by remember { mutableStateOf(false) }
@@ -125,8 +130,8 @@ fun PocketProjectsScreen(
         onResult = { uri -> uri?.let { onImportZip(it) } }
     )
 
-    val filteredProjects = remember(state.projects, searchQuery) {
-        if (searchQuery.isBlank()) {
+    val filteredProjects = remember(state.projects, searchQuery, filterTab, favoriteIds) {
+        val searched = if (searchQuery.isBlank()) {
             state.projects
         } else {
             state.projects.filter {
@@ -135,17 +140,23 @@ fun PocketProjectsScreen(
                     it.slug.contains(searchQuery, ignoreCase = true)
             }
         }
+
+        when (filterTab) {
+            ProjectFilterTab.ALL -> searched
+            ProjectFilterTab.RECENT -> searched.sortedByDescending { it.updatedAtMillis }
+            ProjectFilterTab.FAVORITES -> searched.filter { favoriteIds.contains(it.id) }
+        }
     }
 
     LazyColumn(
         state = listState,
         modifier = modifier
             .fillMaxSize()
-            .background(PocketObsidian),
+            .background(PocketDarkPalette.background),
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        // Header
+        // 1. Header: Projects    + New Project
         item {
             Row(
                 modifier = Modifier
@@ -162,7 +173,8 @@ fun PocketProjectsScreen(
                         text = "Projects",
                         color = PocketTextPrimary,
                         fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        letterSpacing = (-0.2).sp
                     )
                     Box(
                         modifier = Modifier
@@ -173,10 +185,10 @@ fun PocketProjectsScreen(
                     ) {
                         Text(
                             text = "${state.projects.size}",
-                            color = PocketEmerald,
+                            color = PocketPrimaryBlue,
                             fontSize = 11.sp,
                             fontFamily = FontFamily.Monospace,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.SemiBold
                         )
                     }
                 }
@@ -185,10 +197,10 @@ fun PocketProjectsScreen(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    // Command Center ⌘
+                    // Search / Command Center
                     Box(
                         modifier = Modifier
-                            .size(32.dp)
+                            .size(34.dp)
                             .clip(RoundedCornerShape(8.dp))
                             .background(PocketSurfaceElevated)
                             .border(1.dp, PocketBorder, RoundedCornerShape(8.dp))
@@ -212,7 +224,7 @@ fun PocketProjectsScreen(
             }
         }
 
-        // Search Bar
+        // 2. Search Bar
         item {
             Row(
                 modifier = Modifier
@@ -237,14 +249,14 @@ fun PocketProjectsScreen(
                     textStyle = TextStyle(
                         color = PocketTextPrimary,
                         fontSize = 13.sp,
-                        fontWeight = FontWeight.Medium
+                        fontWeight = FontWeight.Normal
                     ),
-                    cursorBrush = SolidColor(PocketEmerald),
+                    cursorBrush = SolidColor(PocketPrimaryBlue),
                     singleLine = true,
                     decorationBox = { innerTextField ->
                         if (searchQuery.isEmpty()) {
                             Text(
-                                text = "Filter projects by name or language…",
+                                text = "Search projects…",
                                 color = PocketTextMuted,
                                 fontSize = 13.sp
                             )
@@ -263,7 +275,40 @@ fun PocketProjectsScreen(
             }
         }
 
-        // Import & Actions Ribbon (compact pills)
+        // 3. Filter Tabs: All, Recent, Favorites
+        item {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                listOf(
+                    ProjectFilterTab.ALL to "All",
+                    ProjectFilterTab.RECENT to "Recent",
+                    ProjectFilterTab.FAVORITES to "Favorites"
+                ).forEach { (tab, label) ->
+                    val isSelected = filterTab == tab
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .clip(RoundedCornerShape(6.dp))
+                            .background(if (isSelected) PocketPrimaryBlue.copy(alpha = 0.15f) else PocketSurface)
+                            .border(1.dp, if (isSelected) PocketPrimaryBlue else PocketBorder, RoundedCornerShape(6.dp))
+                            .clickable { filterTab = tab }
+                            .padding(vertical = 7.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = if (tab == ProjectFilterTab.FAVORITES && favoriteIds.isNotEmpty()) "$label (${favoriteIds.size})" else label,
+                            color = if (isSelected) PocketPrimaryBlue else PocketTextSecondary,
+                            fontSize = 12.sp,
+                            fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Medium
+                        )
+                    }
+                }
+            }
+        }
+
+        // 4. Quick Actions Ribbon: Instant Sandbox, Git Clone, Import ZIP, GitHub
         item {
             Row(
                 modifier = Modifier
@@ -282,7 +327,7 @@ fun PocketProjectsScreen(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(5.dp)
                 ) {
-                    Icon(Icons.Default.Bolt, contentDescription = null, tint = PocketEmerald, modifier = Modifier.size(14.dp))
+                    Icon(Icons.Default.Bolt, contentDescription = null, tint = PocketPrimaryBlue, modifier = Modifier.size(14.dp))
                     Text("Instant Sandbox", color = PocketTextPrimary, fontSize = 11.5.sp, fontWeight = FontWeight.Medium)
                 }
 
@@ -300,7 +345,7 @@ fun PocketProjectsScreen(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(5.dp)
                 ) {
-                    Icon(Icons.Default.Code, contentDescription = null, tint = PocketIndigo, modifier = Modifier.size(14.dp))
+                    Icon(Icons.AutoMirrored.Filled.CallSplit, contentDescription = null, tint = PocketPrimaryBlue, modifier = Modifier.size(14.dp))
                     Text(if (state.gitCloneRunning) "Cloning…" else "Git Clone", color = PocketTextPrimary, fontSize = 11.5.sp, fontWeight = FontWeight.Medium)
                 }
 
@@ -315,7 +360,7 @@ fun PocketProjectsScreen(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(5.dp)
                 ) {
-                    Icon(Icons.Default.CloudDownload, contentDescription = null, tint = PocketCyan, modifier = Modifier.size(14.dp))
+                    Icon(Icons.Default.CloudDownload, contentDescription = null, tint = PocketPrimaryBlue, modifier = Modifier.size(14.dp))
                     Text(if (state.projectImporting) "Importing…" else "Import ZIP", color = PocketTextPrimary, fontSize = 11.5.sp, fontWeight = FontWeight.Medium)
                 }
 
@@ -335,18 +380,18 @@ fun PocketProjectsScreen(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(5.dp)
                 ) {
-                    Icon(Icons.Default.Code, contentDescription = null, tint = PocketEmerald, modifier = Modifier.size(14.dp))
+                    Icon(Icons.Default.Code, contentDescription = null, tint = PocketPrimaryBlue, modifier = Modifier.size(14.dp))
                     Text(state.githubLogin?.let { "@$it" } ?: "GitHub", color = PocketTextPrimary, fontSize = 11.5.sp, fontWeight = FontWeight.Medium)
                 }
             }
         }
 
-        // Projects Section
+        // 5. Projects List
         if (filteredProjects.isEmpty()) {
             item {
                 Surface(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp),
+                    shape = RoundedCornerShape(8.dp),
                     color = PocketSurface,
                     border = BorderStroke(1.dp, PocketBorder)
                 ) {
@@ -359,7 +404,7 @@ fun PocketProjectsScreen(
                     ) {
                         Box(
                             modifier = Modifier
-                                .size(42.dp)
+                                .size(40.dp)
                                 .clip(CircleShape)
                                 .background(PocketSurfaceElevated),
                             contentAlignment = Alignment.Center
@@ -367,22 +412,22 @@ fun PocketProjectsScreen(
                             Icon(Icons.Default.Folder, contentDescription = null, tint = PocketTextMuted, modifier = Modifier.size(20.dp))
                         }
                         Text(
-                            text = if (searchQuery.isNotBlank()) "No matching projects" else "No Projects Yet",
+                            text = if (searchQuery.isNotBlank()) "No matching projects" else if (filterTab == ProjectFilterTab.FAVORITES) "No favorite projects" else "No Projects Yet",
                             color = PocketTextPrimary,
                             fontSize = 14.sp,
                             fontWeight = FontWeight.SemiBold
                         )
                         Text(
-                            text = if (searchQuery.isNotBlank()) "Try searching with a different keyword." else "Create a project or start an instant sandbox to begin.",
-                            color = PocketTextMuted,
+                            text = if (searchQuery.isNotBlank()) "Try searching with a different keyword." else if (filterTab == ProjectFilterTab.FAVORITES) "Star a project to pin it here." else "Create a project or start an instant sandbox to begin.",
+                            color = PocketTextSecondary,
                             fontSize = 12.sp
                         )
-                        if (searchQuery.isBlank()) {
+                        if (searchQuery.isBlank() && filterTab != ProjectFilterTab.FAVORITES) {
                             PocketPrimaryButton(
                                 text = "Start Sandbox",
                                 icon = Icons.Default.Bolt,
                                 onClick = onCreateQuickProject,
-                                height = 38.dp
+                                height = 36.dp
                             )
                         }
                     }
@@ -392,13 +437,14 @@ fun PocketProjectsScreen(
             items(filteredProjects, key = { it.id }) { project ->
                 var menuOpen by remember { mutableStateOf(false) }
                 val isRunning = state.isRunning && state.activeProject?.id == project.id
+                val isFav = favoriteIds.contains(project.id)
 
                 Surface(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(RoundedCornerShape(10.dp))
+                        .clip(RoundedCornerShape(8.dp))
                         .clickable { onOpen(project) },
-                    shape = RoundedCornerShape(10.dp),
+                    shape = RoundedCornerShape(8.dp),
                     color = PocketSurface,
                     border = BorderStroke(1.dp, if (isRunning) PocketEmerald else PocketBorder)
                 ) {
@@ -416,16 +462,16 @@ fun PocketProjectsScreen(
                         ) {
                             Box(
                                 modifier = Modifier
-                                    .size(34.dp)
-                                    .clip(RoundedCornerShape(8.dp))
+                                    .size(32.dp)
+                                    .clip(RoundedCornerShape(6.dp))
                                     .background(if (isRunning) PocketEmerald.copy(alpha = 0.15f) else PocketSurfaceElevated),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Folder,
                                     contentDescription = null,
-                                    tint = if (isRunning) PocketEmerald else PocketTextSecondary,
-                                    modifier = Modifier.size(18.dp)
+                                    tint = if (isRunning) PocketEmerald else PocketPrimaryBlue,
+                                    modifier = Modifier.size(16.dp)
                                 )
                             }
 
@@ -438,7 +484,7 @@ fun PocketProjectsScreen(
                                         text = project.name,
                                         color = PocketTextPrimary,
                                         fontSize = 13.5.sp,
-                                        fontWeight = FontWeight.SemiBold,
+                                        fontWeight = FontWeight.Medium,
                                         maxLines = 1,
                                         overflow = TextOverflow.Ellipsis
                                     )
@@ -455,8 +501,8 @@ fun PocketProjectsScreen(
                                 }
 
                                 Text(
-                                    text = "${project.language.ifBlank { "Linux" }} • Modified ${project.formattedUpdatedAt}",
-                                    color = PocketTextMuted,
+                                    text = "${project.language.ifBlank { "Android" }} · Updated ${project.formattedUpdatedAt}",
+                                    color = PocketTextSecondary,
                                     fontSize = 11.sp,
                                     maxLines = 1
                                 )
@@ -467,6 +513,22 @@ fun PocketProjectsScreen(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
+                            // Favorite toggle button
+                            IconButton(
+                                onClick = {
+                                    favoriteIds = if (isFav) favoriteIds - project.id else favoriteIds + project.id
+                                },
+                                modifier = Modifier.size(28.dp)
+                            ) {
+                                Icon(
+                                    imageVector = if (isFav) Icons.Default.Star else Icons.Default.StarBorder,
+                                    contentDescription = if (isFav) "Favorited" else "Favorite",
+                                    tint = if (isFav) PocketAmber else PocketTextMuted,
+                                    modifier = Modifier.size(16.dp)
+                                )
+                            }
+
+                            // Open button
                             Box(
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(6.dp))
@@ -479,11 +541,12 @@ fun PocketProjectsScreen(
                                     verticalAlignment = Alignment.CenterVertically,
                                     horizontalArrangement = Arrangement.spacedBy(3.dp)
                                 ) {
-                                    Text("Open", color = PocketEmerald, fontSize = 11.5.sp, fontWeight = FontWeight.SemiBold)
-                                    Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null, tint = PocketEmerald, modifier = Modifier.size(12.dp))
+                                    Text("Open", color = PocketPrimaryBlue, fontSize = 11.5.sp, fontWeight = FontWeight.SemiBold)
+                                    Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null, tint = PocketPrimaryBlue, modifier = Modifier.size(12.dp))
                                 }
                             }
 
+                            // More actions menu
                             Box {
                                 IconButton(
                                     onClick = { menuOpen = true },
@@ -495,6 +558,22 @@ fun PocketProjectsScreen(
                                     expanded = menuOpen,
                                     onDismissRequest = { menuOpen = false }
                                 ) {
+                                    DropdownMenuItem(
+                                        text = { Text("Open Project") },
+                                        leadingIcon = { Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null, modifier = Modifier.size(16.dp)) },
+                                        onClick = {
+                                            menuOpen = false
+                                            onOpen(project)
+                                        }
+                                    )
+                                    DropdownMenuItem(
+                                        text = { Text(if (isFav) "Remove from Favorites" else "Add to Favorites") },
+                                        leadingIcon = { Icon(if (isFav) Icons.Default.StarBorder else Icons.Default.Star, contentDescription = null, modifier = Modifier.size(16.dp)) },
+                                        onClick = {
+                                            menuOpen = false
+                                            favoriteIds = if (isFav) favoriteIds - project.id else favoriteIds + project.id
+                                        }
+                                    )
                                     DropdownMenuItem(
                                         text = { Text("Rename Project") },
                                         leadingIcon = { Icon(Icons.Default.Edit, contentDescription = null, modifier = Modifier.size(16.dp)) },
@@ -537,6 +616,14 @@ fun PocketProjectsScreen(
                     label = { Text("Project Name") },
                     placeholder = { Text("e.g. mobile-web-app") },
                     singleLine = true,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedTextColor = PocketTextPrimary,
+                        unfocusedTextColor = PocketTextPrimary,
+                        focusedBorderColor = PocketPrimaryBlue,
+                        unfocusedBorderColor = PocketBorder,
+                        focusedLabelColor = PocketPrimaryBlue,
+                        unfocusedLabelColor = PocketTextSecondary
+                    ),
                     modifier = Modifier.fillMaxWidth()
                 )
             },
@@ -550,7 +637,7 @@ fun PocketProjectsScreen(
                             onCreate(trimmed)
                         }
                     },
-                    height = 40.dp
+                    height = 38.dp
                 )
             },
             dismissButton = {
@@ -559,7 +646,7 @@ fun PocketProjectsScreen(
                 }
             },
             containerColor = PocketSurface,
-            shape = RoundedCornerShape(14.dp)
+            shape = RoundedCornerShape(10.dp)
         )
     }
 
@@ -577,6 +664,14 @@ fun PocketProjectsScreen(
                         label = { Text("Git Repository URL") },
                         placeholder = { Text("https://github.com/user/repo.git") },
                         singleLine = true,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedTextColor = PocketTextPrimary,
+                            unfocusedTextColor = PocketTextPrimary,
+                            focusedBorderColor = PocketPrimaryBlue,
+                            unfocusedBorderColor = PocketBorder,
+                            focusedLabelColor = PocketPrimaryBlue,
+                            unfocusedLabelColor = PocketTextSecondary
+                        ),
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
@@ -591,7 +686,7 @@ fun PocketProjectsScreen(
                             onCloneGit(trimmed)
                         }
                     },
-                    height = 40.dp
+                    height = 38.dp
                 )
             },
             dismissButton = {
@@ -600,7 +695,7 @@ fun PocketProjectsScreen(
                 }
             },
             containerColor = PocketSurface,
-            shape = RoundedCornerShape(14.dp)
+            shape = RoundedCornerShape(10.dp)
         )
     }
 
@@ -616,6 +711,14 @@ fun PocketProjectsScreen(
                     onValueChange = { renameText = it },
                     label = { Text("New Name") },
                     singleLine = true,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedTextColor = PocketTextPrimary,
+                        unfocusedTextColor = PocketTextPrimary,
+                        focusedBorderColor = PocketPrimaryBlue,
+                        unfocusedBorderColor = PocketBorder,
+                        focusedLabelColor = PocketPrimaryBlue,
+                        unfocusedLabelColor = PocketTextSecondary
+                    ),
                     modifier = Modifier.fillMaxWidth()
                 )
             },
@@ -629,7 +732,7 @@ fun PocketProjectsScreen(
                             projectToRename = null
                         }
                     },
-                    height = 40.dp
+                    height = 38.dp
                 )
             },
             dismissButton = {
@@ -638,7 +741,7 @@ fun PocketProjectsScreen(
                 }
             },
             containerColor = PocketSurface,
-            shape = RoundedCornerShape(14.dp)
+            shape = RoundedCornerShape(10.dp)
         )
     }
 
@@ -667,7 +770,7 @@ fun PocketProjectsScreen(
                 }
             },
             containerColor = PocketSurface,
-            shape = RoundedCornerShape(14.dp)
+            shape = RoundedCornerShape(10.dp)
         )
     }
 
@@ -698,19 +801,19 @@ fun PocketProjectsScreen(
                         if (state.githubAuthStatus == GitHubAuthStatus.AWAITING_USER) {
                             Text(
                                 text = "Code: ${state.githubUserCode ?: "..."}",
-                                color = PocketEmerald,
+                                color = PocketPrimaryBlue,
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold,
                                 fontFamily = FontFamily.Monospace
                             )
                             state.githubVerificationUri?.let { uri ->
-                                Text("Open: $uri", color = PocketCyan, fontSize = 12.sp)
+                                Text("Open: $uri", color = PocketPrimaryBlue, fontSize = 12.sp)
                             }
                         }
                     } else {
                         if (state.githubRepositoriesLoading) {
                             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                                CircularProgressIndicator(color = PocketEmerald, modifier = Modifier.size(28.dp))
+                                CircularProgressIndicator(color = PocketPrimaryBlue, modifier = Modifier.size(28.dp))
                             }
                         } else if (state.githubRepositories.isEmpty()) {
                             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -739,7 +842,7 @@ fun PocketProjectsScreen(
                                             Text(repo.fullName.substringAfterLast('/'), color = PocketTextPrimary, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, maxLines = 1)
                                             Text(repo.fullName, color = PocketTextMuted, fontSize = 11.sp, maxLines = 1)
                                         }
-                                        Icon(Icons.Default.CloudDownload, contentDescription = "Clone", tint = PocketEmerald, modifier = Modifier.size(16.dp))
+                                        Icon(Icons.Default.CloudDownload, contentDescription = "Clone", tint = PocketPrimaryBlue, modifier = Modifier.size(16.dp))
                                     }
                                 }
                             }
@@ -757,7 +860,7 @@ fun PocketProjectsScreen(
                 } else {
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         TextButton(onClick = onRefreshGitHub) {
-                            Text("Refresh", color = PocketCyan)
+                            Text("Refresh", color = PocketPrimaryBlue)
                         }
                         TextButton(onClick = onDisconnectGitHub) {
                             Text("Disconnect", color = PocketRose)
@@ -771,7 +874,7 @@ fun PocketProjectsScreen(
                 }
             },
             containerColor = PocketSurface,
-            shape = RoundedCornerShape(14.dp)
+            shape = RoundedCornerShape(10.dp)
         )
     }
 }

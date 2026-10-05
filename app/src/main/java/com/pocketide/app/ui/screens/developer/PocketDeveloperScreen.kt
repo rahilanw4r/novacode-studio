@@ -125,9 +125,7 @@ fun PocketDeveloperScreen(
             // Hero Profile Card
             item {
                 PocketGlassCard(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .liquidAuraBorder(enabled = true, shape = RoundedCornerShape(16.dp), strokeWidth = 1.5.dp)
+                    modifier = Modifier.fillMaxWidth()
                 ) {
                     Column(
                         modifier = Modifier.fillMaxWidth(),
@@ -325,7 +323,7 @@ fun PocketDeveloperScreen(
                     PocketGlassCard(modifier = Modifier.fillMaxWidth()) {
                         Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                             SpecRow(icon = Icons.Default.Shield, label = "Studio Version", value = "v${BuildConfig.VERSION_NAME} (Build ${BuildConfig.VERSION_CODE})")
-                            SpecRow(icon = Icons.Default.Memory, label = "Virtualization Runtime", value = "PRoot Isolated ARM64")
+                            SpecRow(icon = Icons.Default.Memory, label = "Linux Runtime", value = "PRoot Isolated ARM64")
                             SpecRow(icon = Icons.Default.Person, label = "Lead Developer", value = "Rahil Anwar")
                             SpecRow(icon = Icons.Default.Code, label = "Linux Base", value = "Ubuntu 24.04 LTS")
                         }

@@ -17,12 +17,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.AutoAwesome
+import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Code
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.Extension
@@ -32,13 +31,12 @@ import androidx.compose.material.icons.filled.Memory
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PrivacyTip
 import androidx.compose.material.icons.filled.Psychology
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.SystemUpdate
 import androidx.compose.material.icons.filled.Terminal
+import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.AlertDialog
-import com.pocketide.app.BuildConfig
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
@@ -59,14 +57,12 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.pocketide.app.ui.theme.AppThemeMode
+import com.pocketide.app.BuildConfig
 import com.pocketide.app.ui.AppUiState
+import com.pocketide.app.ui.theme.AppThemeMode
 import com.pocketide.app.ui.theme.PocketBorder
-import com.pocketide.app.ui.theme.PocketCyan
-import com.pocketide.app.ui.theme.PocketEmerald
-import com.pocketide.app.ui.theme.PocketIndigo
-import com.pocketide.app.ui.theme.PocketObsidian
-import com.pocketide.app.ui.theme.PocketPurple
+import com.pocketide.app.ui.theme.PocketDarkPalette
+import com.pocketide.app.ui.theme.PocketPrimaryBlue
 import com.pocketide.app.ui.theme.PocketSurface
 import com.pocketide.app.ui.theme.PocketSurfaceElevated
 import com.pocketide.app.ui.theme.PocketTextMuted
@@ -87,11 +83,12 @@ fun PocketMoreScreen(
     var showRuntimeDialog by remember { mutableStateOf(false) }
     var showPrivacyDialog by remember { mutableStateOf(false) }
     var showExtensionsDialog by remember { mutableStateOf(false) }
+    var showMcpDialog by remember { mutableStateOf(false) }
 
     LazyColumn(
         modifier = modifier
             .fillMaxSize()
-            .background(PocketObsidian),
+            .background(PocketDarkPalette.background),
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
@@ -105,15 +102,16 @@ fun PocketMoreScreen(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = "More",
+                    text = "Settings",
                     color = PocketTextPrimary,
                     fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    letterSpacing = (-0.2).sp
                 )
 
                 Box(
                     modifier = Modifier
-                        .size(32.dp)
+                        .size(34.dp)
                         .clip(RoundedCornerShape(8.dp))
                         .background(PocketSurfaceElevated)
                         .border(1.dp, PocketBorder, RoundedCornerShape(8.dp))
@@ -125,12 +123,11 @@ fun PocketMoreScreen(
             }
         }
 
-        // GENERAL SECTION
+        // 1. GENERAL SECTION
         item {
-            MoreSection(title = "GENERAL") {
+            MoreSection(title = "General") {
                 MoreSettingRow(
                     icon = Icons.Default.DarkMode,
-                    iconTint = PocketCyan,
                     title = "Appearance",
                     value = when (state.themeMode) {
                         AppThemeMode.DARK -> "Dark"
@@ -142,7 +139,6 @@ fun PocketMoreScreen(
                 HorizontalDivider(color = PocketBorder)
                 MoreSettingRow(
                     icon = Icons.Default.Language,
-                    iconTint = PocketIndigo,
                     title = "Language",
                     value = "English",
                     onClick = {}
@@ -150,86 +146,103 @@ fun PocketMoreScreen(
             }
         }
 
-        // DEVELOPMENT SECTION
+        // 2. DEVELOPMENT SECTION
         item {
-            MoreSection(title = "DEVELOPMENT") {
+            MoreSection(title = "Development") {
                 MoreSettingRow(
                     icon = Icons.Default.Person,
-                    iconTint = PocketEmerald,
                     title = "Developer Tools",
-                    value = "Rahil Anwar",
+                    value = "Debug & Tools",
                     onClick = onOpenDeveloper
                 )
                 HorizontalDivider(color = PocketBorder)
                 MoreSettingRow(
-                    icon = Icons.Default.Memory,
-                    iconTint = PocketPurple,
+                    icon = Icons.Default.Terminal,
                     title = "Linux Runtime",
-                    value = "Ubuntu 24.04 ARM64",
+                    value = "PRoot Isolated",
                     onClick = { showRuntimeDialog = true }
                 )
                 HorizontalDivider(color = PocketBorder)
                 MoreSettingRow(
-                    icon = Icons.Default.SystemUpdate,
-                    iconTint = PocketEmerald,
-                    title = "Update Channel",
-                    value = state.appUpdate?.let { "v${it.versionName} Available" } ?: "v${BuildConfig.VERSION_NAME} Up to date",
-                    onClick = onInstallUpdate
+                    icon = Icons.Default.Extension,
+                    title = "Extensions",
+                    value = "Installed (1)",
+                    onClick = { showExtensionsDialog = true }
                 )
                 HorizontalDivider(color = PocketBorder)
                 MoreSettingRow(
-                    icon = Icons.Default.Extension,
-                    iconTint = PocketCyan,
-                    title = "Extensions & MCP",
-                    value = "Custom tools",
-                    onClick = { showExtensionsDialog = true }
+                    icon = Icons.Default.Build,
+                    title = "MCP / Custom Tools",
+                    value = "Configured",
+                    onClick = { showMcpDialog = true }
                 )
             }
         }
 
-        // AI SECTION
+        // 3. AI SECTION
         item {
             MoreSection(title = "AI") {
                 MoreSettingRow(
                     icon = Icons.Default.AutoAwesome,
-                    iconTint = PocketEmerald,
-                    title = "AI Providers",
+                    title = "Providers",
                     value = state.agentKind.title,
                     onClick = onOpenAiSettings
                 )
                 HorizontalDivider(color = PocketBorder)
                 MoreSettingRow(
                     icon = Icons.Default.Psychology,
-                    iconTint = PocketIndigo,
-                    title = "Default Model",
-                    value = if (state.antigravityModel.isNotBlank()) state.antigravityModel.substringAfterLast('-').replaceFirstChar { it.uppercase() } else "High reasoning",
+                    title = "Models",
+                    value = if (state.antigravityModel.isNotBlank()) state.antigravityModel.substringAfterLast('-').replaceFirstChar { it.uppercase() } else "Default",
+                    onClick = onOpenAiSettings
+                )
+                HorizontalDivider(color = PocketBorder)
+                MoreSettingRow(
+                    icon = Icons.Default.Tune,
+                    title = "AI Configuration",
+                    value = "Settings",
                     onClick = onOpenAiSettings
                 )
                 HorizontalDivider(color = PocketBorder)
                 MoreSettingRow(
                     icon = Icons.Default.Security,
-                    iconTint = PocketCyan,
-                    title = "AI Privacy",
-                    value = "Local keys",
+                    title = "Privacy",
+                    value = "Local encrypted keys",
                     onClick = { showPrivacyDialog = true }
                 )
             }
         }
 
-        // ABOUT SECTION
+        // 4. UPDATES SECTION
         item {
-            MoreSection(title = "ABOUT") {
+            MoreSection(title = "Updates") {
+                MoreSettingRow(
+                    icon = Icons.Default.SystemUpdate,
+                    title = "Update Channel",
+                    value = state.appUpdate?.let { "v${it.versionName} Available" } ?: "v${BuildConfig.VERSION_NAME} Up to date",
+                    onClick = onInstallUpdate
+                )
+            }
+        }
+
+        // 5. ABOUT SECTION
+        item {
+            MoreSection(title = "About") {
                 MoreSettingRow(
                     icon = Icons.Default.Info,
-                    iconTint = PocketIndigo,
                     title = "Pocket IDE",
-                    value = "v${BuildConfig.VERSION_NAME} (Build ${BuildConfig.VERSION_CODE})",
+                    value = "v${BuildConfig.VERSION_NAME}",
+                    onClick = {}
+                )
+                HorizontalDivider(color = PocketBorder)
+                MoreSettingRow(
+                    icon = Icons.Default.Memory,
+                    title = "Build Number",
+                    value = "${BuildConfig.VERSION_CODE}",
                     onClick = {}
                 )
                 HorizontalDivider(color = PocketBorder)
                 MoreSettingRow(
                     icon = Icons.Default.PrivacyTip,
-                    iconTint = PocketEmerald,
                     title = "Privacy Policy",
                     value = null,
                     onClick = { showPrivacyDialog = true }
@@ -237,67 +250,74 @@ fun PocketMoreScreen(
                 HorizontalDivider(color = PocketBorder)
                 MoreSettingRow(
                     icon = Icons.Default.Code,
-                    iconTint = PocketPurple,
                     title = "Open Source Repository",
                     value = "GitHub",
                     onClick = {
                         try {
-                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/rahilanw4r"))
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/rahilanw4r/pocket-ide"))
                             context.startActivity(intent)
                         } catch (_: Exception) {}
                     }
                 )
+                HorizontalDivider(color = PocketBorder)
+                MoreSettingRow(
+                    icon = Icons.Default.Person,
+                    title = "Creator",
+                    value = "Rahil Anwar",
+                    onClick = onOpenDeveloper
+                )
             }
         }
 
-        // Bottom clearance for floating nav bar
+        // Bottom clearance for nav bar
         item {
             Spacer(Modifier.height(72.dp))
         }
     }
 
-    // Runtime Dialog
+    // Linux Runtime Dialog
     if (showRuntimeDialog) {
         AlertDialog(
             onDismissRequest = { showRuntimeDialog = false },
-            title = { Text("Linux Runtime Environment", color = PocketTextPrimary, fontWeight = FontWeight.Bold) },
+            title = { Text("Linux Runtime", color = PocketTextPrimary, fontWeight = FontWeight.Bold) },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text("Architecture: aarch64 (ARM64)", color = PocketTextSecondary, fontSize = 13.sp)
-                    Text("Distribution: Ubuntu 24.04 LTS Noble", color = PocketTextSecondary, fontSize = 13.sp)
-                    Text("Kernel: Linux on-device isolated sandbox", color = PocketTextSecondary, fontSize = 13.sp)
-                    Text("Status: ${if (state.isRunning) "Running active process" else "Online & Ready"}", color = PocketEmerald, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
+                    Text("Environment: On-device Linux development environment", color = PocketTextSecondary, fontSize = 13.sp)
+                    Text("Runtime: Isolated PRoot user-space environment", color = PocketTextSecondary, fontSize = 13.sp)
+                    Text("Distribution: Ubuntu 24.04 LTS (Noble Numbat)", color = PocketTextSecondary, fontSize = 13.sp)
+                    Text("Architecture: ARM64 (aarch64)", color = PocketTextSecondary, fontSize = 13.sp)
+                    Text("Isolation: Sandboxed PRoot rootfs with seccomp filtering", color = PocketTextSecondary, fontSize = 13.sp)
                 }
             },
             confirmButton = {
                 TextButton(onClick = { showRuntimeDialog = false }) {
-                    Text("Close", color = PocketEmerald)
+                    Text("Done", color = PocketPrimaryBlue)
                 }
             },
             containerColor = PocketSurface,
-            shape = RoundedCornerShape(14.dp)
+            shape = RoundedCornerShape(10.dp)
         )
     }
 
-    // Privacy Dialog
+    // AI Privacy Dialog
     if (showPrivacyDialog) {
         AlertDialog(
             onDismissRequest = { showPrivacyDialog = false },
             title = { Text("Privacy & Security", color = PocketTextPrimary, fontWeight = FontWeight.Bold) },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text("• All development code executes directly on your local device.", color = PocketTextSecondary, fontSize = 13.sp)
-                    Text("• API keys and credentials are encrypted using Android Keystore.", color = PocketTextSecondary, fontSize = 13.sp)
-                    Text("• No user project files are transmitted to third-party telemetry servers.", color = PocketTextSecondary, fontSize = 13.sp)
+                    Text("• All development code executes directly inside your on-device Linux environment.", color = PocketTextSecondary, fontSize = 13.sp)
+                    Text("• API keys and provider tokens are stored in Android Keystore with AES-GCM encryption.", color = PocketTextSecondary, fontSize = 13.sp)
+                    Text("• No project telemetry or source code is uploaded to external telemetry services.", color = PocketTextSecondary, fontSize = 13.sp)
                 }
             },
             confirmButton = {
                 TextButton(onClick = { showPrivacyDialog = false }) {
-                    Text("Got it", color = PocketEmerald)
+                    Text("Done", color = PocketPrimaryBlue)
                 }
             },
             containerColor = PocketSurface,
-            shape = RoundedCornerShape(14.dp)
+            shape = RoundedCornerShape(10.dp)
         )
     }
 
@@ -305,19 +325,45 @@ fun PocketMoreScreen(
     if (showExtensionsDialog) {
         AlertDialog(
             onDismissRequest = { showExtensionsDialog = false },
-            title = { Text("Extensions & Tool Ecosystem", color = PocketTextPrimary, fontWeight = FontWeight.Bold) },
+            title = { Text("Extensions", color = PocketTextPrimary, fontWeight = FontWeight.Bold) },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text("Pocket IDE supports MCP (Model Context Protocol) sidecars and Antigravity custom tools for enhanced copilot workflows.", color = PocketTextSecondary, fontSize = 13.sp)
+                    Text("Installed Extensions:", color = PocketTextPrimary, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
+                    Text("• Antigravity Python Language Support (builtin)", color = PocketTextSecondary, fontSize = 12.5.sp)
+                    Text("• Kotlin / Java LSP Support (builtin)", color = PocketTextSecondary, fontSize = 12.5.sp)
+                    Text("• Git Integration Provider (builtin)", color = PocketTextSecondary, fontSize = 12.5.sp)
                 }
             },
             confirmButton = {
                 TextButton(onClick = { showExtensionsDialog = false }) {
-                    Text("OK", color = PocketEmerald)
+                    Text("Done", color = PocketPrimaryBlue)
                 }
             },
             containerColor = PocketSurface,
-            shape = RoundedCornerShape(14.dp)
+            shape = RoundedCornerShape(10.dp)
+        )
+    }
+
+    // MCP / Custom Tools Dialog
+    if (showMcpDialog) {
+        AlertDialog(
+            onDismissRequest = { showMcpDialog = false },
+            title = { Text("MCP & Custom Tools", color = PocketTextPrimary, fontWeight = FontWeight.Bold) },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text("Model Context Protocol (MCP):", color = PocketTextPrimary, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
+                    Text("• Local stdio sidecars supported for tool execution", color = PocketTextSecondary, fontSize = 12.5.sp)
+                    Text("• Filesystem access tool provider enabled", color = PocketTextSecondary, fontSize = 12.5.sp)
+                    Text("• Terminal command execution provider enabled", color = PocketTextSecondary, fontSize = 12.5.sp)
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { showMcpDialog = false }) {
+                    Text("Done", color = PocketPrimaryBlue)
+                }
+            },
+            containerColor = PocketSurface,
+            shape = RoundedCornerShape(10.dp)
         )
     }
 }
@@ -330,14 +376,13 @@ private fun MoreSection(
     Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
         Text(
             text = title,
-            color = PocketTextMuted,
-            fontSize = 11.5.sp,
-            fontWeight = FontWeight.Bold,
-            letterSpacing = 0.5.sp
+            color = PocketTextPrimary,
+            fontSize = 13.sp,
+            fontWeight = FontWeight.SemiBold
         )
         Surface(
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(10.dp),
+            shape = RoundedCornerShape(8.dp),
             color = PocketSurface,
             border = androidx.compose.foundation.BorderStroke(1.dp, PocketBorder)
         ) {
@@ -351,7 +396,6 @@ private fun MoreSection(
 @Composable
 private fun MoreSettingRow(
     icon: ImageVector,
-    iconTint: Color,
     title: String,
     value: String? = null,
     onClick: () -> Unit
@@ -376,7 +420,7 @@ private fun MoreSettingRow(
                     .background(PocketSurfaceElevated),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(imageVector = icon, contentDescription = null, tint = iconTint, modifier = Modifier.size(16.dp))
+                Icon(imageVector = icon, contentDescription = null, tint = PocketPrimaryBlue, modifier = Modifier.size(16.dp))
             }
             Text(
                 text = title,
@@ -393,7 +437,7 @@ private fun MoreSettingRow(
             if (value != null) {
                 Text(
                     text = value,
-                    color = PocketTextMuted,
+                    color = PocketTextSecondary,
                     fontSize = 12.sp
                 )
             }
