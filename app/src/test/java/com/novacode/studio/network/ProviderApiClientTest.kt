@@ -1,6 +1,6 @@
-package com.novacode.studio.network
+package com.pocketide.app.network
 
-import com.novacode.studio.model.ProviderProtocol
+import com.pocketide.app.model.ProviderProtocol
 import org.json.JSONObject
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
