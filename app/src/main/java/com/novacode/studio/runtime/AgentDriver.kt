@@ -1,6 +1,6 @@
-package com.novacode.studio.runtime
+package com.pocketide.app.runtime
 
-import com.novacode.studio.model.AgentKind
+import com.pocketide.app.model.AgentKind
 
 /** Features exposed by an agent without teaching shared UI about a concrete CLI. */
 enum class AgentCapability {
