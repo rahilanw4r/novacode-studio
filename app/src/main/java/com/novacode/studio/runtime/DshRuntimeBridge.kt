@@ -1,16 +1,16 @@
-package com.novacode.studio.runtime
+package com.pocketide.app.runtime
 
 import android.content.Context
 import android.util.Log
 import androidx.core.content.ContextCompat
-import com.novacode.studio.model.ChangeItem
-import com.novacode.studio.model.ChatMessage
-import com.novacode.studio.model.DevStack
-import com.novacode.studio.model.ProjectKind
-import com.novacode.studio.model.ProviderKind
-import com.novacode.studio.model.ProviderProfile
-import com.novacode.studio.model.RuntimeEvent
-import com.novacode.studio.model.ToolRequest
+import com.pocketide.app.model.ChangeItem
+import com.pocketide.app.model.ChatMessage
+import com.pocketide.app.model.DevStack
+import com.pocketide.app.model.ProjectKind
+import com.pocketide.app.model.ProviderKind
+import com.pocketide.app.model.ProviderProfile
+import com.pocketide.app.model.RuntimeEvent
+import com.pocketide.app.model.ToolRequest
 import java.io.File
 import java.io.RandomAccessFile
 import java.util.UUID
@@ -99,7 +99,7 @@ class DshRuntimeBridge(
             }
             startForegroundRuntime(projectSlug)
             val installed = installer.installedRuntime()
-            check(installer.isAgentInstalled(com.novacode.studio.model.AgentKind.DEEPSEEK_CODER)) {
+            check(installer.isAgentInstalled(com.pocketide.app.model.AgentKind.DEEPSEEK_CODER)) {
                 "DeepSeek Coder is not installed. Open Settings → Coding agent to install it."
             }
             installer.ensureDshAndroidCompatibility()
@@ -118,7 +118,7 @@ class DshRuntimeBridge(
             writeDshSettings(installed.rootfs, route, provider)
             val environment = linkedMapOf(
                 "DSH_HOME" to DSH_HOME_GUEST_PATH,
-                // NovaCode already confines the whole Linux guest with PRoot. Let dsh
+                // PocketIDE already confines the whole Linux guest with PRoot. Let dsh
                 // use every tool inside that boundary without an unavailable approval UI.
                 "DSH_PERMISSION_MODE" to "danger-full-access",
                 route.keyEnv to secret,
@@ -553,10 +553,10 @@ class DshRuntimeBridge(
             sb.appendLine("If this is an Android project, the phone already provides JDK 17, Android SDK 36, ARM64 Build Tools 35.0.0, Gradle 8.14.3, and an offline Maven repository.")
             sb.appendLine("For newly created Android projects, use AGP 8.11.0, Kotlin 1.9.22, compileSdk 36, and Java 17 so the preinstalled offline toolchain can build immediately.")
             sb.appendLine("The bundled Maven cache handles the base toolchain; Gradle may download project-specific libraries normally. Set android.useAndroidX=true for AndroidX or Compose projects.")
-            sb.appendLine("NovaCode globally configures Gradle to use the SDK's ARM64 aapt2. Do not use the x86_64 Maven aapt2, investigate its architecture, or add android.aapt2FromMavenOverride to the project.")
+            sb.appendLine("PocketIDE globally configures Gradle to use the SDK's ARM64 aapt2. Do not use the x86_64 Maven aapt2, investigate its architecture, or add android.aapt2FromMavenOverride to the project.")
             sb.appendLine("Use the installed `gradle` command for Android builds; do not ask the user to install Android Studio, an SDK, Gradle, ADB, or Termux.")
         } else {
-            sb.appendLine("The optional Android build toolchain is not installed in this NovaCode runtime. You may create Android project files, but do not claim that Gradle, the Android SDK, or aapt2 is available and do not present build or install commands as verified. Tell the user to add the Android development stack in NovaCode Settings before building.")
+            sb.appendLine("The optional Android build toolchain is not installed in this PocketIDE runtime. You may create Android project files, but do not claim that Gradle, the Android SDK, or aapt2 is available and do not present build or install commands as verified. Tell the user to add the Android development stack in PocketIDE Settings before building.")
         }
         sb.appendLine("For local servers, give a clear start command and never use a kill command that searches its own command text with pgrep, because it can terminate the terminal itself.")
         sb.appendLine("</project_workspace>")
