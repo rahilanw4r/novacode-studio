@@ -145,3 +145,23 @@ Java_com_pocketide_app_runtime_NativeSpawn_kill(JNIEnv *env, jobject self, jint 
     if (result != 0 && errno == ESRCH) result = kill(pid, signal);
     return result;
 }
+
+// Backward-compatibility JNI aliases for legacy runtimes
+JNIEXPORT jintArray JNICALL
+Java_com_novacode_studio_runtime_NativeSpawn_spawn(JNIEnv *env, jobject self, jobjectArray java_argv,
+                                                   jobjectArray java_env, jstring java_cwd,
+                                                   jstring java_output, jboolean use_pty,
+                                                   jint pty_rows, jint pty_columns) {
+    return Java_com_pocketide_app_runtime_NativeSpawn_spawn(env, self, java_argv, java_env, java_cwd, java_output, use_pty, pty_rows, pty_columns);
+}
+
+JNIEXPORT jint JNICALL
+Java_com_novacode_studio_runtime_NativeSpawn_waitFor(JNIEnv *env, jobject self, jint pid, jboolean no_hang) {
+    return Java_com_pocketide_app_runtime_NativeSpawn_waitFor(env, self, pid, no_hang);
+}
+
+JNIEXPORT jint JNICALL
+Java_com_novacode_studio_runtime_NativeSpawn_kill(JNIEnv *env, jobject self, jint pid, jint signal) {
+    return Java_com_pocketide_app_runtime_NativeSpawn_kill(env, self, pid, signal);
+}
+

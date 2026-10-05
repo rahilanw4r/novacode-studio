@@ -3,7 +3,7 @@ name: Build Pocket IDE APK
 on:
   push:
     branches: [ main ]
-  workflow_dispatch:
+  workflow_dispatch: {}
 
 jobs:
   build:
@@ -56,19 +56,22 @@ jobs:
           echo "Publishing release $TAG with $APK_NAME from $APK_FILE"
           cp "$APK_FILE" "$APK_NAME"
 
+          cat << 'EOF' > release_notes.md
+          ### Pocket IDE
+
+          **Your on-device AI-powered development workspace.**
+
+          #### Highlights:
+          - **Official Rebrand**: Completely rebranded to **Pocket IDE** across all components, subsystems, packages, and assets.
+          - **Clean Package Migration**: Migrated to `com.pocketide.app`.
+          - **Restrained Dark Theme**: Serious, modern developer tool styling without neon/glass distractions.
+          - **AI Coding Workspace**: Native autonomous coding agent pair programming with Google AntiGravity, Claude Code, and DeepSeek Coder.
+          - **Isolated Linux Runtime**: On-device PRoot development environment with Git, Node, Python, and C/C++ toolchains operating 100% locally.
+          EOF
+
           gh release create "$TAG" "$APK_NAME" \
             --title "Pocket IDE $TAG — Your AI-powered development workspace, anywhere" \
-            --notes "### Pocket IDE $TAG
-
-**Your AI-powered development workspace, anywhere.**
-
-#### Highlights:
-- **Official Rebrand**: Completely rebranded to **Pocket IDE** across all components, subsystems, packages, and assets.
-- **Clean Package Migration**: Cleanly migrated to \`com.pocketide.app\`.
-- **AI Coding Workspace**: Native autonomous coding agent pair programming with Google AntiGravity, Claude Code, and DeepSeek Coder.
-- **Standalone Linux Subsystem**: Full Ubuntu PRoot environment with Git, Node, Python, and C/C++ toolchains operating 100% locally on your phone." || (
-            gh release edit "$TAG" --title "Pocket IDE $TAG — Your AI-powered development workspace, anywhere" && \
+            --notes-file release_notes.md || (
+            gh release edit "$TAG" --title "Pocket IDE $TAG — Your AI-powered development workspace, anywhere" --notes-file release_notes.md && \
             gh release upload "$TAG" "$APK_NAME" --clobber
           )
-
-
