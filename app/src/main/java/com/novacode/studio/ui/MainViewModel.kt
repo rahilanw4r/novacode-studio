@@ -1,4 +1,4 @@
-package com.novacode.studio.ui
+package com.pocketide.app.ui
 
 import android.app.Application
 import android.content.Intent
@@ -11,51 +11,51 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
-import com.novacode.studio.BuildConfig
-import com.novacode.studio.data.ApiKeyVault
-import com.novacode.studio.data.ApiKeyInfo
-import com.novacode.studio.data.AppPreferences
-import com.novacode.studio.model.ActivityItem
-import com.novacode.studio.model.AgentKind
-import com.novacode.studio.model.ChangeItem
-import com.novacode.studio.model.ChatMessage
-import com.novacode.studio.model.ChatAttachment
-import com.novacode.studio.model.DevStack
-import com.novacode.studio.model.Project
-import com.novacode.studio.model.ProjectKind
-import com.novacode.studio.model.ProjectChat
-import com.novacode.studio.model.ProviderKind
-import com.novacode.studio.model.ProviderProfile
-import com.novacode.studio.model.RuntimeEvent
-import com.novacode.studio.model.ToolRequest
-import com.novacode.studio.model.WorkspaceEntry
-import com.novacode.studio.model.projectSlug
-import com.novacode.studio.model.generateQuickChatIdentity
-import com.novacode.studio.model.providerProtocolForAgent
-import com.novacode.studio.network.ConnectionValidation
-import com.novacode.studio.network.ModelDiscoveryResult
-import com.novacode.studio.network.ProviderApiClient
-import com.novacode.studio.network.GitHubRepository
-import com.novacode.studio.runtime.ClaudeRuntimeBridge
-import com.novacode.studio.runtime.DshRuntimeBridge
-import com.novacode.studio.runtime.AgentRegistry
-import com.novacode.studio.runtime.AgentUpdateInfo
-import com.novacode.studio.runtime.AntigravityAuthController
-import com.novacode.studio.runtime.AntigravityAuthState
-import com.novacode.studio.runtime.AntigravityAuthStatus
-import com.novacode.studio.runtime.AntigravityRuntimeBridge
-import com.novacode.studio.runtime.NativeSpawnProcess
-import com.novacode.studio.runtime.RuntimeInstallProgress
-import com.novacode.studio.runtime.RuntimeInstaller
-import com.novacode.studio.runtime.RuntimeSetupController
-import com.novacode.studio.runtime.RuntimeSetupService
-import com.novacode.studio.runtime.RuntimeSetupSnapshot
-import com.novacode.studio.runtime.RuntimeSetupStatus
-import com.novacode.studio.runtime.readTailText
-import com.novacode.studio.runtime.supportsArm64Runtime
-import com.novacode.studio.runtime.AndroidAppInstaller
-import com.novacode.studio.update.AppUpdateInfo
-import com.novacode.studio.update.AppUpdater
+import com.pocketide.app.BuildConfig
+import com.pocketide.app.data.ApiKeyVault
+import com.pocketide.app.data.ApiKeyInfo
+import com.pocketide.app.data.AppPreferences
+import com.pocketide.app.model.ActivityItem
+import com.pocketide.app.model.AgentKind
+import com.pocketide.app.model.ChangeItem
+import com.pocketide.app.model.ChatMessage
+import com.pocketide.app.model.ChatAttachment
+import com.pocketide.app.model.DevStack
+import com.pocketide.app.model.Project
+import com.pocketide.app.model.ProjectKind
+import com.pocketide.app.model.ProjectChat
+import com.pocketide.app.model.ProviderKind
+import com.pocketide.app.model.ProviderProfile
+import com.pocketide.app.model.RuntimeEvent
+import com.pocketide.app.model.ToolRequest
+import com.pocketide.app.model.WorkspaceEntry
+import com.pocketide.app.model.projectSlug
+import com.pocketide.app.model.generateQuickChatIdentity
+import com.pocketide.app.model.providerProtocolForAgent
+import com.pocketide.app.network.ConnectionValidation
+import com.pocketide.app.network.ModelDiscoveryResult
+import com.pocketide.app.network.ProviderApiClient
+import com.pocketide.app.network.GitHubRepository
+import com.pocketide.app.runtime.ClaudeRuntimeBridge
+import com.pocketide.app.runtime.DshRuntimeBridge
+import com.pocketide.app.runtime.AgentRegistry
+import com.pocketide.app.runtime.AgentUpdateInfo
+import com.pocketide.app.runtime.AntigravityAuthController
+import com.pocketide.app.runtime.AntigravityAuthState
+import com.pocketide.app.runtime.AntigravityAuthStatus
+import com.pocketide.app.runtime.AntigravityRuntimeBridge
+import com.pocketide.app.runtime.NativeSpawnProcess
+import com.pocketide.app.runtime.RuntimeInstallProgress
+import com.pocketide.app.runtime.RuntimeInstaller
+import com.pocketide.app.runtime.RuntimeSetupController
+import com.pocketide.app.runtime.RuntimeSetupService
+import com.pocketide.app.runtime.RuntimeSetupSnapshot
+import com.pocketide.app.runtime.RuntimeSetupStatus
+import com.pocketide.app.runtime.readTailText
+import com.pocketide.app.runtime.supportsArm64Runtime
+import com.pocketide.app.runtime.AndroidAppInstaller
+import com.pocketide.app.update.AppUpdateInfo
+import com.pocketide.app.update.AppUpdater
 import java.io.File
 import java.io.RandomAccessFile
 import java.net.UnknownHostException
@@ -130,7 +130,7 @@ private data class ProjectTerminalResult(
 )
 
 private data class RuntimeRetryRequest(
-    val runtime: com.novacode.studio.runtime.RuntimeBridge,
+    val runtime: com.pocketide.app.runtime.RuntimeBridge,
     val project: Project,
     val prompt: String,
     val history: List<ChatMessage>,
@@ -162,7 +162,7 @@ data class AppUiState(
     val backgroundSetupComplete: Boolean = false,
     val provider: ProviderProfile = ProviderProfile(ProviderKind.ANTHROPIC),
     val activeApiKeyName: String? = null,
-    val themeMode: com.novacode.studio.ui.theme.AppThemeMode = com.novacode.studio.ui.theme.AppThemeMode.DARK,
+    val themeMode: com.pocketide.app.ui.theme.AppThemeMode = com.pocketide.app.ui.theme.AppThemeMode.DARK,
     val apiPingStatus: ApiPingStatus = ApiPingStatus.IDLE,
     val apiPingMessage: String? = null,
     val projects: List<Project> = emptyList(),
@@ -275,7 +275,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         },
     )
     private val agentRegistry = AgentRegistry.builtIns(claudeRuntime, dshRuntime, antigravityRuntime)
-    private fun activeRuntime(): com.novacode.studio.runtime.RuntimeBridge = agentRegistry.require(_state.value.agentKind).runtime
+    private fun activeRuntime(): com.pocketide.app.runtime.RuntimeBridge = agentRegistry.require(_state.value.agentKind).runtime
     private val providerApi = ProviderApiClient()
     private fun appUpdater(): AppUpdater = AppUpdater(
         getApplication(),
@@ -323,8 +323,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             antigravityModel = preferences.antigravityModel.ifBlank { "gemini-3.8-flash-high" },
             antigravityEffort = preferences.antigravityEffort.ifBlank { "high" },
             antigravityModels = DEFAULT_ANTIGRAVITY_MODELS,
-            themeMode = runCatching { com.novacode.studio.ui.theme.AppThemeMode.valueOf(preferences.themeMode.uppercase()) }
-                .getOrDefault(com.novacode.studio.ui.theme.AppThemeMode.DARK),
+            themeMode = runCatching { com.pocketide.app.ui.theme.AppThemeMode.valueOf(preferences.themeMode.uppercase()) }
+                .getOrDefault(com.pocketide.app.ui.theme.AppThemeMode.DARK),
             projects = preferences.loadProjects(),
             githubAuthStatus = GitHubAuthStatus.DISCONNECTED,
             githubLogin = preferences.githubLogin.takeIf(String::isNotBlank),
@@ -938,15 +938,15 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
 
     fun toggleTheme() {
-        val next = if (_state.value.themeMode == com.novacode.studio.ui.theme.AppThemeMode.DARK) {
-            com.novacode.studio.ui.theme.AppThemeMode.LIGHT
+        val next = if (_state.value.themeMode == com.pocketide.app.ui.theme.AppThemeMode.DARK) {
+            com.pocketide.app.ui.theme.AppThemeMode.LIGHT
         } else {
-            com.novacode.studio.ui.theme.AppThemeMode.DARK
+            com.pocketide.app.ui.theme.AppThemeMode.DARK
         }
         setThemeMode(next)
     }
 
-    fun setThemeMode(mode: com.novacode.studio.ui.theme.AppThemeMode) {
+    fun setThemeMode(mode: com.pocketide.app.ui.theme.AppThemeMode) {
         preferences.themeMode = mode.name.lowercase()
         _state.update { it.copy(themeMode = mode) }
     }
@@ -1647,7 +1647,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     runtime.rootfs,
                     workspace,
                     emptyMap(),
-                    listOf(com.novacode.studio.runtime.RuntimeInstaller.AGY_GUEST_PATH, "models"),
+                    listOf(com.pocketide.app.runtime.RuntimeInstaller.AGY_GUEST_PATH, "models"),
                     guestWorkspacePath = "/workspace/antigravity-models",
                     emulateHardLinks = false,
                 )
@@ -1834,7 +1834,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     suspend fun validateProvider(
         profile: ProviderProfile,
         secret: String,
-        models: List<com.novacode.studio.network.DiscoveredModel>,
+        models: List<com.pocketide.app.network.DiscoveredModel>,
     ): ConnectionValidation {
         val key = secret.ifBlank { vault.get(profile.kind.name).orEmpty() }
         return providerApi.validate(
@@ -2626,7 +2626,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         "GH_PROMPT_DISABLED" to "1",
         "GH_NO_UPDATE_NOTIFIER" to "1",
         // Android PRoot has no Secret Service. This keeps the official gh-owned
-        // credential in NovaCode's private Linux home instead of exporting it.
+        // credential in PocketIDE's private Linux home instead of exporting it.
         "BROWSER" to "/bin/false",
     )
 
@@ -2694,23 +2694,23 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private fun startGitHubForegroundOperation() {
         ContextCompat.startForegroundService(
             getApplication(),
-            Intent(getApplication(), com.novacode.studio.runtime.RuntimeExecutionService::class.java)
-                .setAction(com.novacode.studio.runtime.RuntimeExecutionService.ACTION_START)
-                .putExtra(com.novacode.studio.runtime.RuntimeExecutionService.EXTRA_PROJECT_NAME, "GitHub sign-in")
-                .putExtra(com.novacode.studio.runtime.RuntimeExecutionService.EXTRA_TITLE, "Connecting GitHub")
-                .putExtra(com.novacode.studio.runtime.RuntimeExecutionService.EXTRA_CAN_STOP, false),
+            Intent(getApplication(), com.pocketide.app.runtime.RuntimeExecutionService::class.java)
+                .setAction(com.pocketide.app.runtime.RuntimeExecutionService.ACTION_START)
+                .putExtra(com.pocketide.app.runtime.RuntimeExecutionService.EXTRA_PROJECT_NAME, "GitHub sign-in")
+                .putExtra(com.pocketide.app.runtime.RuntimeExecutionService.EXTRA_TITLE, "Connecting GitHub")
+                .putExtra(com.pocketide.app.runtime.RuntimeExecutionService.EXTRA_CAN_STOP, false),
         )
     }
 
     private fun stopGitHubForegroundOperation() {
         runCatching {
             getApplication<Application>().startService(
-                Intent(getApplication(), com.novacode.studio.runtime.RuntimeExecutionService::class.java)
-                    .setAction(com.novacode.studio.runtime.RuntimeExecutionService.ACTION_CANCELLED),
+                Intent(getApplication(), com.pocketide.app.runtime.RuntimeExecutionService::class.java)
+                    .setAction(com.pocketide.app.runtime.RuntimeExecutionService.ACTION_CANCELLED),
             )
         }.onFailure {
             getApplication<Application>().stopService(
-                Intent(getApplication(), com.novacode.studio.runtime.RuntimeExecutionService::class.java),
+                Intent(getApplication(), com.pocketide.app.runtime.RuntimeExecutionService::class.java),
             )
         }
     }
