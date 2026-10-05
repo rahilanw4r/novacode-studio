@@ -1,4 +1,4 @@
-package com.novacode.studio.ui.screens.workspace
+package com.pocketide.app.ui.screens.workspace
 
 import android.net.Uri
 import android.os.Build
@@ -54,11 +54,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import com.novacode.studio.ui.components.CommandCenterDialog
+import com.pocketide.app.ui.components.CommandCenterDialog
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import com.novacode.studio.ui.components.NovaPrimaryButton
+import com.pocketide.app.ui.components.PocketPrimaryButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -74,30 +74,30 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.novacode.studio.model.ChatAttachment
-import com.novacode.studio.model.ProjectChat
-import com.novacode.studio.model.WorkspaceEntry
-import com.novacode.studio.ui.AppUiState
-import com.novacode.studio.ui.components.NovaGlassCard
-import com.novacode.studio.ui.components.NovaStatusPill
-import com.novacode.studio.ui.screens.chat.NovaAgentChatScreen
-import com.novacode.studio.ui.screens.editor.NovaCodeStudioScreen
-import com.novacode.studio.ui.screens.preview.NovaWebPreviewScreen
-import com.novacode.studio.ui.screens.terminal.NovaTerminalScreen
-import com.novacode.studio.ui.theme.NovaAmber
-import com.novacode.studio.ui.theme.NovaBorder
-import com.novacode.studio.ui.theme.NovaCyan
-import com.novacode.studio.ui.theme.NovaEmerald
-import com.novacode.studio.ui.theme.NovaIndigo
-import com.novacode.studio.ui.theme.NovaObsidian
-import com.novacode.studio.ui.theme.NovaRose
-import com.novacode.studio.ui.theme.NovaSurface
-import com.novacode.studio.ui.theme.NovaSurfaceElevated
-import com.novacode.studio.ui.theme.NovaTextMuted
-import com.novacode.studio.ui.theme.NovaTextPrimary
-import com.novacode.studio.ui.theme.NovaTextSecondary
+import com.pocketide.app.model.ChatAttachment
+import com.pocketide.app.model.ProjectChat
+import com.pocketide.app.model.WorkspaceEntry
+import com.pocketide.app.ui.AppUiState
+import com.pocketide.app.ui.components.PocketGlassCard
+import com.pocketide.app.ui.components.PocketStatusPill
+import com.pocketide.app.ui.screens.chat.PocketAgentChatScreen
+import com.pocketide.app.ui.screens.editor.PocketIDEStudioScreen
+import com.pocketide.app.ui.screens.preview.PocketWebPreviewScreen
+import com.pocketide.app.ui.screens.terminal.PocketTerminalScreen
+import com.pocketide.app.ui.theme.PocketAmber
+import com.pocketide.app.ui.theme.PocketBorder
+import com.pocketide.app.ui.theme.PocketCyan
+import com.pocketide.app.ui.theme.PocketEmerald
+import com.pocketide.app.ui.theme.PocketIndigo
+import com.pocketide.app.ui.theme.PocketObsidian
+import com.pocketide.app.ui.theme.PocketRose
+import com.pocketide.app.ui.theme.PocketSurface
+import com.pocketide.app.ui.theme.PocketSurfaceElevated
+import com.pocketide.app.ui.theme.PocketTextMuted
+import com.pocketide.app.ui.theme.PocketTextPrimary
+import com.pocketide.app.ui.theme.PocketTextSecondary
 
-enum class NovaWorkspaceTab(val label: String, val icon: androidx.compose.ui.graphics.vector.ImageVector) {
+enum class PocketWorkspaceTab(val label: String, val icon: androidx.compose.ui.graphics.vector.ImageVector) {
     FILES("Files", Icons.Default.Folder),
     TERMINAL("Terminal", Icons.Default.Terminal),
     AGENT("AI ✦", Icons.Default.AutoAwesome),
@@ -105,7 +105,7 @@ enum class NovaWorkspaceTab(val label: String, val icon: androidx.compose.ui.gra
 }
 
 @Composable
-fun NovaMasterWorkspace(
+fun PocketMasterWorkspace(
     state: AppUiState,
     onBack: () -> Unit,
     onSend: (String) -> Unit,
@@ -132,7 +132,7 @@ fun NovaMasterWorkspace(
 ) {
     BackHandler(onBack = onBack)
     val context = LocalContext.current
-    var currentTab by rememberSaveable { mutableStateOf(NovaWorkspaceTab.FILES) }
+    var currentTab by rememberSaveable { mutableStateOf(PocketWorkspaceTab.FILES) }
     var showCommandCenter by rememberSaveable { mutableStateOf(false) }
     var workspaceMenuOpen by rememberSaveable { mutableStateOf(false) }
 
@@ -144,7 +144,7 @@ fun NovaMasterWorkspace(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(NovaObsidian)
+            .background(PocketObsidian)
             .statusBarsPadding()
             .navigationBarsPadding()
     ) {
@@ -152,7 +152,7 @@ fun NovaMasterWorkspace(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(NovaSurface)
+                .background(PocketSurface)
                 .padding(horizontal = 10.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
@@ -166,14 +166,14 @@ fun NovaMasterWorkspace(
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Back",
-                        tint = NovaTextSecondary,
+                        tint = PocketTextSecondary,
                         modifier = Modifier.size(18.dp)
                     )
                 }
                 Column {
                     Text(
                         text = state.activeProject?.name ?: "Workspace",
-                        color = NovaTextPrimary,
+                        color = PocketTextPrimary,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold,
                         fontFamily = FontFamily.Monospace,
@@ -182,7 +182,7 @@ fun NovaMasterWorkspace(
                     )
                     Text(
                         text = state.agentKind.title,
-                        color = NovaCyan,
+                        color = PocketCyan,
                         fontSize = 10.5.sp,
                         maxLines = 1
                     )
@@ -198,25 +198,25 @@ fun NovaMasterWorkspace(
                     modifier = Modifier
                         .size(30.dp)
                         .clip(RoundedCornerShape(6.dp))
-                        .background(NovaSurfaceElevated)
-                        .border(1.dp, NovaBorder, RoundedCornerShape(6.dp))
+                        .background(PocketSurfaceElevated)
+                        .border(1.dp, PocketBorder, RoundedCornerShape(6.dp))
                         .clickable { showCommandCenter = true },
                     contentAlignment = Alignment.Center
                 ) {
-                    Text("⌘", color = NovaTextPrimary, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                    Text("⌘", color = PocketTextPrimary, fontSize = 12.sp, fontWeight = FontWeight.Bold)
                 }
 
                 // Status Pill
-                NovaStatusPill(
+                PocketStatusPill(
                     statusText = if (state.isRunning) "RUNNING" else "READY",
                     isRunning = state.isRunning,
-                    color = if (state.isRunning) NovaCyan else NovaEmerald
+                    color = if (state.isRunning) PocketCyan else PocketEmerald
                 )
 
                 // Menu ⋮
                 Box {
                     IconButton(onClick = { workspaceMenuOpen = true }, modifier = Modifier.size(30.dp)) {
-                        Icon(Icons.Default.MoreVert, contentDescription = "Menu", tint = NovaTextSecondary, modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.MoreVert, contentDescription = "Menu", tint = PocketTextSecondary, modifier = Modifier.size(18.dp))
                     }
                     DropdownMenu(
                         expanded = workspaceMenuOpen,
@@ -251,13 +251,13 @@ fun NovaMasterWorkspace(
             }
         }
 
-        HorizontalDivider(color = NovaBorder)
+        HorizontalDivider(color = PocketBorder)
 
         // Main Tab Content
         Box(modifier = Modifier.weight(1f)) {
             when (currentTab) {
-                NovaWorkspaceTab.FILES -> {
-                    NovaCodeStudioScreen(
+                PocketWorkspaceTab.FILES -> {
+                    PocketIDEStudioScreen(
                         files = state.workspaceFiles,
                         changes = state.changes,
                         openedFilePath = state.openedFilePath,
@@ -273,12 +273,12 @@ fun NovaMasterWorkspace(
                         onUndoAllChanges = onUndoChanges,
                         onAskCopilotContextual = { prompt ->
                             onSend(prompt)
-                            currentTab = NovaWorkspaceTab.AGENT
+                            currentTab = PocketWorkspaceTab.AGENT
                         }
                     )
                 }
-                NovaWorkspaceTab.AGENT -> {
-                    NovaAgentChatScreen(
+                PocketWorkspaceTab.AGENT -> {
+                    PocketAgentChatScreen(
                         messages = state.messages,
                         liveProcess = state.liveProcess,
                         liveThinking = state.liveThinking,
@@ -294,8 +294,8 @@ fun NovaMasterWorkspace(
                         onRemoveAttachment = onRemoveAttachment
                     )
                 }
-                NovaWorkspaceTab.TERMINAL -> {
-                    NovaTerminalScreen(
+                PocketWorkspaceTab.TERMINAL -> {
+                    PocketTerminalScreen(
                         outputLines = state.projectTerminalLines,
                         activeCommand = state.projectTerminalCommand,
                         isProcessRunning = state.projectTerminalRunning,
@@ -305,15 +305,15 @@ fun NovaMasterWorkspace(
                         onClear = onTerminalClear
                     )
                 }
-                NovaWorkspaceTab.PREVIEW -> {
-                    NovaWebPreviewScreen(
+                PocketWorkspaceTab.PREVIEW -> {
+                    PocketWebPreviewScreen(
                         initialUrl = "http://localhost:5173"
                     )
                 }
             }
         }
 
-        HorizontalDivider(color = NovaBorder)
+        HorizontalDivider(color = PocketBorder)
 
         // Floating Workspace Dock: [ Files ] [ Terminal ] [ Run ▶ ] [ AI ✦ ] [ Preview ]
         Surface(
@@ -321,8 +321,8 @@ fun NovaMasterWorkspace(
                 .fillMaxWidth()
                 .padding(horizontal = 12.dp, vertical = 6.dp),
             shape = RoundedCornerShape(14.dp),
-            color = NovaSurface,
-            border = BorderStroke(1.dp, NovaBorder),
+            color = PocketSurface,
+            border = BorderStroke(1.dp, PocketBorder),
             shadowElevation = 3.dp
         ) {
             Row(
@@ -333,36 +333,36 @@ fun NovaMasterWorkspace(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 // Files tab
-                val filesActive = currentTab == NovaWorkspaceTab.FILES
+                val filesActive = currentTab == PocketWorkspaceTab.FILES
                 Box(
                     modifier = Modifier
                         .weight(1f)
                         .clip(RoundedCornerShape(8.dp))
-                        .background(if (filesActive) NovaSurfaceElevated else Color.Transparent)
-                        .clickable { currentTab = NovaWorkspaceTab.FILES }
+                        .background(if (filesActive) PocketSurfaceElevated else Color.Transparent)
+                        .clickable { currentTab = PocketWorkspaceTab.FILES }
                         .padding(vertical = 6.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                        Icon(Icons.Default.Folder, contentDescription = "Files", tint = if (filesActive) NovaEmerald else NovaTextMuted, modifier = Modifier.size(16.dp))
-                        Text("Files", color = if (filesActive) NovaEmerald else NovaTextMuted, fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
+                        Icon(Icons.Default.Folder, contentDescription = "Files", tint = if (filesActive) PocketEmerald else PocketTextMuted, modifier = Modifier.size(16.dp))
+                        Text("Files", color = if (filesActive) PocketEmerald else PocketTextMuted, fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
                     }
                 }
 
                 // Terminal tab
-                val termActive = currentTab == NovaWorkspaceTab.TERMINAL
+                val termActive = currentTab == PocketWorkspaceTab.TERMINAL
                 Box(
                     modifier = Modifier
                         .weight(1f)
                         .clip(RoundedCornerShape(8.dp))
-                        .background(if (termActive) NovaSurfaceElevated else Color.Transparent)
-                        .clickable { currentTab = NovaWorkspaceTab.TERMINAL }
+                        .background(if (termActive) PocketSurfaceElevated else Color.Transparent)
+                        .clickable { currentTab = PocketWorkspaceTab.TERMINAL }
                         .padding(vertical = 6.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                        Icon(Icons.Default.Terminal, contentDescription = "Terminal", tint = if (termActive) NovaEmerald else NovaTextMuted, modifier = Modifier.size(16.dp))
-                        Text("Terminal", color = if (termActive) NovaEmerald else NovaTextMuted, fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
+                        Icon(Icons.Default.Terminal, contentDescription = "Terminal", tint = if (termActive) PocketEmerald else PocketTextMuted, modifier = Modifier.size(16.dp))
+                        Text("Terminal", color = if (termActive) PocketEmerald else PocketTextMuted, fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
                     }
                 }
 
@@ -371,55 +371,55 @@ fun NovaMasterWorkspace(
                     modifier = Modifier
                         .weight(1.1f)
                         .clip(RoundedCornerShape(8.dp))
-                        .background(NovaEmerald.copy(alpha = 0.2f))
-                        .border(1.dp, NovaEmerald, RoundedCornerShape(8.dp))
+                        .background(PocketEmerald.copy(alpha = 0.2f))
+                        .border(1.dp, PocketEmerald, RoundedCornerShape(8.dp))
                         .clickable {
                             if (state.androidProjectDetected) onBuildAndRunAndroid()
                             else {
                                 onTerminalRun("npm run dev 2>/dev/null || python3 main.py 2>/dev/null || cargo run 2>/dev/null || ./run.sh")
-                                currentTab = NovaWorkspaceTab.TERMINAL
+                                currentTab = PocketWorkspaceTab.TERMINAL
                             }
                         }
                         .padding(vertical = 6.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                        Icon(Icons.Default.PlayArrow, contentDescription = "Run", tint = NovaEmerald, modifier = Modifier.size(16.dp))
-                        Text("Run ▶", color = NovaEmerald, fontSize = 11.5.sp, fontWeight = FontWeight.Bold)
+                        Icon(Icons.Default.PlayArrow, contentDescription = "Run", tint = PocketEmerald, modifier = Modifier.size(16.dp))
+                        Text("Run ▶", color = PocketEmerald, fontSize = 11.5.sp, fontWeight = FontWeight.Bold)
                     }
                 }
 
                 // AI ✦ tab
-                val agentActive = currentTab == NovaWorkspaceTab.AGENT
+                val agentActive = currentTab == PocketWorkspaceTab.AGENT
                 Box(
                     modifier = Modifier
                         .weight(1f)
                         .clip(RoundedCornerShape(8.dp))
-                        .background(if (agentActive) NovaSurfaceElevated else Color.Transparent)
-                        .clickable { currentTab = NovaWorkspaceTab.AGENT }
+                        .background(if (agentActive) PocketSurfaceElevated else Color.Transparent)
+                        .clickable { currentTab = PocketWorkspaceTab.AGENT }
                         .padding(vertical = 6.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                        Icon(Icons.Default.AutoAwesome, contentDescription = "AI", tint = if (agentActive) NovaEmerald else NovaTextMuted, modifier = Modifier.size(16.dp))
-                        Text("AI ✦", color = if (agentActive) NovaEmerald else NovaTextMuted, fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
+                        Icon(Icons.Default.AutoAwesome, contentDescription = "AI", tint = if (agentActive) PocketEmerald else PocketTextMuted, modifier = Modifier.size(16.dp))
+                        Text("AI ✦", color = if (agentActive) PocketEmerald else PocketTextMuted, fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
                     }
                 }
 
                 // Preview tab
-                val previewActive = currentTab == NovaWorkspaceTab.PREVIEW
+                val previewActive = currentTab == PocketWorkspaceTab.PREVIEW
                 Box(
                     modifier = Modifier
                         .weight(1f)
                         .clip(RoundedCornerShape(8.dp))
-                        .background(if (previewActive) NovaSurfaceElevated else Color.Transparent)
-                        .clickable { currentTab = NovaWorkspaceTab.PREVIEW }
+                        .background(if (previewActive) PocketSurfaceElevated else Color.Transparent)
+                        .clickable { currentTab = PocketWorkspaceTab.PREVIEW }
                         .padding(vertical = 6.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                        Icon(Icons.Default.Language, contentDescription = "Preview", tint = if (previewActive) NovaEmerald else NovaTextMuted, modifier = Modifier.size(16.dp))
-                        Text("Preview", color = if (previewActive) NovaEmerald else NovaTextMuted, fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
+                        Icon(Icons.Default.Language, contentDescription = "Preview", tint = if (previewActive) PocketEmerald else PocketTextMuted, modifier = Modifier.size(16.dp))
+                        Text("Preview", color = if (previewActive) PocketEmerald else PocketTextMuted, fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
                     }
                 }
             }
@@ -432,8 +432,8 @@ fun NovaMasterWorkspace(
         onDismissRequest = { showCommandCenter = false },
         onLaunchSandbox = {},
         onCreateProject = {},
-        onOpenTerminal = { currentTab = NovaWorkspaceTab.TERMINAL },
-        onAskCopilot = { currentTab = NovaWorkspaceTab.AGENT },
+        onOpenTerminal = { currentTab = PocketWorkspaceTab.TERMINAL },
+        onAskCopilot = { currentTab = PocketWorkspaceTab.AGENT },
         onGitClone = {},
         onImportZip = {},
         onOpenSettings = {},
@@ -442,7 +442,7 @@ fun NovaMasterWorkspace(
             if (state.androidProjectDetected) onBuildAndRunAndroid()
             else {
                 onTerminalRun("npm run dev 2>/dev/null || python3 main.py 2>/dev/null || cargo run 2>/dev/null || ./run.sh")
-                currentTab = NovaWorkspaceTab.TERMINAL
+                currentTab = PocketWorkspaceTab.TERMINAL
             }
         }
     )
@@ -451,30 +451,30 @@ fun NovaMasterWorkspace(
     state.pendingTerminalCommand?.let { cmd ->
         AlertDialog(
             onDismissRequest = onTerminalCancel,
-            icon = { Icon(Icons.Default.Warning, contentDescription = null, tint = NovaAmber) },
-            title = { Text("Approve Terminal Command", color = NovaTextPrimary, fontWeight = FontWeight.Bold) },
+            icon = { Icon(Icons.Default.Warning, contentDescription = null, tint = PocketAmber) },
+            title = { Text("Approve Terminal Command", color = PocketTextPrimary, fontWeight = FontWeight.Bold) },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text("The AI copilot requested to run this command in your isolated Linux workspace:", color = NovaTextSecondary, fontSize = 12.5.sp)
+                    Text("The AI copilot requested to run this command in your isolated Linux workspace:", color = PocketTextSecondary, fontSize = 12.5.sp)
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clip(RoundedCornerShape(8.dp))
-                            .background(NovaSurfaceElevated)
-                            .border(1.dp, NovaBorder, RoundedCornerShape(8.dp))
+                            .background(PocketSurfaceElevated)
+                            .border(1.dp, PocketBorder, RoundedCornerShape(8.dp))
                             .padding(10.dp)
                     ) {
                         Text(
                             text = cmd,
                             fontFamily = FontFamily.Monospace,
                             fontSize = 12.sp,
-                            color = NovaCyan
+                            color = PocketCyan
                         )
                     }
                 }
             },
             confirmButton = {
-                NovaPrimaryButton(
+                PocketPrimaryButton(
                     text = "Approve & Run",
                     onClick = onTerminalConfirm,
                     height = 38.dp
@@ -482,10 +482,10 @@ fun NovaMasterWorkspace(
             },
             dismissButton = {
                 TextButton(onClick = onTerminalCancel) {
-                    Text("Reject", color = NovaRose)
+                    Text("Reject", color = PocketRose)
                 }
             },
-            containerColor = NovaSurface,
+            containerColor = PocketSurface,
             shape = RoundedCornerShape(16.dp)
         )
     }
