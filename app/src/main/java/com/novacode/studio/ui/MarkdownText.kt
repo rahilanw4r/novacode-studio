@@ -1,4 +1,4 @@
-package com.novacode.studio.ui
+package com.pocketide.app.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -47,7 +47,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.novacode.studio.ui.theme.NovaIndigo
+import com.pocketide.app.ui.theme.PocketIndigo
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -121,7 +121,7 @@ private fun BulletBlock(item: MarkdownBlock.BulletItem, color: Color) {
             modifier = Modifier
                 .padding(top = 8.dp, end = 8.dp)
                 .size(5.dp)
-                .background(NovaIndigo, CircleShape),
+                .background(PocketIndigo, CircleShape),
         )
         Text(
             text = formatInlineMarkdown(item.text),
@@ -140,7 +140,7 @@ private fun NumberedBlock(item: MarkdownBlock.NumberedItem, color: Color) {
     ) {
         Text(
             text = item.number,
-            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold, color = NovaIndigo),
+            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold, color = PocketIndigo),
             modifier = Modifier.padding(end = 6.dp),
         )
         Text(
@@ -166,7 +166,7 @@ private fun QuoteBlock(quote: MarkdownBlock.BlockQuote) {
             modifier = Modifier
                 .width(3.dp)
                 .height(24.dp)
-                .background(NovaIndigo, RoundedCornerShape(2.dp)),
+                .background(PocketIndigo, RoundedCornerShape(2.dp)),
         )
         Spacer(Modifier.width(10.dp))
         Text(
@@ -218,7 +218,7 @@ private fun CodeSnippetBlock(block: MarkdownBlock.CodeBlock, onRunCode: ((String
                             Icon(
                                 Icons.Default.PlayArrow,
                                 contentDescription = "Run in project terminal",
-                                tint = NovaIndigo,
+                                tint = PocketIndigo,
                                 modifier = Modifier.size(18.dp),
                             )
                         }
@@ -237,7 +237,7 @@ private fun CodeSnippetBlock(block: MarkdownBlock.CodeBlock, onRunCode: ((String
                         Icon(
                             imageVector = if (copied) Icons.Default.Check else Icons.Default.ContentCopy,
                             contentDescription = "Copy code",
-                            tint = if (copied) NovaIndigo else Color(0xFF9AA0A6),
+                            tint = if (copied) PocketIndigo else Color(0xFF9AA0A6),
                             modifier = Modifier.size(16.dp),
                         )
                     }
@@ -264,7 +264,7 @@ private fun CodeSnippetBlock(block: MarkdownBlock.CodeBlock, onRunCode: ((String
 @Composable
 private fun formatInlineMarkdown(text: String): AnnotatedString {
     val codeBg = MaterialTheme.colorScheme.surfaceVariant
-    val codeColor = NovaIndigo
+    val codeColor = PocketIndigo
     val primaryColor = MaterialTheme.colorScheme.primary
 
     return remember(text, codeBg, codeColor, primaryColor) {
