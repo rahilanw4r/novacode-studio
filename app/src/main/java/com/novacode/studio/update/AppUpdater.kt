@@ -1,9 +1,9 @@
-package com.novacode.studio.update
+package com.pocketide.app.update
 
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
-import com.novacode.studio.BuildConfig
+import com.pocketide.app.BuildConfig
 import java.io.File
 import java.net.HttpURLConnection
 import java.net.URL
