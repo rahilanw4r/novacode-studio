@@ -1,4 +1,4 @@
-package com.novacode.studio.ui.components
+package com.pocketide.app.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -55,16 +55,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import com.novacode.studio.ui.theme.NovaBorder
-import com.novacode.studio.ui.theme.NovaCyan
-import com.novacode.studio.ui.theme.NovaEmerald
-import com.novacode.studio.ui.theme.NovaIndigo
-import com.novacode.studio.ui.theme.NovaPurple
-import com.novacode.studio.ui.theme.NovaSurface
-import com.novacode.studio.ui.theme.NovaSurfaceElevated
-import com.novacode.studio.ui.theme.NovaTextMuted
-import com.novacode.studio.ui.theme.NovaTextPrimary
-import com.novacode.studio.ui.theme.NovaTextSecondary
+import com.pocketide.app.ui.theme.PocketBorder
+import com.pocketide.app.ui.theme.PocketCyan
+import com.pocketide.app.ui.theme.PocketEmerald
+import com.pocketide.app.ui.theme.PocketIndigo
+import com.pocketide.app.ui.theme.PocketPurple
+import com.pocketide.app.ui.theme.PocketSurface
+import com.pocketide.app.ui.theme.PocketSurfaceElevated
+import com.pocketide.app.ui.theme.PocketTextMuted
+import com.pocketide.app.ui.theme.PocketTextPrimary
+import com.pocketide.app.ui.theme.PocketTextSecondary
 
 data class CommandActionItem(
     val id: String,
@@ -210,8 +210,8 @@ fun CommandCenterDialog(
                 .fillMaxWidth()
                 .padding(vertical = 16.dp),
             shape = RoundedCornerShape(16.dp),
-            color = NovaSurface,
-            border = androidx.compose.foundation.BorderStroke(1.dp, NovaBorder)
+            color = PocketSurface,
+            border = androidx.compose.foundation.BorderStroke(1.dp, PocketBorder)
         ) {
             Column(modifier = Modifier.fillMaxWidth()) {
                 // Header with search box
@@ -226,11 +226,11 @@ fun CommandCenterDialog(
                         modifier = Modifier
                             .size(24.dp)
                             .clip(RoundedCornerShape(6.dp))
-                            .background(NovaSurfaceElevated)
-                            .border(1.dp, NovaBorder, RoundedCornerShape(6.dp)),
+                            .background(PocketSurfaceElevated)
+                            .border(1.dp, PocketBorder, RoundedCornerShape(6.dp)),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text("⌘", color = NovaEmerald, fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                        Text("⌘", color = PocketEmerald, fontSize = 13.sp, fontWeight = FontWeight.Bold)
                     }
 
                     BasicTextField(
@@ -240,17 +240,17 @@ fun CommandCenterDialog(
                             .weight(1f)
                             .focusRequester(focusRequester),
                         textStyle = TextStyle(
-                            color = NovaTextPrimary,
+                            color = PocketTextPrimary,
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Medium
                         ),
-                        cursorBrush = SolidColor(NovaEmerald),
+                        cursorBrush = SolidColor(PocketEmerald),
                         singleLine = true,
                         decorationBox = { innerTextField ->
                             if (query.isEmpty()) {
                                 Text(
                                     text = "Search files, commands and actions…",
-                                    color = NovaTextMuted,
+                                    color = PocketTextMuted,
                                     fontSize = 13.sp
                                 )
                             }
@@ -263,12 +263,12 @@ fun CommandCenterDialog(
                             onClick = { query = "" },
                             modifier = Modifier.size(24.dp)
                         ) {
-                            Icon(Icons.Default.Close, contentDescription = "Clear", tint = NovaTextSecondary, modifier = Modifier.size(16.dp))
+                            Icon(Icons.Default.Close, contentDescription = "Clear", tint = PocketTextSecondary, modifier = Modifier.size(16.dp))
                         }
                     }
                 }
 
-                HorizontalDivider(color = NovaBorder)
+                HorizontalDivider(color = PocketBorder)
 
                 // Results list
                 LazyColumn(
@@ -287,7 +287,7 @@ fun CommandCenterDialog(
                             ) {
                                 Text(
                                     text = "No matching actions found",
-                                    color = NovaTextMuted,
+                                    color = PocketTextMuted,
                                     fontSize = 13.sp
                                 )
                             }
@@ -311,26 +311,26 @@ fun CommandCenterDialog(
                                         modifier = Modifier
                                             .size(30.dp)
                                             .clip(RoundedCornerShape(8.dp))
-                                            .background(NovaSurfaceElevated),
+                                            .background(PocketSurfaceElevated),
                                         contentAlignment = Alignment.Center
                                     ) {
                                         Icon(
                                             imageVector = action.icon,
                                             contentDescription = null,
-                                            tint = if (action.id == "sandbox" || action.id == "run") NovaEmerald else NovaTextSecondary,
+                                            tint = if (action.id == "sandbox" || action.id == "run") PocketEmerald else PocketTextSecondary,
                                             modifier = Modifier.size(16.dp)
                                         )
                                     }
                                     Column {
                                         Text(
                                             text = action.title,
-                                            color = NovaTextPrimary,
+                                            color = PocketTextPrimary,
                                             fontSize = 13.sp,
                                             fontWeight = FontWeight.SemiBold
                                         )
                                         Text(
                                             text = action.subtitle,
-                                            color = NovaTextMuted,
+                                            color = PocketTextMuted,
                                             fontSize = 11.sp
                                         )
                                     }
@@ -340,13 +340,13 @@ fun CommandCenterDialog(
                                     Box(
                                         modifier = Modifier
                                             .clip(RoundedCornerShape(4.dp))
-                                            .background(NovaSurfaceElevated)
-                                            .border(1.dp, NovaBorder, RoundedCornerShape(4.dp))
+                                            .background(PocketSurfaceElevated)
+                                            .border(1.dp, PocketBorder, RoundedCornerShape(4.dp))
                                             .padding(horizontal = 6.dp, vertical = 2.dp)
                                     ) {
                                         Text(
                                             text = action.tag,
-                                            color = NovaEmerald,
+                                            color = PocketEmerald,
                                             fontSize = 10.sp,
                                             fontFamily = FontFamily.Monospace,
                                             fontWeight = FontWeight.Bold
