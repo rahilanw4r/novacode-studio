@@ -1,4 +1,4 @@
-name: Build NovaCode Studio APK
+name: Build Pocket IDE APK
 
 on:
   push:
@@ -42,7 +42,7 @@ jobs:
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: NovaCode-Studio-Debug-APK
+          name: Pocket-IDE-Debug-APK
           path: app/build/outputs/apk/online/debug/*.apk
 
       - name: Publish to GitHub Release
@@ -50,6 +50,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           APK_FILE=$(ls app/build/outputs/apk/online/debug/*.apk | head -n 1)
-          cp "$APK_FILE" NovaCode-Studio-v1.0.16.apk
-          gh release create v1.0.16 NovaCode-Studio-v1.0.16.apk --title "NovaCode Studio v1.0.16 — Redesigned Splash Screen & UI Polish" --notes "NovaCode Studio v1.0.16 features a beautiful redesigned splash screen featuring the official high-resolution logo and animated glowing aura, upgraded Google OAuth multiline URL reconstruction resilience, dynamic versioning across all UI screens, and overall UI polish." || gh release upload v1.0.16 NovaCode-Studio-v1.0.16.apk --clobber
+          cp "$APK_FILE" Pocket-IDE-v1.0.16.apk
+          gh release create v1.0.16 Pocket-IDE-v1.0.16.apk --title "Pocket IDE v1.0.16 — Official Pocket IDE Rebrand" --notes "Pocket IDE v1.0.16 — Your AI-powered development workspace, anywhere. Features complete app rebranding, redesigned glowing splash screen, high-resolution branding assets, and resilient AntiGravity OAuth parsing." || gh release upload v1.0.16 Pocket-IDE-v1.0.16.apk --clobber
+
 

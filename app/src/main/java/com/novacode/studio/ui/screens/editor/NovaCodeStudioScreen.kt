@@ -226,7 +226,7 @@ fun NovaCodeStudioScreen(
             title = {
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     Icon(Icons.Default.AutoAwesome, contentDescription = null, tint = NovaEmerald, modifier = Modifier.size(18.dp))
-                    Text("NovaCode Copilot", color = NovaTextPrimary, fontWeight = FontWeight.Bold)
+                    Text("Pocket IDE Copilot", color = NovaTextPrimary, fontWeight = FontWeight.Bold)
                 }
             },
             text = {

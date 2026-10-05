@@ -14,5 +14,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "NovaCodeStudio"
+rootProject.name = "PocketIDE"
 include(":app")

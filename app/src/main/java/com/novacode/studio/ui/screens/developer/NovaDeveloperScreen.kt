@@ -177,7 +177,7 @@ fun NovaDeveloperScreen(
                         }
 
                         Text(
-                            text = "Architect of NovaCode Studio. Building autonomous AI coding environments and native on-device Linux virtualization for modern creators.",
+                            text = "Architect of Pocket IDE. Building autonomous AI coding environments and native on-device Linux virtualization for modern creators.",
                             color = NovaTextSecondary,
                             fontSize = 12.5.sp,
                             lineHeight = 18.sp,

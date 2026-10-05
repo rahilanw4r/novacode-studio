@@ -181,7 +181,7 @@ fun NovaTerminalScreen(
             if (outputLines.isEmpty()) {
                 item {
                     Text(
-                        text = "NovaCode Linux Subsystem (Ubuntu PRoot ARM64)\nType a command below or tap a quick snippet.\n",
+                        text = "Pocket IDE Linux Subsystem (Ubuntu PRoot ARM64)\nType a command below or tap a quick snippet.\n",
                         color = NovaCyan,
                         fontSize = 12.sp,
                         fontFamily = FontFamily.Monospace

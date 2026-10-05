@@ -753,11 +753,11 @@ private fun LegacySettingsScreen(
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
-                            Text("NovaCode Studio", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                            Text("Pocket IDE", fontWeight = FontWeight.Bold, fontSize = 16.sp)
                             Text("v${BuildConfig.VERSION_NAME}", color = NovaEmerald, fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
                         }
                         Text(
-                            "Autonomous on-device Linux development environment and Liquid AI copilot.",
+                            "Your AI-powered development workspace, anywhere.",
                             fontSize = 12.5.sp,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             lineHeight = 18.sp,

@@ -149,7 +149,7 @@ fun NovaHomeScreen(
                 ) {
                     Image(
                         painter = painterResource(id = R.drawable.app_logo),
-                        contentDescription = "NovaCode Studio",
+                        contentDescription = "Pocket IDE",
                         modifier = Modifier
                             .size(34.dp)
                             .clip(RoundedCornerShape(8.dp))
@@ -157,17 +157,17 @@ fun NovaHomeScreen(
                     Column {
                         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                             Text(
-                                text = "NovaCode",
+                                text = "Pocket",
                                 color = NovaTextPrimary,
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold,
                                 letterSpacing = 0.2.sp
                             )
                             Text(
-                                text = "Studio",
-                                color = NovaEmerald,
+                                text = "IDE",
+                                color = NovaCyan,
                                 fontSize = 16.sp,
-                                fontWeight = FontWeight.SemiBold,
+                                fontWeight = FontWeight.Bold,
                                 letterSpacing = 0.2.sp
                             )
                         }
@@ -568,7 +568,7 @@ fun NovaHomeScreen(
                             decorationBox = { innerTextField ->
                                 if (copilotPrompt.isEmpty()) {
                                     Text(
-                                        text = "Ask NovaCode…",
+                                        text = "Ask Pocket IDE…",
                                         color = NovaTextMuted,
                                         fontSize = 13.sp
                                     )

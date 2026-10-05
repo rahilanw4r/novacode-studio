@@ -2,7 +2,7 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "Run NovaCode Studio on Device",
+      "label": "Run Pocket IDE on Device",
       "type": "shell",
       "command": "./gradlew installDebug && adb shell am start -n com.novacode.studio/.MainActivity",
       "group": {

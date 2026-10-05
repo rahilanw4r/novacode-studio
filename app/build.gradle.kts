@@ -179,7 +179,7 @@ tasks.matching { it.name.contains("Offline") && it.name.contains("lint", ignoreC
 
 tasks.register("playReadinessCheck") {
     group = "verification"
-    description = "Checks configuration required before uploading a NovaCode Studio Play bundle."
+    description = "Checks configuration required before uploading a Pocket IDE Play bundle."
     doLast {
         check(playBuild) { "Run with -PplayBuild=true." }
         check(privacyPolicyUrl.startsWith("https://")) {

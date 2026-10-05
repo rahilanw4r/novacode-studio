@@ -403,7 +403,7 @@ fun TerminalScreen(
                         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                             if (lines.isEmpty()) {
                                 Text(
-                                    "NovaCode Studio Terminal ready.\nType a bash command below or tap a quick command chip above.",
+                                    "Pocket IDE Terminal ready.\nType a bash command below or tap a quick command chip above.",
                                     fontFamily = FontFamily.Monospace,
                                     fontSize = 12.sp,
                                     color = emptyStateColor,

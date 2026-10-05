@@ -1,1 +1,1 @@
-# NovaCode Studio alpha: release shrinking is intentionally disabled.
+# Pocket IDE: release shrinking is intentionally disabled.

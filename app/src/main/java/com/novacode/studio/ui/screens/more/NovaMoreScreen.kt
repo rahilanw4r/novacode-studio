@@ -222,7 +222,7 @@ fun NovaMoreScreen(
                 MoreSettingRow(
                     icon = Icons.Default.Info,
                     iconTint = NovaIndigo,
-                    title = "NovaCode Studio",
+                    title = "Pocket IDE",
                     value = "v${BuildConfig.VERSION_NAME} (Build ${BuildConfig.VERSION_CODE})",
                     onClick = {}
                 )
@@ -308,7 +308,7 @@ fun NovaMoreScreen(
             title = { Text("Extensions & Tool Ecosystem", color = NovaTextPrimary, fontWeight = FontWeight.Bold) },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text("NovaCode Studio supports MCP (Model Context Protocol) sidecars and Antigravity custom tools for enhanced copilot workflows.", color = NovaTextSecondary, fontSize = 13.sp)
+                    Text("Pocket IDE supports MCP (Model Context Protocol) sidecars and Antigravity custom tools for enhanced copilot workflows.", color = NovaTextSecondary, fontSize = 13.sp)
                 }
             },
             confirmButton = {

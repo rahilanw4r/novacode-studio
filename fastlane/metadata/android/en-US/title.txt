@@ -1,1 +1,1 @@
-NovaCode Studio
+Pocket IDE

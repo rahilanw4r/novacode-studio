@@ -118,7 +118,7 @@ fun NovaSplashScreen(
         progress.animateTo(0.90f, animationSpec = tween(360))
         delay(220)
 
-        bootStep = "NovaCode Studio ready"
+        bootStep = "Pocket IDE ready"
         progress.animateTo(1f, animationSpec = tween(220))
         delay(380)
 
@@ -180,7 +180,7 @@ fun NovaSplashScreen(
                 // Official High-Resolution App Logo
                 Image(
                     painter = painterResource(id = R.drawable.app_logo),
-                    contentDescription = "NovaCode Studio Logo",
+                    contentDescription = "Pocket IDE Logo",
                     contentScale = ContentScale.Fit,
                     modifier = Modifier
                         .size(88.dp)
@@ -197,45 +197,34 @@ fun NovaSplashScreen(
                 modifier = Modifier.alpha(alpha.value)
             ) {
                 Text(
-                    text = "NOVACODE",
+                    text = "POCKET",
                     color = NovaTextPrimary,
-                    fontSize = 26.sp,
+                    fontSize = 28.sp,
                     fontWeight = FontWeight.Black,
-                    letterSpacing = 3.5.sp,
+                    letterSpacing = 4.sp,
                     fontFamily = FontFamily.Monospace
                 )
                 Text(
-                    text = "STUDIO",
+                    text = "IDE",
                     color = NovaCyan,
-                    fontSize = 26.sp,
+                    fontSize = 28.sp,
                     fontWeight = FontWeight.Black,
-                    letterSpacing = 3.5.sp,
+                    letterSpacing = 4.sp,
                     fontFamily = FontFamily.Monospace
                 )
             }
 
-            Spacer(modifier = Modifier.height(6.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(6.dp),
+            Text(
+                text = "Your AI-powered development workspace, anywhere.",
+                color = NovaTextSecondary,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Medium,
+                letterSpacing = 0.3.sp,
+                fontFamily = FontFamily.Default,
                 modifier = Modifier.alpha(alpha.value)
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(5.dp)
-                        .clip(CircleShape)
-                        .background(NovaEmerald)
-                )
-                Text(
-                    text = "AUTONOMOUS MOBILE AI IDE",
-                    color = NovaTextSecondary,
-                    fontSize = 10.5.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    letterSpacing = 2.sp,
-                    fontFamily = FontFamily.Monospace
-                )
-            }
+            )
 
             Spacer(modifier = Modifier.height(44.dp))
 

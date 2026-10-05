@@ -22,7 +22,7 @@ internal object RuntimeTaskController {
 class RuntimeExecutionService : Service() {
     private var wakeLock: PowerManager.WakeLock? = null
     private var projectName: String = "your project"
-    private var notificationTitle: String = "NovaCode Studio is working"
+    private var notificationTitle: String = "Pocket IDE is working"
     private var canStop: Boolean = true
     private var taskRunning: Boolean = false
 
@@ -55,12 +55,12 @@ class RuntimeExecutionService : Service() {
             }
             ACTION_COMPLETE -> finishTask(
                 title = "Task completed",
-                detail = intent?.getStringExtra(EXTRA_DETAIL) ?: "NovaCode Studio finished working in $projectName.",
+                detail = intent?.getStringExtra(EXTRA_DETAIL) ?: "Pocket IDE finished working in $projectName.",
                 failed = false,
             )
             ACTION_FAILED -> finishTask(
                 title = "Task needs attention",
-                detail = intent?.getStringExtra(EXTRA_DETAIL) ?: "NovaCode Studio could not finish the task.",
+                detail = intent?.getStringExtra(EXTRA_DETAIL) ?: "Pocket IDE could not finish the task.",
                 failed = true,
             )
             ACTION_CANCELLED -> {
@@ -171,7 +171,7 @@ class RuntimeExecutionService : Service() {
             val manager = context.getSystemService(NotificationManager::class.java)
             manager.createNotificationChannel(
                 NotificationChannel(RUNNING_CHANNEL_ID, "Running coding tasks", NotificationManager.IMPORTANCE_LOW).apply {
-                    description = "Shows progress while NovaCode Studio is working in the background"
+                    description = "Shows progress while Pocket IDE is working in the background"
                 },
             )
             manager.createNotificationChannel(

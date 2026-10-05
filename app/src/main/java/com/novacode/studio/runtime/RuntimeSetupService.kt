@@ -73,7 +73,7 @@ object RuntimeSetupController {
     @Synchronized
     fun begin(context: Context) {
         val previous = mutableSnapshot.value.logs
-        val logs = (previous + "— Resuming NovaCode Studio setup —").takeLast(MAX_LOG_LINES)
+        val logs = (previous + "— Resuming Pocket IDE setup —").takeLast(MAX_LOG_LINES)
         set(context, RuntimeSetupSnapshot(status = RuntimeSetupStatus.RUNNING, progress = 0.01f, logs = logs))
     }
 
@@ -127,7 +127,7 @@ object RuntimeSetupController {
             context,
             current.copy(
                 status = RuntimeSetupStatus.COMPLETE,
-                message = "NovaCode Studio is ready",
+                message = "Pocket IDE is ready",
                 progress = 1f,
                 indeterminate = false,
                 downloadedBytes = null,
@@ -151,10 +151,10 @@ object RuntimeSetupController {
         }
         val friendly = when {
             offline -> "Connect to Wi-Fi or mobile data, then resume setup."
-            interruptedDpkg -> "Android interrupted Linux setup. NovaCode Studio will repair it when you try again."
+            interruptedDpkg -> "Android interrupted Linux setup. Pocket IDE will repair it when you try again."
             else -> error.message.orEmpty().lineSequence().lastOrNull { it.isNotBlank() }
                 ?.take(220)
-                ?: "NovaCode Studio could not finish setup."
+                ?: "Pocket IDE could not finish setup."
         }
         val current = mutableSnapshot.value
         set(
@@ -296,7 +296,7 @@ class RuntimeSetupService : Service() {
         val latest = state.logs.lastOrNull().orEmpty().take(180)
         val builder = NotificationCompat.Builder(this, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_notification)
-            .setContentTitle("Setting up NovaCode Studio")
+            .setContentTitle("Setting up Pocket IDE")
             .setContentText(latest.ifBlank { state.message })
             .setStyle(NotificationCompat.BigTextStyle().bigText(latest.ifBlank { state.message }))
             .setContentIntent(openAppIntent())
@@ -321,7 +321,7 @@ class RuntimeSetupService : Service() {
 
     private fun showFinishedNotification(success: Boolean) {
         val state = RuntimeSetupController.snapshot.value
-        val title = if (success) "NovaCode Studio is ready" else "Setup needs attention"
+        val title = if (success) "Pocket IDE is ready" else "Setup needs attention"
         val detail = if (success) "Your private coding workspace is ready." else state.errorMessage.orEmpty()
         val notification = NotificationCompat.Builder(this, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_notification)
@@ -375,7 +375,7 @@ class RuntimeSetupService : Service() {
 
         fun ensureNotificationChannel(context: Context) {
             context.getSystemService(NotificationManager::class.java).createNotificationChannel(
-                NotificationChannel(CHANNEL_ID, "NovaCode Studio setup", NotificationManager.IMPORTANCE_LOW).apply {
+                NotificationChannel(CHANNEL_ID, "Pocket IDE setup", NotificationManager.IMPORTANCE_LOW).apply {
                     description = "Shows download and installation progress for the private coding environment"
                 },
             )

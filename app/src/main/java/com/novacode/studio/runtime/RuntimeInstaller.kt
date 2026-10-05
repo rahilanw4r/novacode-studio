@@ -134,14 +134,14 @@ class RuntimeInstaller(private val context: Context) {
 
     /** Returns the already verified runtime without performing network or update checks. */
     fun installedRuntime(): InstalledRuntime {
-        check(isInstalled()) { "Core runtime setup is incomplete. Reopen NovaCode Studio to repair it." }
+        check(isInstalled()) { "Core runtime setup is incomplete. Reopen Pocket IDE to repair it." }
         return InstalledRuntime(
             proot = resolveProotBinary(),
             rootfs = rootfs,
         )
     }
 
-    /** Removes only scaffolding written automatically by earlier NovaCode alpha builds. */
+    /** Removes only scaffolding written automatically by earlier Pocket IDE alpha builds. */
     fun cleanupLegacyWorkspaceScaffolding() {
         val workspaces = File(context.filesDir, "workspaces")
         workspaces.listFiles { file -> file.isDirectory }.orEmpty().forEach { workspace ->
@@ -174,7 +174,7 @@ class RuntimeInstaller(private val context: Context) {
                 android.os.Build.SUPPORTED_ABIS,
                 System.getProperty("os.arch"),
             ),
-        ) { "Unsupported architecture: NovaCode Studio requires an ARM64 device or ARM64 emulator" }
+        ) { "Unsupported architecture: Pocket IDE requires an ARM64 device or ARM64 emulator" }
         val proot = resolveProotBinary()
         require(proot.canExecute()) { "The embedded PRoot launcher is unavailable" }
 

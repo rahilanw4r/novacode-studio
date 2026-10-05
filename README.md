@@ -1,11 +1,11 @@
 <div align="center">
 
-  <img src="assets/readme/app_logo.png" alt="NovaCode Studio Official Logo" width="128" height="128" style="border-radius: 28px; box-shadow: 0 8px 24px rgba(0,0,0,0.4);" />
+  <img src="assets/readme/app_logo.png" alt="Pocket IDE Official Logo" width="128" height="128" style="border-radius: 28px; box-shadow: 0 8px 24px rgba(0,0,0,0.4);" />
 
-  # ⚡ NovaCode Studio
+  # ⚡ Pocket IDE
 
-  ### Mobile-First Linux IDE & Autonomous AI Coding Environment for Android
-  **Turn your Android smartphone into a complete, standalone software engineering workstation.**
+  ### Your AI-powered development workspace, anywhere.
+  **Mobile-First Linux IDE & Autonomous AI Coding Environment for Android**
 
   <br />
 
@@ -32,15 +32,15 @@
 
 ## 📖 Overview
 
-**NovaCode Studio** is an open-source, mobile-first Linux development environment and autonomous AI workspace designed specifically for Android devices. Unlike cloud-streamed containers or simple mobile code editors, NovaCode Studio operates **100% locally on your phone** using an isolated **PRoot Linux userspace (Ubuntu ARM64)**.
+**Pocket IDE** is an open-source, mobile-first Linux development environment and autonomous AI workspace designed specifically for Android devices. Unlike cloud-streamed containers or simple mobile code editors, Pocket IDE operates **100% locally on your phone** using an isolated **PRoot Linux userspace (Ubuntu ARM64)**.
 
 Compile real programs, run local development servers, launch multi-tab Linux terminals, inspect side-by-side Git diffs, and collaborate with autonomous AI coding agents — including **Google AntiGravity (Gemini 3.8 / 3.6 / 3.1)**, **Claude Code (3.7 Sonnet)**, and **DeepSeek Coder** — with **zero root access** and **no PC tethering required**.
 
 ---
 
-## 💡 Why NovaCode Studio?
+## 💡 Why Pocket IDE?
 
-| Traditional Mobile Code Editors | Cloud Remote Workspaces (Codespaces/Gitpod) | ⚡ NovaCode Studio |
+| Traditional Mobile Code Editors | Cloud Remote Workspaces (Codespaces/Gitpod) | ⚡ Pocket IDE |
 | :--- | :--- | :--- |
 | ❌ Syntax highlighting only; cannot compile or run code | ⚠️ Requires constant high-speed internet & subscription | ✅ **Runs real compilers & runtimes directly on your phone** |
 | ❌ No terminal or standard Linux tools (`npm`, `pip`, `make`) | ⚠️ Metered cloud compute hours & vendor lock-in | ✅ **Full Ubuntu PRoot subsystem with Git, Node, Python, and C/C++** |
@@ -112,11 +112,11 @@ Compile real programs, run local development servers, launch multi-tab Linux ter
 
 ## 🗂️ Navigation Architecture
 
-NovaCode Studio organizes the development workflow into 5 streamlined destinations:
+Pocket IDE organizes the development workflow into 5 streamlined destinations:
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                          NovaCode Studio                        │
+│                            Pocket IDE                           │
 ├───────────┬──────────────┬─────────────┬─────────────┬──────────┤
 │   Home    │   Projects   │   Copilot   │  Terminal   │   More   │
 └───────────┴──────────────┴─────────────┴─────────────┴──────────┘
@@ -136,18 +136,18 @@ NovaCode Studio organizes the development workflow into 5 streamlined destinatio
 
 ---
 
-## 🎯 How to Use NovaCode Studio
+## 🎯 How to Use Pocket IDE
 
-Follow this step-by-step guide to get the most out of NovaCode Studio on your Android device:
+Follow this step-by-step guide to get the most out of Pocket IDE on your Android device:
 
 ### Step 1: Initial Setup & Runtime Initialization
-1. Launch NovaCode Studio after installation.
+1. Launch Pocket IDE after installation.
 2. Grant notification permission when prompted (this keeps background compilers and terminal tasks alive while multitasking).
 3. The app will automatically unpack and verify the private **PRoot Linux (Ubuntu ARM64)** environment.
 4. Select the language toolchains you plan to use (e.g., Python, C/C++, or Android SDK) or keep the lightweight Core runtime.
 
 ### Step 2: Connect Your AI Agent or Authentication
-NovaCode Studio supports multiple AI backends depending on your workflow:
+Pocket IDE supports multiple AI backends depending on your workflow:
 - **Google AntiGravity**: Navigate to **Copilot** or **More > AI Settings**, select **AntiGravity**, and tap **Sign In**. Your browser will open the official Google OAuth page. Sign in with your Google account, and your session token is securely passed back to the app.
 - **Claude Code**: Select **Claude** and input your Anthropic API key. The key is stored locally with hardware-backed encryption.
 - **DeepSeek / OpenAI**: Input your respective API key or configure an OpenRouter endpoint for community and open-weights models.
@@ -155,7 +155,7 @@ NovaCode Studio supports multiple AI backends depending on your workflow:
 
 ### Step 3: Create or Import a Project
 - **Starter Templates**: From the **Home** tab, tap any quick starter template (e.g., *React + Vite*, *FastAPI Python*, *Node.js*, or *C++ Hello World*) to scaffold a complete project instantly.
-- **Clone from GitHub**: Tap **Clone Repository**, paste your Git URL (or pick from your connected GitHub account), and NovaCode Studio will clone it directly into your workspace.
+- **Clone from GitHub**: Tap **Clone Repository**, paste your Git URL (or pick from your connected GitHub account), and Pocket IDE will clone it directly into your workspace.
 - **Open Existing Directory**: Browse and open any folder inside your isolated workspace.
 
 ### Step 4: Pair Program with the AI Copilot
@@ -205,11 +205,11 @@ NovaCode Studio supports multiple AI backends depending on your workflow:
 
 ## 🔒 Privacy, Security & Credential Storage
 
-Your privacy and source code security are central to NovaCode Studio's architecture. Here is a transparent breakdown of how credentials, connections, and files are protected on your device.
+Your privacy and source code security are central to Pocket IDE's architecture. Here is a transparent breakdown of how credentials, connections, and files are protected on your device.
 
 ### 🛡️ Are Your Keys & Credentials Safe?
 
-> **Yes, 100%.** NovaCode Studio never transmits your code, API keys, or personal tokens to any developer-owned server or third-party proxy. Everything is stored locally on your device and protected by Android's hardware security layer.
+> **Yes, 100%.** Pocket IDE never transmits your code, API keys, or personal tokens to any developer-owned server or third-party proxy. Everything is stored locally on your device and protected by Android's hardware security layer.
 
 ---
 
@@ -225,23 +225,23 @@ When you enter an API key for Anthropic Claude, OpenAI, DeepSeek, or Google Gemi
 ### 2. Google AntiGravity Connection & OAuth Security
 When signing into **Google AntiGravity**:
 - **Official Google OAuth 2.0 PKCE**: Authentication uses standard Google OAuth with RFC 7636 **PKCE (Proof Key for Code Exchange)**.
-- **Direct Google Exchange**: You log in securely using your phone's default web browser at `https://accounts.google.com`. NovaCode Studio never sees or handles your Google password.
+- **Direct Google Exchange**: You log in securely using your phone's default web browser at `https://accounts.google.com`. Pocket IDE never sees or handles your Google password.
 - **Local Token Storage**: The resulting authentication token is exchanged directly with Google and stored exclusively inside the private Linux rootfs directory (`/root/.gemini/antigravity-cli/antigravity-oauth-token`) within the app's internal sandbox.
 
 ---
 
 ### 3. GitHub Connect (Official OAuth Device Flow)
 When connecting your GitHub account to browse and clone repositories:
-- **Official GitHub CLI (`gh`)**: NovaCode Studio uses GitHub's official command-line tool.
+- **Official GitHub CLI (`gh`)**: Pocket IDE uses GitHub's official command-line tool.
 - **Device Code Flow**: You authenticate directly on `https://github.com/login/device` by confirming a one-time verification code in your browser.
-- **No Passwords Stored**: NovaCode Studio never asks for or stores your GitHub username or password. The scoped OAuth token is managed directly by the official GitHub CLI within the private PRoot sandbox.
+- **No Passwords Stored**: Pocket IDE never asks for or stores your GitHub username or password. The scoped OAuth token is managed directly by the official GitHub CLI within the private PRoot sandbox.
 
 ---
 
 ### 4. Zero Intermediary Proxies or Cloud Telemetry
 - **Direct API Communication**: Every request sent to an AI model travels directly from your phone's network connection to the official provider endpoint (e.g., `api.anthropic.com`, `generativelanguage.googleapis.com`, `api.openai.com`, or `api.deepseek.com`).
 - **No Middleman Servers**: There are no proxy servers, relay gateways, or analytics aggregators between your phone and your AI provider.
-- **No Telemetry or Tracking**: NovaCode Studio contains no analytics trackers, tracking beacons, advertising SDKs, or data harvesting code.
+- **No Telemetry or Tracking**: Pocket IDE contains no analytics trackers, tracking beacons, advertising SDKs, or data harvesting code.
 
 ---
 
@@ -256,7 +256,7 @@ When connecting your GitHub account to browse and clone repositories:
 ---
 
 ### 6. Full Offline Capability
-- You do **not** need an internet connection to use NovaCode Studio.
+- You do **not** need an internet connection to use Pocket IDE.
 - The Linux shell, Git version control, Python interpreter, C/C++ compilers, Node.js runtime, and Android toolchain function **100% offline**.
 - You only need internet access when executing online AI model prompts or running `git push` / `git pull` to remote repositories.
 
@@ -277,7 +277,7 @@ When connecting your GitHub account to browse and clone repositories:
 ## 🚀 Installation & Getting Started
 
 ### Method 1: Download Prebuilt APK (Recommended)
-1. Download the latest release from the **[GitHub Releases Page](https://github.com/rahilanw4r/novacode-studio/releases/latest)** (`NovaCode-Studio-v1.0.16.apk`).
+1. Download the latest release from the **[GitHub Releases Page](https://github.com/rahilanw4r/novacode-studio/releases/latest)** (`Pocket-IDE-v1.0.16.apk`).
 2. Open the downloaded file on your Android device and confirm installation.
 3. Grant notification permissions when prompted to allow background build and terminal monitoring.
 4. Follow the interactive onboarding setup to initialize the private Linux runtime and pick your preferred AI agent.
@@ -293,14 +293,14 @@ cd novacode-studio
 ./gradlew :app:assembleOnlineDebug
 
 # 3. Locate generated APK
-ls -lh app/build/outputs/apk/online/debug/NovaCode-Studio-*.apk
+ls -lh app/build/outputs/apk/online/debug/Pocket-IDE-*.apk
 ```
 
 ---
 
 ## 👨‍💻 Author & Credits
 
-**NovaCode Studio** is designed, engineered, and maintained by:
+**Pocket IDE** is designed, engineered, and maintained by:
 
 <div align="left">
   <table>

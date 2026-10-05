@@ -348,13 +348,13 @@ private fun EmptyChatGreeting(onSelectPrompt: (String) -> Unit) {
             Icon(Icons.Default.AutoAwesome, contentDescription = null, tint = NovaCyan, modifier = Modifier.size(28.dp))
         }
         Text(
-            text = "NovaCode Autonomous Agent",
+            text = "Pocket IDE Autonomous Agent",
             color = NovaTextPrimary,
             fontSize = 17.sp,
             fontWeight = FontWeight.Bold
         )
         Text(
-            text = "Your on-device developer pairing partner. What are we building today?",
+            text = "Your AI-powered development workspace, anywhere.",
             color = NovaTextSecondary,
             fontSize = 13.sp,
             modifier = Modifier.padding(horizontal = 24.dp)

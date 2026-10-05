@@ -870,7 +870,7 @@ fun AgentScreen(
                                 decorationBox = { innerTextField ->
                                     if (aiWorkspacePrompt.isEmpty()) {
                                         Text(
-                                            text = "Ask NovaCode to write, debug, explain, or refactor code…",
+                                            text = "Ask Pocket IDE to write, debug, explain, or refactor code…",
                                             color = NovaTextMuted,
                                             fontSize = 12.5.sp,
                                             lineHeight = 17.sp
