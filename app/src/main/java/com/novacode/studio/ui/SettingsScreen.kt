@@ -1,4 +1,4 @@
-package com.novacode.studio.ui
+package com.pocketide.app.ui
 
 import android.content.Intent
 import android.net.Uri
@@ -32,7 +32,7 @@ import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Code
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.DarkMode
-import com.novacode.studio.BuildConfig
+import com.pocketide.app.BuildConfig
 import androidx.compose.material.icons.filled.DeleteSweep
 import androidx.compose.material.icons.filled.Dns
 import androidx.compose.material.icons.filled.Key
@@ -86,17 +86,17 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.novacode.studio.model.DevStack
-import com.novacode.studio.model.ProviderKind
-import com.novacode.studio.model.ProviderProfile
-import com.novacode.studio.model.AgentKind
-import com.novacode.studio.network.ConnectionValidation
-import com.novacode.studio.network.DiscoveredModel
-import com.novacode.studio.network.ModelDiscoveryResult
-import com.novacode.studio.ui.theme.AppThemeMode
-import com.novacode.studio.ui.theme.NovaCyan
-import com.novacode.studio.ui.theme.NovaEmerald
-import com.novacode.studio.ui.theme.NovaIndigo
+import com.pocketide.app.model.DevStack
+import com.pocketide.app.model.ProviderKind
+import com.pocketide.app.model.ProviderProfile
+import com.pocketide.app.model.AgentKind
+import com.pocketide.app.network.ConnectionValidation
+import com.pocketide.app.network.DiscoveredModel
+import com.pocketide.app.network.ModelDiscoveryResult
+import com.pocketide.app.ui.theme.AppThemeMode
+import com.pocketide.app.ui.theme.PocketCyan
+import com.pocketide.app.ui.theme.PocketEmerald
+import com.pocketide.app.ui.theme.PocketIndigo
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -140,7 +140,7 @@ private fun LegacySettingsScreen(
                         Icon(
                             Icons.Default.Settings,
                             contentDescription = null,
-                            tint = NovaIndigo,
+                            tint = PocketIndigo,
                             modifier = Modifier.size(24.dp),
                         )
                         Spacer(Modifier.width(10.dp))
@@ -236,7 +236,7 @@ private fun LegacySettingsScreen(
                                                 Icon(
                                                     Icons.Default.CheckCircle,
                                                     "Installed",
-                                                    tint = NovaEmerald,
+                                                    tint = PocketEmerald,
                                                     modifier = Modifier.size(15.dp),
                                                 )
                                             }
@@ -253,7 +253,7 @@ private fun LegacySettingsScreen(
                                                 "${(state.devStackProgress * 100).toInt().coerceIn(0, 100)}%",
                                                 fontWeight = FontWeight.Bold,
                                                 fontSize = 13.sp,
-                                                color = NovaIndigo,
+                                                color = PocketIndigo,
                                             )
                                         }
                                         installed -> Unit // badge already shown next to the name
@@ -271,7 +271,7 @@ private fun LegacySettingsScreen(
                                     LinearProgressIndicator(
                                         progress = { state.devStackProgress.coerceIn(0f, 1f) },
                                         modifier = Modifier.fillMaxWidth().height(8.dp),
-                                        color = NovaIndigo,
+                                        color = PocketIndigo,
                                         trackColor = MaterialTheme.colorScheme.surface,
                                     )
                                     Spacer(Modifier.height(6.dp))
@@ -302,7 +302,7 @@ private fun LegacySettingsScreen(
                                             "${formatBytes(speed)}/s",
                                             fontSize = 11.sp,
                                             fontFamily = FontFamily.Monospace,
-                                            color = NovaIndigo,
+                                            color = PocketIndigo,
                                         )
                                     }
                                 } else if (index != DevStack.entries.lastIndex) {
@@ -387,9 +387,9 @@ private fun LegacySettingsScreen(
                                         .clip(CircleShape)
                                         .background(
                                             when (state.apiPingStatus) {
-                                                ApiPingStatus.OK -> NovaEmerald
+                                                ApiPingStatus.OK -> PocketEmerald
                                                 ApiPingStatus.FAILED -> MaterialTheme.colorScheme.error
-                                                ApiPingStatus.PINGING -> NovaIndigo
+                                                ApiPingStatus.PINGING -> PocketIndigo
                                                 ApiPingStatus.IDLE -> MaterialTheme.colorScheme.onSurfaceVariant
                                             },
                                         ),
@@ -449,7 +449,7 @@ private fun LegacySettingsScreen(
                                 Icon(
                                     Icons.Default.Key,
                                     contentDescription = null,
-                                    tint = if (isSelected) NovaIndigo else MaterialTheme.colorScheme.onSurfaceVariant,
+                                    tint = if (isSelected) PocketIndigo else MaterialTheme.colorScheme.onSurfaceVariant,
                                     modifier = Modifier.size(18.dp),
                                 )
                                 Spacer(Modifier.width(10.dp))
@@ -458,13 +458,13 @@ private fun LegacySettingsScreen(
                                         Text(kind.title, fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
                                         if (kind.experimental) {
                                             Spacer(Modifier.width(6.dp))
-                                            Text("EXPERIMENTAL", color = NovaIndigo, fontSize = 9.sp, fontWeight = FontWeight.Bold)
+                                            Text("EXPERIMENTAL", color = PocketIndigo, fontSize = 9.sp, fontWeight = FontWeight.Bold)
                                         }
                                     }
                                     Text(kind.subtitle, fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                 }
                                 if (isSelected) {
-                                    Icon(Icons.Default.Check, contentDescription = null, tint = NovaIndigo, modifier = Modifier.size(18.dp))
+                                    Icon(Icons.Default.Check, contentDescription = null, tint = PocketIndigo, modifier = Modifier.size(18.dp))
                                 }
                             }
                         }
@@ -482,7 +482,7 @@ private fun LegacySettingsScreen(
                     singleLine = true,
                     shape = RoundedCornerShape(12.dp),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = NovaIndigo,
+                        focusedBorderColor = PocketIndigo,
                     ),
                 )
 
@@ -502,7 +502,7 @@ private fun LegacySettingsScreen(
                         singleLine = true,
                         shape = RoundedCornerShape(12.dp),
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = NovaIndigo,
+                            focusedBorderColor = PocketIndigo,
                         ),
                     )
                     OutlinedButton(
@@ -563,7 +563,7 @@ private fun LegacySettingsScreen(
                         }
                     },
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = NovaIndigo,
+                        focusedBorderColor = PocketIndigo,
                     ),
                 )
 
@@ -572,7 +572,7 @@ private fun LegacySettingsScreen(
                     Column(Modifier.padding(top = 10.dp)) {
                         Surface(
                             shape = RoundedCornerShape(10.dp),
-                            color = if (validationOk) NovaEmerald.copy(alpha = 0.15f) else MaterialTheme.colorScheme.error.copy(alpha = 0.15f),
+                            color = if (validationOk) PocketEmerald.copy(alpha = 0.15f) else MaterialTheme.colorScheme.error.copy(alpha = 0.15f),
                             modifier = Modifier.fillMaxWidth(),
                         ) {
                             Row(
@@ -582,13 +582,13 @@ private fun LegacySettingsScreen(
                                 Icon(
                                     if (validationOk) Icons.Default.CheckCircle else Icons.Default.Warning,
                                     contentDescription = null,
-                                    tint = if (validationOk) NovaEmerald else MaterialTheme.colorScheme.error,
+                                    tint = if (validationOk) PocketEmerald else MaterialTheme.colorScheme.error,
                                     modifier = Modifier.size(18.dp),
                                 )
                                 Spacer(Modifier.width(8.dp))
                                 Text(
                                     validationStatus.orEmpty(),
-                                    color = if (validationOk) NovaEmerald else MaterialTheme.colorScheme.error,
+                                    color = if (validationOk) PocketEmerald else MaterialTheme.colorScheme.error,
                                     fontSize = 12.sp,
                                 )
                             }
@@ -629,7 +629,7 @@ private fun LegacySettingsScreen(
                         .fillMaxWidth()
                         .height(50.dp),
                     shape = RoundedCornerShape(14.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = NovaIndigo),
+                    colors = ButtonDefaults.buttonColors(containerColor = PocketIndigo),
                 ) {
                     if (isValidating) {
                         CircularProgressIndicator(Modifier.size(18.dp), strokeWidth = 2.dp, color = Color.White)
@@ -754,7 +754,7 @@ private fun LegacySettingsScreen(
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
                             Text("Pocket IDE", fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                            Text("v${BuildConfig.VERSION_NAME}", color = NovaEmerald, fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
+                            Text("v${BuildConfig.VERSION_NAME}", color = PocketEmerald, fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
                         }
                         Text(
                             "Your AI-powered development workspace, anywhere.",
@@ -777,7 +777,7 @@ private fun LegacySettingsScreen(
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
                             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                Icon(Icons.AutoMirrored.Filled.Send, contentDescription = null, tint = NovaCyan, modifier = Modifier.size(16.dp))
+                                Icon(Icons.AutoMirrored.Filled.Send, contentDescription = null, tint = PocketCyan, modifier = Modifier.size(16.dp))
                                 Column {
                                     Text("Creator: Rahil Anwar", fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
                                     Text("Telegram: @RahilAnw4r", fontSize = 11.5.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -798,7 +798,7 @@ private fun LegacySettingsScreen(
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
                             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                Icon(Icons.Default.Code, contentDescription = null, tint = NovaEmerald, modifier = Modifier.size(16.dp))
+                                Icon(Icons.Default.Code, contentDescription = null, tint = PocketEmerald, modifier = Modifier.size(16.dp))
                                 Column {
                                     Text("Official GitHub Repository", fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
                                     Text("rahilanw4r/novacode-studio", fontSize = 11.5.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -819,11 +819,11 @@ private fun SectionHeader(title: String, subtitle: String, icon: ImageVector) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Surface(
             shape = RoundedCornerShape(10.dp),
-            color = NovaIndigo.copy(alpha = 0.12f),
+            color = PocketIndigo.copy(alpha = 0.12f),
             modifier = Modifier.size(36.dp),
         ) {
             Box(contentAlignment = Alignment.Center) {
-                Icon(icon, contentDescription = null, tint = NovaIndigo, modifier = Modifier.size(18.dp))
+                Icon(icon, contentDescription = null, tint = PocketIndigo, modifier = Modifier.size(18.dp))
             }
         }
         Spacer(Modifier.width(10.dp))
@@ -848,7 +848,7 @@ private fun ThemeOptionCard(
             .clickable(onClick = onClick)
             .border(
                 width = if (selected) 2.dp else 1.dp,
-                color = if (selected) NovaIndigo else MaterialTheme.colorScheme.outline.copy(alpha = 0.3f),
+                color = if (selected) PocketIndigo else MaterialTheme.colorScheme.outline.copy(alpha = 0.3f),
                 shape = RoundedCornerShape(14.dp),
             ),
         shape = RoundedCornerShape(14.dp),
@@ -864,7 +864,7 @@ private fun ThemeOptionCard(
             Icon(
                 icon,
                 contentDescription = title,
-                tint = if (selected) NovaIndigo else MaterialTheme.colorScheme.onSurfaceVariant,
+                tint = if (selected) PocketIndigo else MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(22.dp),
             )
             Text(
