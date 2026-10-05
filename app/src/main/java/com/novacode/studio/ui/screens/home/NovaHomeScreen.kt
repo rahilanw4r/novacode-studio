@@ -1,4 +1,4 @@
-package com.novacode.studio.ui.screens.home
+package com.pocketide.app.ui.screens.home
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -63,23 +63,23 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.novacode.studio.R
-import com.novacode.studio.model.Project
-import com.novacode.studio.ui.AppUiState
-import com.novacode.studio.ui.components.NovaPrimaryButton
-import com.novacode.studio.ui.components.NovaSecondaryButton
-import com.novacode.studio.ui.theme.NovaBorder
-import com.novacode.studio.ui.theme.NovaCyan
-import com.novacode.studio.ui.theme.NovaEmerald
-import com.novacode.studio.ui.theme.NovaIndigo
-import com.novacode.studio.ui.theme.NovaObsidian
-import com.novacode.studio.ui.theme.NovaPurple
-import com.novacode.studio.ui.theme.NovaSurface
-import com.novacode.studio.ui.theme.NovaSurfaceElevated
-import com.novacode.studio.ui.theme.NovaSurfaceVariant
-import com.novacode.studio.ui.theme.NovaTextMuted
-import com.novacode.studio.ui.theme.NovaTextPrimary
-import com.novacode.studio.ui.theme.NovaTextSecondary
+import com.pocketide.app.R
+import com.pocketide.app.model.Project
+import com.pocketide.app.ui.AppUiState
+import com.pocketide.app.ui.components.PocketPrimaryButton
+import com.pocketide.app.ui.components.PocketSecondaryButton
+import com.pocketide.app.ui.theme.PocketBorder
+import com.pocketide.app.ui.theme.PocketCyan
+import com.pocketide.app.ui.theme.PocketEmerald
+import com.pocketide.app.ui.theme.PocketIndigo
+import com.pocketide.app.ui.theme.PocketObsidian
+import com.pocketide.app.ui.theme.PocketPurple
+import com.pocketide.app.ui.theme.PocketSurface
+import com.pocketide.app.ui.theme.PocketSurfaceElevated
+import com.pocketide.app.ui.theme.PocketSurfaceVariant
+import com.pocketide.app.ui.theme.PocketTextMuted
+import com.pocketide.app.ui.theme.PocketTextPrimary
+import com.pocketide.app.ui.theme.PocketTextSecondary
 
 data class StarterTemplate(
     val title: String,
@@ -91,7 +91,7 @@ data class StarterTemplate(
 )
 
 @Composable
-fun NovaHomeScreen(
+fun PocketHomeScreen(
     state: AppUiState,
     listState: LazyListState,
     onOpenProject: (Project) -> Unit,
@@ -107,10 +107,10 @@ fun NovaHomeScreen(
     var newProjectName by remember { mutableStateOf("") }
     var copilotPrompt by remember { mutableStateOf("") }
 
-    val cyan = NovaCyan
-    val emerald = NovaEmerald
-    val purple = NovaPurple
-    val indigo = NovaIndigo
+    val cyan = PocketCyan
+    val emerald = PocketEmerald
+    val purple = PocketPurple
+    val indigo = PocketIndigo
     val starterTemplates = remember(cyan, emerald, purple, indigo) {
         listOf(
             StarterTemplate("React + Vite", "TypeScript • SPA", "WEB", cyan, Icons.Default.Code, "vite-react-app"),
@@ -129,7 +129,7 @@ fun NovaHomeScreen(
         state = listState,
         modifier = modifier
             .fillMaxSize()
-            .background(NovaObsidian),
+            .background(PocketObsidian),
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
@@ -158,14 +158,14 @@ fun NovaHomeScreen(
                         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                             Text(
                                 text = "Pocket",
-                                color = NovaTextPrimary,
+                                color = PocketTextPrimary,
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold,
                                 letterSpacing = 0.2.sp
                             )
                             Text(
                                 text = "IDE",
-                                color = NovaCyan,
+                                color = PocketCyan,
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold,
                                 letterSpacing = 0.2.sp
@@ -179,11 +179,11 @@ fun NovaHomeScreen(
                                 modifier = Modifier
                                     .size(6.dp)
                                     .clip(CircleShape)
-                                    .background(NovaEmerald)
+                                    .background(PocketEmerald)
                             )
                             Text(
                                 text = "Local • ARM64",
-                                color = NovaTextMuted,
+                                color = PocketTextMuted,
                                 fontSize = 11.sp,
                                 fontFamily = FontFamily.Monospace
                             )
@@ -200,12 +200,12 @@ fun NovaHomeScreen(
                         modifier = Modifier
                             .size(34.dp)
                             .clip(RoundedCornerShape(8.dp))
-                            .background(NovaSurfaceElevated)
-                            .border(1.dp, NovaBorder, RoundedCornerShape(8.dp))
+                            .background(PocketSurfaceElevated)
+                            .border(1.dp, PocketBorder, RoundedCornerShape(8.dp))
                             .clickable(onClick = onOpenCommandCenter),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text("⌘", color = NovaTextPrimary, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                        Text("⌘", color = PocketTextPrimary, fontSize = 14.sp, fontWeight = FontWeight.Bold)
                     }
 
                     // Developer profile
@@ -213,12 +213,12 @@ fun NovaHomeScreen(
                         modifier = Modifier
                             .size(34.dp)
                             .clip(RoundedCornerShape(8.dp))
-                            .background(NovaSurfaceElevated)
-                            .border(1.dp, NovaBorder, RoundedCornerShape(8.dp))
+                            .background(PocketSurfaceElevated)
+                            .border(1.dp, PocketBorder, RoundedCornerShape(8.dp))
                             .clickable(onClick = onOpenDeveloper),
                         contentAlignment = Alignment.Center
                     ) {
-                        Icon(Icons.Default.Person, contentDescription = "Developer", tint = NovaEmerald, modifier = Modifier.size(17.dp))
+                        Icon(Icons.Default.Person, contentDescription = "Developer", tint = PocketEmerald, modifier = Modifier.size(17.dp))
                     }
                 }
             }
@@ -229,8 +229,8 @@ fun NovaHomeScreen(
             Surface(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
-                color = NovaSurface,
-                border = androidx.compose.foundation.BorderStroke(1.dp, NovaBorder)
+                color = PocketSurface,
+                border = androidx.compose.foundation.BorderStroke(1.dp, PocketBorder)
             ) {
                 Column(
                     modifier = Modifier
@@ -240,20 +240,20 @@ fun NovaHomeScreen(
                 ) {
                     Text(
                         text = "WORKSPACE",
-                        color = NovaEmerald,
+                        color = PocketEmerald,
                         fontSize = 11.sp,
                         fontWeight = FontWeight.Bold,
                         letterSpacing = 0.6.sp
                     )
                     Text(
                         text = "Build directly on your device",
-                        color = NovaTextPrimary,
+                        color = PocketTextPrimary,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.SemiBold
                     )
                     Text(
                         text = "Your private, on-device Linux development environment.",
-                        color = NovaTextSecondary,
+                        color = PocketTextSecondary,
                         fontSize = 12.5.sp,
                         lineHeight = 17.sp
                     )
@@ -264,14 +264,14 @@ fun NovaHomeScreen(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        NovaPrimaryButton(
+                        PocketPrimaryButton(
                             text = "Start Sandbox",
                             icon = Icons.Default.Bolt,
                             onClick = onCreateQuickProject,
                             modifier = Modifier.weight(1f),
                             height = 42.dp
                         )
-                        NovaSecondaryButton(
+                        PocketSecondaryButton(
                             text = "New Project",
                             icon = Icons.Default.Add,
                             onClick = {
@@ -296,7 +296,7 @@ fun NovaHomeScreen(
                 ) {
                     Text(
                         text = "RECENT PROJECTS",
-                        color = NovaTextMuted,
+                        color = PocketTextMuted,
                         fontSize = 11.5.sp,
                         fontWeight = FontWeight.Bold,
                         letterSpacing = 0.5.sp
@@ -304,7 +304,7 @@ fun NovaHomeScreen(
                     if (state.projects.isNotEmpty()) {
                         Text(
                             text = "See all (${state.projects.size})",
-                            color = NovaEmerald,
+                            color = PocketEmerald,
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Medium,
                             modifier = Modifier.clickable(onClick = onViewAllProjects)
@@ -316,8 +316,8 @@ fun NovaHomeScreen(
                     Surface(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(10.dp),
-                        color = NovaSurfaceVariant,
-                        border = androidx.compose.foundation.BorderStroke(1.dp, NovaBorder)
+                        color = PocketSurfaceVariant,
+                        border = androidx.compose.foundation.BorderStroke(1.dp, PocketBorder)
                     ) {
                         Column(
                             modifier = Modifier
@@ -328,16 +328,16 @@ fun NovaHomeScreen(
                         ) {
                             Text(
                                 text = "No Projects Yet",
-                                color = NovaTextPrimary,
+                                color = PocketTextPrimary,
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.SemiBold
                             )
                             Text(
                                 text = "Start a sandbox or create a project to begin.",
-                                color = NovaTextMuted,
+                                color = PocketTextMuted,
                                 fontSize = 12.sp
                             )
-                            NovaPrimaryButton(
+                            PocketPrimaryButton(
                                 text = "Start Sandbox",
                                 icon = Icons.Default.Bolt,
                                 onClick = onCreateQuickProject,
@@ -349,13 +349,13 @@ fun NovaHomeScreen(
                     Surface(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(10.dp),
-                        color = NovaSurface,
-                        border = androidx.compose.foundation.BorderStroke(1.dp, NovaBorder)
+                        color = PocketSurface,
+                        border = androidx.compose.foundation.BorderStroke(1.dp, PocketBorder)
                     ) {
                         Column(modifier = Modifier.fillMaxWidth()) {
                             recentProjects.forEachIndexed { index, project ->
                                 if (index > 0) {
-                                    HorizontalDivider(color = NovaBorder)
+                                    HorizontalDivider(color = PocketBorder)
                                 }
                                 Row(
                                     modifier = Modifier
@@ -374,20 +374,20 @@ fun NovaHomeScreen(
                                             modifier = Modifier
                                                 .size(32.dp)
                                                 .clip(RoundedCornerShape(8.dp))
-                                                .background(NovaSurfaceElevated),
+                                                .background(PocketSurfaceElevated),
                                             contentAlignment = Alignment.Center
                                         ) {
                                             Icon(
                                                 imageVector = Icons.Default.Folder,
                                                 contentDescription = null,
-                                                tint = NovaEmerald,
+                                                tint = PocketEmerald,
                                                 modifier = Modifier.size(18.dp)
                                             )
                                         }
                                         Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                                             Text(
                                                 text = project.name,
-                                                color = NovaTextPrimary,
+                                                color = PocketTextPrimary,
                                                 fontSize = 13.5.sp,
                                                 fontWeight = FontWeight.SemiBold,
                                                 maxLines = 1,
@@ -395,7 +395,7 @@ fun NovaHomeScreen(
                                             )
                                             Text(
                                                 text = "${project.language.ifBlank { "Linux" }} • Modified ${project.formattedUpdatedAt}",
-                                                color = NovaTextMuted,
+                                                color = PocketTextMuted,
                                                 fontSize = 11.sp,
                                                 maxLines = 1
                                             )
@@ -405,7 +405,7 @@ fun NovaHomeScreen(
                                     Icon(
                                         imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                                         contentDescription = "Open",
-                                        tint = NovaTextMuted,
+                                        tint = PocketTextMuted,
                                         modifier = Modifier.size(18.dp)
                                     )
                                 }
@@ -421,7 +421,7 @@ fun NovaHomeScreen(
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(
                     text = "STARTER TEMPLATES",
-                    color = NovaTextMuted,
+                    color = PocketTextMuted,
                     fontSize = 11.5.sp,
                     fontWeight = FontWeight.Bold,
                     letterSpacing = 0.5.sp
@@ -440,8 +440,8 @@ fun NovaHomeScreen(
                                 .clip(RoundedCornerShape(10.dp))
                                 .clickable { onCreateProject(template.defaultName) },
                             shape = RoundedCornerShape(10.dp),
-                            color = NovaSurface,
-                            border = androidx.compose.foundation.BorderStroke(1.dp, NovaBorder)
+                            color = PocketSurface,
+                            border = androidx.compose.foundation.BorderStroke(1.dp, PocketBorder)
                         ) {
                             Column(
                                 modifier = Modifier
@@ -476,7 +476,7 @@ fun NovaHomeScreen(
                                 }
                                 Text(
                                     text = template.title,
-                                    color = NovaTextPrimary,
+                                    color = PocketTextPrimary,
                                     fontSize = 12.5.sp,
                                     fontWeight = FontWeight.SemiBold,
                                     maxLines = 1,
@@ -484,7 +484,7 @@ fun NovaHomeScreen(
                                 )
                                 Text(
                                     text = template.tech,
-                                    color = NovaTextMuted,
+                                    color = PocketTextMuted,
                                     fontSize = 10.sp,
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis
@@ -501,8 +501,8 @@ fun NovaHomeScreen(
             Surface(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
-                color = NovaSurface,
-                border = androidx.compose.foundation.BorderStroke(1.dp, NovaBorder)
+                color = PocketSurface,
+                border = androidx.compose.foundation.BorderStroke(1.dp, PocketBorder)
             ) {
                 Column(
                     modifier = Modifier
@@ -518,19 +518,19 @@ fun NovaHomeScreen(
                             modifier = Modifier
                                 .size(24.dp)
                                 .clip(CircleShape)
-                                .background(NovaEmerald.copy(alpha = 0.15f)),
+                                .background(PocketEmerald.copy(alpha = 0.15f)),
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
                                 imageVector = Icons.Default.AutoAwesome,
                                 contentDescription = null,
-                                tint = NovaEmerald,
+                                tint = PocketEmerald,
                                 modifier = Modifier.size(13.dp)
                             )
                         }
                         Text(
                             text = "AI COPILOT",
-                            color = NovaEmerald,
+                            color = PocketEmerald,
                             fontSize = 11.sp,
                             fontWeight = FontWeight.Bold,
                             letterSpacing = 0.6.sp
@@ -539,7 +539,7 @@ fun NovaHomeScreen(
 
                     Text(
                         text = "Build, debug and understand your code with AI.",
-                        color = NovaTextSecondary,
+                        color = PocketTextSecondary,
                         fontSize = 12.5.sp
                     )
 
@@ -548,8 +548,8 @@ fun NovaHomeScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clip(RoundedCornerShape(8.dp))
-                            .background(NovaSurfaceElevated)
-                            .border(1.dp, NovaBorder, RoundedCornerShape(8.dp))
+                            .background(PocketSurfaceElevated)
+                            .border(1.dp, PocketBorder, RoundedCornerShape(8.dp))
                             .padding(horizontal = 10.dp, vertical = 8.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -559,17 +559,17 @@ fun NovaHomeScreen(
                             onValueChange = { copilotPrompt = it },
                             modifier = Modifier.weight(1f),
                             textStyle = TextStyle(
-                                color = NovaTextPrimary,
+                                color = PocketTextPrimary,
                                 fontSize = 13.sp,
                                 fontWeight = FontWeight.Normal
                             ),
-                            cursorBrush = SolidColor(NovaEmerald),
+                            cursorBrush = SolidColor(PocketEmerald),
                             singleLine = true,
                             decorationBox = { innerTextField ->
                                 if (copilotPrompt.isEmpty()) {
                                     Text(
                                         text = "Ask Pocket IDE…",
-                                        color = NovaTextMuted,
+                                        color = PocketTextMuted,
                                         fontSize = 13.sp
                                     )
                                 }
@@ -581,7 +581,7 @@ fun NovaHomeScreen(
                             modifier = Modifier
                                 .size(28.dp)
                                 .clip(RoundedCornerShape(6.dp))
-                                .background(if (copilotPrompt.isNotBlank()) NovaEmerald else NovaSurfaceVariant)
+                                .background(if (copilotPrompt.isNotBlank()) PocketEmerald else PocketSurfaceVariant)
                                 .clickable(enabled = copilotPrompt.isNotBlank()) {
                                     val p = copilotPrompt.trim()
                                     if (p.isNotBlank()) {
@@ -594,7 +594,7 @@ fun NovaHomeScreen(
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.Send,
                                 contentDescription = "Send",
-                                tint = if (copilotPrompt.isNotBlank()) NovaObsidian else NovaTextMuted,
+                                tint = if (copilotPrompt.isNotBlank()) PocketObsidian else PocketTextMuted,
                                 modifier = Modifier.size(14.dp)
                             )
                         }
@@ -610,15 +610,15 @@ fun NovaHomeScreen(
                                 modifier = Modifier
                                     .weight(1f)
                                     .clip(RoundedCornerShape(6.dp))
-                                    .background(NovaSurfaceElevated)
-                                    .border(1.dp, NovaBorder, RoundedCornerShape(6.dp))
+                                    .background(PocketSurfaceElevated)
+                                    .border(1.dp, PocketBorder, RoundedCornerShape(6.dp))
                                     .clickable { onAskCopilot(action) }
                                     .padding(vertical = 6.dp),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Text(
                                     text = action,
-                                    color = NovaTextPrimary,
+                                    color = PocketTextPrimary,
                                     fontSize = 11.sp,
                                     fontWeight = FontWeight.Medium,
                                     maxLines = 1
@@ -640,7 +640,7 @@ fun NovaHomeScreen(
     if (showCreateDialog) {
         AlertDialog(
             onDismissRequest = { showCreateDialog = false },
-            title = { Text("New Project", color = NovaTextPrimary, fontWeight = FontWeight.Bold) },
+            title = { Text("New Project", color = PocketTextPrimary, fontWeight = FontWeight.Bold) },
             text = {
                 OutlinedTextField(
                     value = newProjectName,
@@ -652,7 +652,7 @@ fun NovaHomeScreen(
                 )
             },
             confirmButton = {
-                NovaPrimaryButton(
+                PocketPrimaryButton(
                     text = "Create",
                     onClick = {
                         val name = newProjectName.trim()
@@ -666,10 +666,10 @@ fun NovaHomeScreen(
             },
             dismissButton = {
                 TextButton(onClick = { showCreateDialog = false }) {
-                    Text("Cancel", color = NovaTextSecondary)
+                    Text("Cancel", color = PocketTextSecondary)
                 }
             },
-            containerColor = NovaSurface,
+            containerColor = PocketSurface,
             shape = RoundedCornerShape(14.dp)
         )
     }
