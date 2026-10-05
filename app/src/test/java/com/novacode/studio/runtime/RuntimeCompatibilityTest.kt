@@ -1,4 +1,4 @@
-package com.novacode.studio.runtime
+package com.pocketide.app.runtime
 
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
