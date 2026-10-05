@@ -1,8 +1,8 @@
-package com.novacode.studio.runtime
+package com.pocketide.app.runtime
 
-import com.novacode.studio.model.ChangeItem
-import com.novacode.studio.model.DiffLine
-import com.novacode.studio.model.DiffLineType
+import com.pocketide.app.model.ChangeItem
+import com.pocketide.app.model.DiffLine
+import com.pocketide.app.model.DiffLineType
 import java.io.File
 import java.security.MessageDigest
 import java.util.concurrent.ConcurrentHashMap
