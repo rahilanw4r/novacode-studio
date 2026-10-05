@@ -37,7 +37,6 @@ It is designed around one idea: **your phone should be able to do real developme
 <p align="center">
   <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/1.png" width="31%" alt="Pocket IDE">
   <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/2.png" width="31%" alt="Pocket IDE">
-  <img src="docs/screenshots/terminal-alpha.png" width="31%" alt="Pocket IDE Terminal">
 </p>
 
 ---
@@ -112,7 +111,6 @@ Depending on what you select, setup may download:
 - Android development tools
 - Claude Code
 - Antigravity CLI
-- DeepSeek Harness
 - Other optional development components
 
 Setup can take several minutes and may require significant storage. Keep the device connected to the internet and avoid force-stopping Pocket IDE while setup is running.
@@ -371,7 +369,6 @@ The repository's runtime manifest currently includes bundles for:
 - Android development tools
 - Claude Code
 - Antigravity CLI
-- DeepSeek Harness
 
 Versions and bundle contents can change independently of the Android application.
 
