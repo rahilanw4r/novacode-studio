@@ -50,6 +50,6 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           APK_FILE=$(ls app/build/outputs/apk/online/debug/*.apk | head -n 1)
-          cp "$APK_FILE" NovaCode-Studio-v1.0.14.apk
-          gh release create v1.0.14 NovaCode-Studio-v1.0.14.apk --title "NovaCode Studio v1.0.14 — Android Zip Asset Checksum Fix" --notes "NovaCode Studio v1.0.14 fixes runtime setup checksum mismatches by updating ANDROID_SDK_SHA256 and ANDROID_MAVEN_SHA256 constants to match actual remote assets (e57ccbe19849a7462072a828db91c86abb00418a76e647bdb8a763b42fc5933e and 2273633fccc45215839ade08972831229330f1e22bc0d46303d0141263c41c6d)." || gh release upload v1.0.14 NovaCode-Studio-v1.0.14.apk --clobber
+          cp "$APK_FILE" NovaCode-Studio-v1.0.15.apk
+          gh release create v1.0.15 NovaCode-Studio-v1.0.15.apk --title "NovaCode Studio v1.0.15 — AntiGravity Auth & Runtime Fix" --notes "NovaCode Studio v1.0.15 fixes Google OAuth sign-in HTTP 500 errors by sanitizing terminal OSC 8 hyperlinks, adds openjdk-17 fallback and resilient verification for the Android toolchain during setup, and updates security documentation." || gh release upload v1.0.15 NovaCode-Studio-v1.0.15.apk --clobber
 

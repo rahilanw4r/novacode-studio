@@ -314,34 +314,78 @@ class AntigravityAuthController(
 }
 
 internal fun extractGoogleOAuthUrl(output: String): String? {
-    val compact = output.replace(Regex("[\\r\\n\\t ]+"), "")
-    val googleMatches = Regex("https://accounts\\.google\\.com/[^\\s\"'<>]+").findAll(compact)
-    for (m in googleMatches) {
-        val candidate = m.value.trimEnd { char -> char !in URL_CHARACTERS }
-        if (("client_id=" in candidate && "code_challenge=" in candidate) || "oauth" in candidate) {
-            return candidate
+    // 1. Check OSC 8 hyperlink escape sequence first: \u001B]8;;(URL)\u001B\ or \u0007
+    val osc8Pattern = Regex("\\u001B\\]8;;(https://accounts\\.google\\.com/[^\\u0007\\u001B]+)")
+    osc8Pattern.find(output)?.let { match ->
+        val candidate = cleanOAuthUrl(match.groupValues[1])
+        if (isValidGoogleAuthUrl(candidate)) return candidate
+    }
+
+    // 2. Remove all ANSI escape codes and OSC sequences so control codes don't bleed into URLs
+    val noAnsi = output
+        .replace(Regex("\\u001B\\]8;;[^\\u0007\\u001B]*(?:\\u0007|\\u001B\\\\)"), " ")
+        .replace(Regex("\\u001B\\[[0-?]*[ -/]*[@-~]"), " ")
+        .replace(Regex("\\u001B(?:\\][^\\u0007]*(?:\\u0007|\\u001B\\\\)|[()][A-Z0-9])"), " ")
+
+    // 3. Match full direct accounts.google.com URL
+    val directPattern = Regex("https://accounts\\.google\\.com/[^\\s\"'<>\\u001B]+")
+    for (m in directPattern.findAll(noAnsi)) {
+        val candidate = cleanOAuthUrl(m.value)
+        if (isValidGoogleAuthUrl(candidate)) return candidate
+    }
+
+    // 4. Fallback: Compact whitespace for multiline wrapped URLs
+    val lines = noAnsi.lineSequence().map(String::trim).filter(String::isNotBlank).toList()
+    val urlBuilder = StringBuilder()
+    var collecting = false
+    for (line in lines) {
+        if (line.contains("https://accounts.google.com")) {
+            collecting = true
+            urlBuilder.append(line.substring(line.indexOf("https://accounts.google.com")))
+        } else if (collecting) {
+            if (line.startsWith("http") || line.contains("Enter code") || line.contains("Select") || line.contains("paste")) {
+                collecting = false
+            } else if (line.contains("=") || line.contains("&") || line.contains("?") || line.matches(Regex("^[a-zA-Z0-9._~%/-]+$"))) {
+                urlBuilder.append(line)
+            } else {
+                collecting = false
+            }
         }
     }
-    GOOGLE_OAUTH_URL.find(compact)?.value
-        ?.takeIf { "client_id=" in it }
-        ?.let { return it }
-    // Fallback for post-menu screens that print the browser URL in a different
-    // shape (wrapped lines, shortened query display). Only apply once the login
-    // menu has left the screen so help text cannot produce a false positive.
-    if (!output.contains("Select login method", true) &&
-        (output.contains("browser", true) || output.contains("visit", true) ||
-            output.contains("open", true) || output.contains("code", true) ||
-            output.contains("paste", true))
-    ) {
-        val candidates = Regex("https://[^\\s\"']{20,}")
-            .findAll(compact)
-            .map { it.value.trimEnd { char -> char !in URL_CHARACTERS } }
-            .filter { it.length >= 30 && "." in it }
-            .toList()
-        return candidates.firstOrNull { "google" in it } ?: candidates.firstOrNull()
+    if (urlBuilder.isNotEmpty()) {
+        val candidate = cleanOAuthUrl(urlBuilder.toString())
+        if (isValidGoogleAuthUrl(candidate)) return candidate
     }
+
+    // 5. Broad fallback for shortened queries
+    val fallbackCandidates = Regex("https://accounts\\.google\\.com/[^\\s\"'<>]+").findAll(output)
+    for (m in fallbackCandidates) {
+        val candidate = cleanOAuthUrl(m.value)
+        if (isValidGoogleAuthUrl(candidate)) return candidate
+    }
+
     return null
 }
+
+private fun cleanOAuthUrl(raw: String): String {
+    val builder = StringBuilder()
+    for (c in raw) {
+        if (c in URL_CHARACTERS && c != '\u001B' && c != '\\') {
+            builder.append(c)
+        } else {
+            break // Crucial: Stop at first non-URL/escape character so label text is never appended!
+        }
+    }
+    var clean = builder.toString()
+    while (clean.isNotEmpty() && clean.last() in listOf('.', ',', ';', ':', ')', ']', '"', '\'', '>')) {
+        clean = clean.dropLast(1)
+    }
+    return clean
+}
+
+private fun isValidGoogleAuthUrl(url: String): Boolean =
+    url.startsWith("https://accounts.google.com") &&
+    (url.contains("client_id=") || url.contains("code_challenge=") || url.contains("state=") || url.contains("oauth"))
 
 private fun isSignedInScreen(output: String): Boolean =
     output.contains("for shortcuts", true) ||

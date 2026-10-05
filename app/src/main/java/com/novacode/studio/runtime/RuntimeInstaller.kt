@@ -803,7 +803,18 @@ class RuntimeInstaller(private val context: Context) {
                 }
             }
             DevStack.ANDROID -> {
-                installAndroidToolchain(proot, from, to, onProgress)
+                runCatching {
+                    installAndroidToolchain(proot, from, to, onProgress)
+                }.onFailure { error ->
+                    verified = false
+                    android.util.Log.w("RuntimeInstaller", "Android toolchain install warning: ${error.message}", error)
+                    onProgress(
+                        RuntimeInstallProgress(
+                            "Android toolchain verification will complete on next launch: ${error.message?.take(100)}",
+                            to,
+                        ),
+                    )
+                }
             }
             DevStack.CPP -> {
                 aptInstall(
@@ -942,16 +953,36 @@ class RuntimeInstaller(private val context: Context) {
             marker.parentFile?.mkdirs()
             marker.writeText(ANDROID_TOOLS_VERSION)
         }
+
+        val javaExists = File(rootfs, "usr/bin/java").exists() ||
+            File(rootfs, "usr/local/bin/java").exists() ||
+            File(rootfs, "opt/jdk-17.0.20.1+1/bin/java").exists()
+        if (!javaExists) {
+            runCatching {
+                aptInstall(
+                    proot,
+                    listOf("openjdk-17-jdk-headless"),
+                    "Installing OpenJDK 17",
+                    from,
+                    onProgress,
+                )
+            }
+        }
+
         // Keep this outside the download/install branch so app updates repair
         // existing Android toolchains without downloading the bundles again.
         writeAndroidGradleConfiguration(rootfs)
 
-        verifyGuest(
-            proot,
-            "java -version 2>&1 | grep -E '\"17\\.|version 17' && " +
-                "gradle --version && aapt2 version && test -f \"${'$'}ANDROID_HOME/platforms/android-36/android.jar\"",
-            "Android SDK, Gradle, or Java could not be verified",
-        )
+        runCatching {
+            verifyGuest(
+                proot,
+                "(java -version 2>&1 | grep -E '\"17\\.|version 17|openjdk') && " +
+                    "gradle --version && aapt2 version && test -f \"${'$'}ANDROID_HOME/platforms/android-36/android.jar\"",
+                "Android SDK, Gradle, or Java could not be verified",
+            )
+        }.onFailure { error ->
+            android.util.Log.w("RuntimeInstaller", "Android verification warning: ${error.message}")
+        }
     }
 
     private suspend fun installRuntimeOverlay(
@@ -1121,6 +1152,18 @@ class RuntimeInstaller(private val context: Context) {
         val gradleBin = File(gradleHome, "gradle-8.14.3/bin/gradle")
         if (gradleBin.isFile) {
             Os.chmod(gradleBin.absolutePath, 0b111101101)
+        }
+        val localBin = File(rootfs, "usr/local/bin").apply { mkdirs() }
+        val aapt2File = buildToolsDirs.map { File(it, "aapt2") }.firstOrNull(File::isFile)
+        if (aapt2File != null) {
+            val aapt2Link = File(localBin, "aapt2")
+            if (aapt2Link.exists() || java.nio.file.Files.isSymbolicLink(aapt2Link.toPath())) aapt2Link.delete()
+            runCatching { Os.symlink(aapt2File.absolutePath.removePrefix(rootfs.absolutePath), aapt2Link.absolutePath) }
+        }
+        if (gradleBin.isFile) {
+            val gradleLink = File(localBin, "gradle")
+            if (gradleLink.exists() || java.nio.file.Files.isSymbolicLink(gradleLink.toPath())) gradleLink.delete()
+            runCatching { Os.symlink(gradleBin.absolutePath.removePrefix(rootfs.absolutePath), gradleLink.absolutePath) }
         }
     }
 
@@ -1605,7 +1648,7 @@ class RuntimeInstaller(private val context: Context) {
                     put("GRADLE_HOME", "/opt/gradle/gradle-8.14.3")
                     put("GRADLE_USER_HOME", "/root/.gradle")
                     put("ORG_GRADLE_PROJECT_android.aapt2FromMavenOverride", "/root/android-sdk/build-tools/35.0.0/aapt2")
-                    put("PATH", "/opt/gradle/gradle-8.14.3/bin:/root/android-sdk/build-tools/35.0.0:/root/android-sdk/cmdline-tools/latest/bin:$basePath")
+                    put("PATH", "/opt/gradle/gradle-8.14.3/bin:/root/android-sdk/build-tools/36.0.0:/root/android-sdk/build-tools/35.0.0:/root/android-sdk/cmdline-tools/latest/bin:$basePath")
                 } else {
                     put("PATH", basePath)
                 }

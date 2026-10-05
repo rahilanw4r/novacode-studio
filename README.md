@@ -11,14 +11,14 @@
 
   [![Android 9.0+](https://img.shields.io/badge/Android-9.0%2B-10B981?style=for-the-badge&logo=android&logoColor=white)](#-system-requirements)
   [![Architecture ARM64](https://img.shields.io/badge/Architecture-ARM64--v8a-6366F1?style=for-the-badge&logo=arm&logoColor=white)](#-system-requirements)
-  [![Latest Release](https://img.shields.io/badge/Release-v1.0.14-06B6D4?style=for-the-badge&logo=github&logoColor=white)](https://github.com/rahilanw4r/novacode-studio/releases/latest)
+  [![Latest Release](https://img.shields.io/badge/Release-v1.0.15-06B6D4?style=for-the-badge&logo=github&logoColor=white)](https://github.com/rahilanw4r/novacode-studio/releases/latest)
   [![Build Status](https://img.shields.io/badge/CI%2FCD-Passing-10B981?style=for-the-badge&logo=githubactions&logoColor=white)](https://github.com/rahilanw4r/novacode-studio/actions)
   [![Telegram Contact](https://img.shields.io/badge/Telegram-@RahilAnw4r-229ED9?style=for-the-badge&logo=telegram&logoColor=white)](https://t.me/RahilAnw4r)
   [![License Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-F59E0B?style=for-the-badge)](LICENSE)
 
   <br />
 
-  [**📥 Download Latest APK (v1.0.14)**](https://github.com/rahilanw4r/novacode-studio/releases/latest) • [**💬 Telegram Contact**](https://t.me/RahilAnw4r) • [**⭐ Star on GitHub**](https://github.com/rahilanw4r/novacode-studio) • [**🐛 Report Issue**](https://github.com/rahilanw4r/novacode-studio/issues)
+  [**📥 Download Latest APK (v1.0.15)**](https://github.com/rahilanw4r/novacode-studio/releases/latest) • [**💬 Telegram Contact**](https://t.me/RahilAnw4r) • [**⭐ Star on GitHub**](https://github.com/rahilanw4r/novacode-studio) • [**🐛 Report Issue**](https://github.com/rahilanw4r/novacode-studio/issues)
 
   <br />
 
@@ -284,7 +284,7 @@ When connecting your GitHub account to browse and clone repositories:
 ## 🚀 Installation & Getting Started
 
 ### Method 1: Download Prebuilt APK (Recommended)
-1. Download the latest release from the **[GitHub Releases Page](https://github.com/rahilanw4r/novacode-studio/releases/latest)** (`NovaCode-Studio-v1.0.14.apk`).
+1. Download the latest release from the **[GitHub Releases Page](https://github.com/rahilanw4r/novacode-studio/releases/latest)** (`NovaCode-Studio-v1.0.15.apk`).
 2. Open the downloaded file on your Android device and confirm installation.
 3. Grant notification permissions when prompted to allow background build and terminal monitoring.
 4. Follow the interactive onboarding setup to initialize the private Linux runtime and pick your preferred AI agent.
