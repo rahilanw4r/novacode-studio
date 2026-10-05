@@ -1,4 +1,4 @@
-package com.novacode.studio.runtime
+package com.pocketide.app.runtime
 
 import android.content.BroadcastReceiver
 import android.content.Context
