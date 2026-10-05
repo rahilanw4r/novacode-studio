@@ -1,6 +1,6 @@
-package com.novacode.studio.runtime
+package com.pocketide.app.runtime
 
-import com.novacode.studio.model.ProviderProfile
+import com.pocketide.app.model.ProviderProfile
 import java.io.BufferedInputStream
 import java.io.BufferedOutputStream
 import java.net.HttpURLConnection
@@ -12,7 +12,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 import org.json.JSONArray
 import org.json.JSONObject
 
-/** Adds NovaCode Studio' saved OpenRouter routing policy to Anthropic Messages requests. */
+/** Adds PocketIDE Studio' saved OpenRouter routing policy to Anthropic Messages requests. */
 internal fun applyOpenRouterRouting(source: JSONObject, profile: ProviderProfile): JSONObject {
     val providers = profile.openRouterProviders
     if (providers.isEmpty()) return source
