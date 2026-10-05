@@ -1,4 +1,4 @@
-package com.novacode.studio.runtime
+package com.pocketide.app.runtime
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -9,10 +9,10 @@ import android.content.Intent
 import android.os.IBinder
 import android.os.PowerManager
 import androidx.core.app.NotificationCompat
-import com.novacode.studio.MainActivity
-import com.novacode.studio.R
-import com.novacode.studio.data.AppPreferences
-import com.novacode.studio.model.DevStack
+import com.pocketide.app.MainActivity
+import com.pocketide.app.R
+import com.pocketide.app.data.AppPreferences
+import com.pocketide.app.model.DevStack
 import java.io.File
 import java.net.UnknownHostException
 import kotlinx.coroutines.CancellationException
@@ -258,8 +258,8 @@ class RuntimeSetupService : Service() {
                 .mapNotNull { name -> runCatching { DevStack.valueOf(name) }.getOrNull() }
                 .toSet()
             val agent = runCatching {
-                com.novacode.studio.model.AgentKind.valueOf(intent?.getStringExtra(EXTRA_AGENT).orEmpty())
-            }.getOrDefault(com.novacode.studio.model.AgentKind.CLAUDE_CODE)
+                com.pocketide.app.model.AgentKind.valueOf(intent?.getStringExtra(EXTRA_AGENT).orEmpty())
+            }.getOrDefault(com.pocketide.app.model.AgentKind.CLAUDE_CODE)
             RuntimeSetupController.begin(this)
             installJob = scope.launch {
                 try {
@@ -345,7 +345,7 @@ class RuntimeSetupService : Service() {
     private fun acquireWakeLock() {
         if (wakeLock?.isHeld == true) return
         wakeLock = getSystemService(PowerManager::class.java)
-            .newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "com.novacode.studio:runtime-setup")
+            .newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "com.pocketide.app:runtime-setup")
             .apply { acquire(MAX_WAKE_LOCK_MS) }
     }
 
@@ -363,8 +363,8 @@ class RuntimeSetupService : Service() {
     override fun onBind(intent: Intent?): IBinder? = null
 
     companion object {
-        const val ACTION_START = "com.novacode.studio.START_SETUP"
-        const val ACTION_STOP = "com.novacode.studio.STOP_SETUP"
+        const val ACTION_START = "com.pocketide.app.START_SETUP"
+        const val ACTION_STOP = "com.pocketide.app.STOP_SETUP"
         const val EXTRA_STACKS = "selected_stacks"
         const val EXTRA_AGENT = "selected_agent"
         private const val CHANNEL_ID = "runtime-setup"
