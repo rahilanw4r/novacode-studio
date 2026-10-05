@@ -1,4 +1,4 @@
-package com.novacode.studio.ui.screens.editor
+package com.pocketide.app.ui.screens.editor
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
@@ -62,19 +62,19 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.novacode.studio.model.ChangeItem
-import com.novacode.studio.model.DiffLine
-import com.novacode.studio.model.DiffLineType
-import com.novacode.studio.model.WorkspaceEntry
-import com.novacode.studio.ui.components.NovaGlassCard
-import com.novacode.studio.ui.components.NovaStatusPill
-import com.novacode.studio.ui.theme.*
-import com.novacode.studio.ui.theme.NovaTextSecondary
+import com.pocketide.app.model.ChangeItem
+import com.pocketide.app.model.DiffLine
+import com.pocketide.app.model.DiffLineType
+import com.pocketide.app.model.WorkspaceEntry
+import com.pocketide.app.ui.components.PocketGlassCard
+import com.pocketide.app.ui.components.PocketStatusPill
+import com.pocketide.app.ui.theme.*
+import com.pocketide.app.ui.theme.PocketTextSecondary
 
 enum class CodeStudioTab { FILES, DIFFS, EDITOR }
 
 @Composable
-fun NovaCodeStudioScreen(
+fun PocketIDEStudioScreen(
     files: List<WorkspaceEntry>,
     changes: List<ChangeItem>,
     openedFilePath: String?,
@@ -101,13 +101,13 @@ fun NovaCodeStudioScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(NovaObsidian)
+            .background(PocketObsidian)
     ) {
         // Studio Top Bar
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(NovaSurface)
+                .background(PocketSurface)
                 .padding(horizontal = 12.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
@@ -127,7 +127,7 @@ fun NovaCodeStudioScreen(
                     title = "Diffs",
                     icon = Icons.Default.Difference,
                     count = changes.size,
-                    badgeColor = if (changes.isNotEmpty()) NovaCyan else null,
+                    badgeColor = if (changes.isNotEmpty()) PocketCyan else null,
                     isSelected = selectedTab == CodeStudioTab.DIFFS,
                     onClick = { selectedTab = CodeStudioTab.DIFFS }
                 )
@@ -145,13 +145,13 @@ fun NovaCodeStudioScreen(
                 Icon(
                     imageVector = Icons.Default.Refresh,
                     contentDescription = "Refresh",
-                    tint = NovaCyan,
+                    tint = PocketCyan,
                     modifier = Modifier.size(18.dp)
                 )
             }
         }
 
-        HorizontalDivider(color = NovaBorder)
+        HorizontalDivider(color = PocketBorder)
 
         // Tab Content
         when (selectedTab) {
@@ -200,14 +200,14 @@ fun NovaCodeStudioScreen(
                                 .padding(16.dp)
                                 .size(44.dp)
                                 .clip(CircleShape)
-                                .background(NovaEmerald)
+                                .background(PocketEmerald)
                                 .clickable { showContextualAi = true },
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
                                 imageVector = Icons.Default.AutoAwesome,
                                 contentDescription = "AI Actions",
-                                tint = NovaObsidian,
+                                tint = PocketObsidian,
                                 modifier = Modifier.size(20.dp)
                             )
                         }
@@ -225,13 +225,13 @@ fun NovaCodeStudioScreen(
             onDismissRequest = { showContextualAi = false },
             title = {
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Icon(Icons.Default.AutoAwesome, contentDescription = null, tint = NovaEmerald, modifier = Modifier.size(18.dp))
-                    Text("Pocket IDE Copilot", color = NovaTextPrimary, fontWeight = FontWeight.Bold)
+                    Icon(Icons.Default.AutoAwesome, contentDescription = null, tint = PocketEmerald, modifier = Modifier.size(18.dp))
+                    Text("Pocket IDE Copilot", color = PocketTextPrimary, fontWeight = FontWeight.Bold)
                 }
             },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    Text("Context: $fileName", color = NovaTextMuted, fontSize = 12.sp, fontFamily = FontFamily.Monospace)
+                    Text("Context: $fileName", color = PocketTextMuted, fontSize = 12.sp, fontFamily = FontFamily.Monospace)
 
                     val contextualActions = listOf(
                         "Explain this code" to "Explain the logic, architecture, and potential pitfalls of $fileName:\n```\n$fileSnippet\n```",
@@ -247,15 +247,15 @@ fun NovaCodeStudioScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .clip(RoundedCornerShape(8.dp))
-                                    .background(NovaSurfaceElevated)
-                                    .border(1.dp, NovaBorder, RoundedCornerShape(8.dp))
+                                    .background(PocketSurfaceElevated)
+                                    .border(1.dp, PocketBorder, RoundedCornerShape(8.dp))
                                     .clickable {
                                         showContextualAi = false
                                         onAskCopilotContextual?.invoke(prompt)
                                     }
                                     .padding(horizontal = 12.dp, vertical = 9.dp)
                             ) {
-                                Text(label, color = NovaTextPrimary, fontSize = 13.sp, fontWeight = FontWeight.Medium)
+                                Text(label, color = PocketTextPrimary, fontSize = 13.sp, fontWeight = FontWeight.Medium)
                             }
                         }
                     }
@@ -279,16 +279,16 @@ fun NovaCodeStudioScreen(
                             onAskCopilotContextual?.invoke("Regarding $fileName:\n$p\n\nFile code:\n```\n$fileSnippet\n```")
                         }
                     ) {
-                        Text("Send", color = NovaEmerald, fontWeight = FontWeight.Bold)
+                        Text("Send", color = PocketEmerald, fontWeight = FontWeight.Bold)
                     }
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showContextualAi = false }) {
-                    Text("Close", color = NovaTextSecondary)
+                    Text("Close", color = PocketTextSecondary)
                 }
             },
-            containerColor = NovaSurface,
+            containerColor = PocketSurface,
             shape = RoundedCornerShape(14.dp)
         )
     }
@@ -303,9 +303,9 @@ private fun StudioTabButton(
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    val bg = if (isSelected) NovaIndigo.copy(alpha = 0.2f) else Color.Transparent
-    val border = if (isSelected) NovaIndigo else Color.Transparent
-    val textColor = if (isSelected) NovaIndigo else NovaTextSecondary
+    val bg = if (isSelected) PocketIndigo.copy(alpha = 0.2f) else Color.Transparent
+    val border = if (isSelected) PocketIndigo else Color.Transparent
+    val textColor = if (isSelected) PocketIndigo else PocketTextSecondary
 
     Row(
         modifier = Modifier
@@ -333,12 +333,12 @@ private fun StudioTabButton(
             Box(
                 modifier = Modifier
                     .clip(CircleShape)
-                    .background(badgeColor ?: NovaSurfaceElevated)
+                    .background(badgeColor ?: PocketSurfaceElevated)
                     .padding(horizontal = 6.dp, vertical = 2.dp)
             ) {
                 Text(
                     text = count.toString(),
-                    color = if (badgeColor != null) NovaObsidian else NovaTextSecondary,
+                    color = if (badgeColor != null) PocketObsidian else PocketTextSecondary,
                     fontSize = 10.sp,
                     fontWeight = FontWeight.Bold
                 )
@@ -365,22 +365,22 @@ private fun FileBrowserView(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(10.dp))
-                .background(NovaSurfaceElevated)
-                .border(1.dp, NovaBorder, RoundedCornerShape(10.dp))
+                .background(PocketSurfaceElevated)
+                .border(1.dp, PocketBorder, RoundedCornerShape(10.dp))
                 .padding(horizontal = 10.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Icon(Icons.Default.Search, contentDescription = null, tint = NovaTextMuted, modifier = Modifier.size(16.dp))
+            Icon(Icons.Default.Search, contentDescription = null, tint = PocketTextMuted, modifier = Modifier.size(16.dp))
             BasicTextField(
                 value = searchQuery,
                 onValueChange = onSearchChange,
-                textStyle = TextStyle(color = NovaTextPrimary, fontSize = 13.sp),
-                cursorBrush = SolidColor(NovaCyan),
+                textStyle = TextStyle(color = PocketTextPrimary, fontSize = 13.sp),
+                cursorBrush = SolidColor(PocketCyan),
                 modifier = Modifier.weight(1f),
                 decorationBox = { inner ->
                     if (searchQuery.isEmpty()) {
-                        Text("Search project files…", color = NovaTextMuted, fontSize = 13.sp)
+                        Text("Search project files…", color = PocketTextMuted, fontSize = 13.sp)
                     }
                     inner()
                 }
@@ -389,7 +389,7 @@ private fun FileBrowserView(
                 Icon(
                     imageVector = Icons.Default.Close,
                     contentDescription = "Clear",
-                    tint = NovaTextMuted,
+                    tint = PocketTextMuted,
                     modifier = Modifier.size(16.dp).clickable { onSearchChange("") }
                 )
             }
@@ -399,7 +399,7 @@ private fun FileBrowserView(
 
         if (filtered.isEmpty()) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("No files found", color = NovaTextMuted, fontSize = 13.sp)
+                Text("No files found", color = PocketTextMuted, fontSize = 13.sp)
             }
         } else {
             LazyColumn(verticalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -421,10 +421,10 @@ private fun FileTreeItem(entry: WorkspaceEntry, onOpen: () -> Unit) {
         else -> Icons.Default.Description
     }
     val tint = when {
-        entry.isDirectory -> NovaCyan
-        entry.name.endsWith(".kt") -> NovaPurple
-        entry.name.endsWith(".py") -> NovaAmber
-        else -> NovaTextSecondary
+        entry.isDirectory -> PocketCyan
+        entry.name.endsWith(".kt") -> PocketPurple
+        entry.name.endsWith(".py") -> PocketAmber
+        else -> PocketTextSecondary
     }
 
     Row(
@@ -439,7 +439,7 @@ private fun FileTreeItem(entry: WorkspaceEntry, onOpen: () -> Unit) {
         Icon(imageVector = icon, contentDescription = null, tint = tint, modifier = Modifier.size(16.dp))
         Text(
             text = entry.name,
-            color = if (entry.isDirectory) NovaTextPrimary else NovaTextSecondary,
+            color = if (entry.isDirectory) PocketTextPrimary else PocketTextSecondary,
             fontSize = 13.sp,
             fontWeight = if (entry.isDirectory) FontWeight.SemiBold else FontWeight.Normal,
             fontFamily = FontFamily.Monospace,
@@ -459,8 +459,8 @@ private fun DiffInspectorView(
     if (changes.isEmpty()) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Icon(Icons.Default.Check, contentDescription = null, tint = NovaEmerald, modifier = Modifier.size(36.dp))
-                Text("Workspace is clean. No uncommitted diffs.", color = NovaTextMuted, fontSize = 13.sp)
+                Icon(Icons.Default.Check, contentDescription = null, tint = PocketEmerald, modifier = Modifier.size(36.dp))
+                Text("Workspace is clean. No uncommitted diffs.", color = PocketTextMuted, fontSize = 13.sp)
             }
         }
         return
@@ -473,25 +473,25 @@ private fun DiffInspectorView(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text("${changes.size} modified files", color = NovaTextPrimary, fontSize = 13.sp, fontWeight = FontWeight.Bold)
+            Text("${changes.size} modified files", color = PocketTextPrimary, fontSize = 13.sp, fontWeight = FontWeight.Bold)
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(6.dp))
-                        .background(NovaEmerald.copy(alpha = 0.15f))
+                        .background(PocketEmerald.copy(alpha = 0.15f))
                         .clickable(onClick = onKeepAll)
                         .padding(horizontal = 8.dp, vertical = 4.dp)
                 ) {
-                    Text("Accept All", color = NovaEmerald, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                    Text("Accept All", color = PocketEmerald, fontSize = 11.sp, fontWeight = FontWeight.Bold)
                 }
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(6.dp))
-                        .background(NovaRose.copy(alpha = 0.15f))
+                        .background(PocketRose.copy(alpha = 0.15f))
                         .clickable(onClick = onUndoAll)
                         .padding(horizontal = 8.dp, vertical = 4.dp)
                 ) {
-                    Text("Revert All", color = NovaRose, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                    Text("Revert All", color = PocketRose, fontSize = 11.sp, fontWeight = FontWeight.Bold)
                 }
             }
         }
@@ -516,7 +516,7 @@ private fun DiffFileCard(
 ) {
     var expanded by remember { mutableStateOf(true) }
 
-    NovaGlassCard(modifier = Modifier.fillMaxWidth()) {
+    PocketGlassCard(modifier = Modifier.fillMaxWidth()) {
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -528,24 +528,24 @@ private fun DiffFileCard(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
-                    Icon(Icons.Default.Code, contentDescription = null, tint = NovaCyan, modifier = Modifier.size(15.dp))
+                    Icon(Icons.Default.Code, contentDescription = null, tint = PocketCyan, modifier = Modifier.size(15.dp))
                     Text(
                         text = change.path,
-                        color = NovaTextPrimary,
+                        color = PocketTextPrimary,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
                         fontFamily = FontFamily.Monospace,
                         modifier = Modifier.weight(1f)
                     )
-                    Text("+${change.additions}", color = NovaEmerald, fontSize = 11.sp, fontWeight = FontWeight.Bold)
-                    Text("-${change.deletions}", color = NovaRose, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                    Text("+${change.additions}", color = PocketEmerald, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                    Text("-${change.deletions}", color = PocketRose, fontSize = 11.sp, fontWeight = FontWeight.Bold)
                 }
                 Row(horizontalArrangement = Arrangement.spacedBy(6.dp), modifier = Modifier.padding(start = 8.dp)) {
                     IconButton(onClick = onKeep, modifier = Modifier.size(24.dp)) {
-                        Icon(Icons.Default.Check, contentDescription = "Accept", tint = NovaEmerald, modifier = Modifier.size(16.dp))
+                        Icon(Icons.Default.Check, contentDescription = "Accept", tint = PocketEmerald, modifier = Modifier.size(16.dp))
                     }
                     IconButton(onClick = onUndo, modifier = Modifier.size(24.dp)) {
-                        Icon(Icons.AutoMirrored.Filled.Undo, contentDescription = "Revert", tint = NovaRose, modifier = Modifier.size(16.dp))
+                        Icon(Icons.AutoMirrored.Filled.Undo, contentDescription = "Revert", tint = PocketRose, modifier = Modifier.size(16.dp))
                     }
                 }
             }
@@ -555,16 +555,16 @@ private fun DiffFileCard(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(8.dp))
-                        .background(NovaObsidian)
+                        .background(PocketObsidian)
                         .horizontalScroll(rememberScrollState())
                         .padding(8.dp)
                 ) {
                     change.diffLines.take(150).forEach { line ->
                         val (lineBg, lineText) = when (line.type) {
-                            DiffLineType.ADDITION -> Pair(NovaEmerald.copy(alpha = 0.15f), NovaEmerald)
-                            DiffLineType.DELETION -> Pair(NovaRose.copy(alpha = 0.15f), NovaRose)
-                            DiffLineType.INFO -> Pair(NovaPurple.copy(alpha = 0.12f), NovaPurple)
-                            DiffLineType.CONTEXT -> Pair(Color.Transparent, NovaTextSecondary)
+                            DiffLineType.ADDITION -> Pair(PocketEmerald.copy(alpha = 0.15f), PocketEmerald)
+                            DiffLineType.DELETION -> Pair(PocketRose.copy(alpha = 0.15f), PocketRose)
+                            DiffLineType.INFO -> Pair(PocketPurple.copy(alpha = 0.12f), PocketPurple)
+                            DiffLineType.CONTEXT -> Pair(Color.Transparent, PocketTextSecondary)
                         }
                         Row(
                             modifier = Modifier
@@ -597,36 +597,36 @@ private fun CodeEditorView(
 ) {
     var content by remember(initialContent) { mutableStateOf(initialContent) }
 
-    Column(modifier = Modifier.fillMaxSize().background(NovaObsidian)) {
+    Column(modifier = Modifier.fillMaxSize().background(PocketObsidian)) {
         // Editor Bar
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(NovaSurfaceElevated)
+                .background(PocketSurfaceElevated)
                 .padding(horizontal = 12.dp, vertical = 6.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 IconButton(onClick = onClose, modifier = Modifier.size(28.dp)) {
-                    Icon(Icons.Default.Close, contentDescription = "Close", tint = NovaTextSecondary, modifier = Modifier.size(16.dp))
+                    Icon(Icons.Default.Close, contentDescription = "Close", tint = PocketTextSecondary, modifier = Modifier.size(16.dp))
                 }
                 Text(
                     text = filePath.substringAfterLast('/'),
-                    color = NovaTextPrimary,
+                    color = PocketTextPrimary,
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Bold,
                     fontFamily = FontFamily.Monospace
                 )
             }
             IconButton(onClick = { onSave(content) }, modifier = Modifier.size(28.dp)) {
-                Icon(Icons.Default.Save, contentDescription = "Save", tint = NovaCyan, modifier = Modifier.size(16.dp))
+                Icon(Icons.Default.Save, contentDescription = "Save", tint = PocketCyan, modifier = Modifier.size(16.dp))
             }
         }
 
         if (isLoading) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator(color = NovaCyan)
+                CircularProgressIndicator(color = PocketCyan)
             }
         } else {
             val lines = remember(content) { content.lines() }
@@ -642,7 +642,7 @@ private fun CodeEditorView(
                     lines.indices.forEach { idx ->
                         Text(
                             text = "${idx + 1}",
-                            color = NovaTextMuted,
+                            color = PocketTextMuted,
                             fontSize = 11.5.sp,
                             fontFamily = FontFamily.Monospace,
                             lineHeight = 18.sp
@@ -654,12 +654,12 @@ private fun CodeEditorView(
                     value = content,
                     onValueChange = { content = it },
                     textStyle = TextStyle(
-                        color = NovaTextPrimary,
+                        color = PocketTextPrimary,
                         fontSize = 11.5.sp,
                         fontFamily = FontFamily.Monospace,
                         lineHeight = 18.sp
                     ),
-                    cursorBrush = SolidColor(NovaCyan),
+                    cursorBrush = SolidColor(PocketCyan),
                     modifier = Modifier.fillMaxWidth()
                 )
             }
