@@ -1,4 +1,4 @@
-package com.novacode.studio.model
+package com.pocketide.app.model
 
 import java.time.Instant
 import java.text.Normalizer
