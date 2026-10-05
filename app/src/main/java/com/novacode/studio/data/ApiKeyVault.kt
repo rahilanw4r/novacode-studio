@@ -1,4 +1,4 @@
-package com.novacode.studio.data
+package com.pocketide.app.data
 
 import android.content.Context
 import android.security.keystore.KeyGenParameterSpec
