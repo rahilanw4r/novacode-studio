@@ -1,11 +1,11 @@
-package com.novacode.studio.runtime
+package com.pocketide.app.runtime
 
-import com.novacode.studio.model.ChatMessage
-import com.novacode.studio.model.ChangeItem
-import com.novacode.studio.model.ProviderProfile
-import com.novacode.studio.model.ProjectKind
-import com.novacode.studio.model.RuntimeEvent
-import com.novacode.studio.model.ToolRequest
+import com.pocketide.app.model.ChatMessage
+import com.pocketide.app.model.ChangeItem
+import com.pocketide.app.model.ProviderProfile
+import com.pocketide.app.model.ProjectKind
+import com.pocketide.app.model.RuntimeEvent
+import com.pocketide.app.model.ToolRequest
 import kotlinx.coroutines.flow.Flow
 
 data class RuntimeLaunchConfig(
@@ -45,7 +45,7 @@ object RuntimeLaunchConfigBuilder {
     fun build(profile: ProviderProfile, authToken: String? = null, localGatewayUrl: String? = null): RuntimeLaunchConfig {
         val environment = linkedMapOf("DISABLE_AUTOUPDATER" to "1")
         when (profile.kind.protocol) {
-            com.novacode.studio.model.ProviderProtocol.CLAUDE_LOGIN -> {
+            com.pocketide.app.model.ProviderProtocol.CLAUDE_LOGIN -> {
                 require(!authToken.isNullOrBlank()) { "Enter a Claude subscription token first" }
                 environment["CLAUDE_CODE_OAUTH_TOKEN"] = authToken
                 // Claude Code gives API-key variables precedence over OAuth. Explicitly
@@ -53,20 +53,20 @@ object RuntimeLaunchConfigBuilder {
                 environment["ANTHROPIC_API_KEY"] = ""
                 environment["ANTHROPIC_AUTH_TOKEN"] = ""
             }
-            com.novacode.studio.model.ProviderProtocol.ANTHROPIC -> {
+            com.pocketide.app.model.ProviderProtocol.ANTHROPIC -> {
                 environment["ANTHROPIC_BASE_URL"] = profile.baseUrl.trimEnd('/')
                 environment["ANTHROPIC_MODEL"] = profile.model
             }
-            com.novacode.studio.model.ProviderProtocol.ANTHROPIC_GATEWAY -> {
+            com.pocketide.app.model.ProviderProtocol.ANTHROPIC_GATEWAY -> {
                 environment["ANTHROPIC_BASE_URL"] = profile.baseUrl.trimEnd('/')
                 environment["ANTHROPIC_MODEL"] = profile.model
             }
-            com.novacode.studio.model.ProviderProtocol.OPENROUTER -> {
+            com.pocketide.app.model.ProviderProtocol.OPENROUTER -> {
                 environment["ANTHROPIC_BASE_URL"] = (localGatewayUrl ?: profile.resolvedBaseUrl).trimEnd('/')
                 environment["ANTHROPIC_MODEL"] = profile.model
             }
-            com.novacode.studio.model.ProviderProtocol.OPENAI_RESPONSES,
-            com.novacode.studio.model.ProviderProtocol.OPENAI_CHAT,
+            com.pocketide.app.model.ProviderProtocol.OPENAI_RESPONSES,
+            com.pocketide.app.model.ProviderProtocol.OPENAI_CHAT,
             -> {
                 require(!localGatewayUrl.isNullOrBlank()) { "A local format gateway is required for this provider" }
                 environment["ANTHROPIC_BASE_URL"] = localGatewayUrl.trimEnd('/')
@@ -74,7 +74,7 @@ object RuntimeLaunchConfigBuilder {
             }
         }
         val runtimeModel = environment["ANTHROPIC_MODEL"] ?: profile.model
-        if (profile.kind.protocol != com.novacode.studio.model.ProviderProtocol.CLAUDE_LOGIN) {
+        if (profile.kind.protocol != com.pocketide.app.model.ProviderProtocol.CLAUDE_LOGIN) {
             environment["ANTHROPIC_DEFAULT_OPUS_MODEL"] = runtimeModel
             environment["ANTHROPIC_DEFAULT_SONNET_MODEL"] = runtimeModel
             environment["ANTHROPIC_DEFAULT_HAIKU_MODEL"] = runtimeModel
@@ -86,7 +86,7 @@ object RuntimeLaunchConfigBuilder {
             environment["DISABLE_TELEMETRY"] = "1"
             if (!authToken.isNullOrBlank()) {
                 environment["ANTHROPIC_AUTH_TOKEN"] = authToken
-                if (profile.kind == com.novacode.studio.model.ProviderKind.LLM_ROUTER) {
+                if (profile.kind == com.pocketide.app.model.ProviderKind.LLM_ROUTER) {
                     environment["ANTHROPIC_API_KEY"] = ""
                     environment["OPENROUTER_API_KEY"] = authToken
                 } else {
