@@ -14,7 +14,7 @@ val testSecrets = Properties().apply {
 val playBuild = providers.gradleProperty("playBuild").orNull?.toBoolean() == true ||
     providers.gradleProperty("playFeasibility").orNull?.toBoolean() == true
 val privacyPolicyUrl = providers.gradleProperty("privacyPolicyUrl").orNull
-    ?: "https://github.com/rahilanw4r/novacode-studio/blob/main/PRIVACY.md"
+    ?: "https://github.com/rahilanw4r/pocket-ide/blob/main/PRIVACY.md"
 val uploadStorePath = providers.environmentVariable("MH_UPLOAD_STORE_FILE").orNull
 val uploadStorePassword = providers.environmentVariable("MH_UPLOAD_STORE_PASSWORD").orNull
 val uploadKeyAlias = providers.environmentVariable("MH_UPLOAD_KEY_ALIAS").orNull
@@ -26,9 +26,9 @@ val hasUploadSigning = listOf(
     uploadKeyPassword,
 ).all { !it.isNullOrBlank() }
 val runtimeReleaseBaseUrl =
-    "https://github.com/rahilanw4r/novacode-studio/releases/download/runtime-2026.09.4"
+    "https://github.com/rahilanw4r/pocket-ide/releases/download/runtime-2026.09.4"
 val appUpdateManifestUrl =
-    "https://github.com/rahilanw4r/novacode-studio/releases/latest/download/novacode-studio-update.json"
+    "https://github.com/rahilanw4r/pocket-ide/releases/latest/download/pocket-ide-update.json"
 val runtimeBundleDir = rootProject.layout.projectDirectory.dir("dist/runtime-bundles")
 val generatedRuntimeAssets = layout.buildDirectory.dir("generated/runtime-assets")
 
@@ -52,7 +52,7 @@ fun buildConfigString(value: String): String =
     "\"${value.replace("\\", "\\\\").replace("\"", "\\\"")}\""
 
 android {
-    namespace = "com.novacode.studio"
+    namespace = "com.pocketide.app"
     compileSdk = 36
     // F-Droid's r26b recipe installs 26.1.10909125. Keep AGP from selecting
     // its newer default NDK; local developers may override this explicitly.
@@ -76,7 +76,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.novacode.studio"
+        applicationId = "com.pocketide.app"
         minSdk = 28
         // The direct APK retains the proven target-28 PRoot execution path. The
         // Play build targets current Android while its runtime path is validated.
