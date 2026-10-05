@@ -1,4 +1,4 @@
-package com.novacode.studio.ui.screens.projects
+package com.pocketide.app.ui.screens.projects
 
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -71,28 +71,28 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.novacode.studio.ui.GitHubAuthStatus
-import com.novacode.studio.network.GitHubRepository
-import com.novacode.studio.model.Project
-import com.novacode.studio.ui.AppUiState
-import com.novacode.studio.ui.components.NovaPrimaryButton
-import com.novacode.studio.ui.components.NovaSecondaryButton
-import com.novacode.studio.ui.components.NovaStatusPill
-import com.novacode.studio.ui.theme.NovaBorder
-import com.novacode.studio.ui.theme.NovaCyan
-import com.novacode.studio.ui.theme.NovaEmerald
-import com.novacode.studio.ui.theme.NovaIndigo
-import com.novacode.studio.ui.theme.NovaObsidian
-import com.novacode.studio.ui.theme.NovaRose
-import com.novacode.studio.ui.theme.NovaSurface
-import com.novacode.studio.ui.theme.NovaSurfaceElevated
-import com.novacode.studio.ui.theme.NovaSurfaceVariant
-import com.novacode.studio.ui.theme.NovaTextMuted
-import com.novacode.studio.ui.theme.NovaTextPrimary
-import com.novacode.studio.ui.theme.NovaTextSecondary
+import com.pocketide.app.ui.GitHubAuthStatus
+import com.pocketide.app.network.GitHubRepository
+import com.pocketide.app.model.Project
+import com.pocketide.app.ui.AppUiState
+import com.pocketide.app.ui.components.PocketPrimaryButton
+import com.pocketide.app.ui.components.PocketSecondaryButton
+import com.pocketide.app.ui.components.PocketStatusPill
+import com.pocketide.app.ui.theme.PocketBorder
+import com.pocketide.app.ui.theme.PocketCyan
+import com.pocketide.app.ui.theme.PocketEmerald
+import com.pocketide.app.ui.theme.PocketIndigo
+import com.pocketide.app.ui.theme.PocketObsidian
+import com.pocketide.app.ui.theme.PocketRose
+import com.pocketide.app.ui.theme.PocketSurface
+import com.pocketide.app.ui.theme.PocketSurfaceElevated
+import com.pocketide.app.ui.theme.PocketSurfaceVariant
+import com.pocketide.app.ui.theme.PocketTextMuted
+import com.pocketide.app.ui.theme.PocketTextPrimary
+import com.pocketide.app.ui.theme.PocketTextSecondary
 
 @Composable
-fun NovaProjectsScreen(
+fun PocketProjectsScreen(
     state: AppUiState,
     listState: LazyListState,
     onOpen: (Project) -> Unit,
@@ -141,7 +141,7 @@ fun NovaProjectsScreen(
         state = listState,
         modifier = modifier
             .fillMaxSize()
-            .background(NovaObsidian),
+            .background(PocketObsidian),
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
@@ -160,20 +160,20 @@ fun NovaProjectsScreen(
                 ) {
                     Text(
                         text = "Projects",
-                        color = NovaTextPrimary,
+                        color = PocketTextPrimary,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold
                     )
                     Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(6.dp))
-                            .background(NovaSurfaceElevated)
-                            .border(1.dp, NovaBorder, RoundedCornerShape(6.dp))
+                            .background(PocketSurfaceElevated)
+                            .border(1.dp, PocketBorder, RoundedCornerShape(6.dp))
                             .padding(horizontal = 6.dp, vertical = 2.dp)
                     ) {
                         Text(
                             text = "${state.projects.size}",
-                            color = NovaEmerald,
+                            color = PocketEmerald,
                             fontSize = 11.sp,
                             fontFamily = FontFamily.Monospace,
                             fontWeight = FontWeight.Bold
@@ -190,16 +190,16 @@ fun NovaProjectsScreen(
                         modifier = Modifier
                             .size(32.dp)
                             .clip(RoundedCornerShape(8.dp))
-                            .background(NovaSurfaceElevated)
-                            .border(1.dp, NovaBorder, RoundedCornerShape(8.dp))
+                            .background(PocketSurfaceElevated)
+                            .border(1.dp, PocketBorder, RoundedCornerShape(8.dp))
                             .clickable(onClick = onOpenCommandCenter),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text("⌘", color = NovaTextPrimary, fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                        Text("⌘", color = PocketTextPrimary, fontSize = 13.sp, fontWeight = FontWeight.Bold)
                     }
 
                     // + New Project button
-                    NovaPrimaryButton(
+                    PocketPrimaryButton(
                         text = "New Project",
                         icon = Icons.Default.Add,
                         onClick = {
@@ -218,8 +218,8 @@ fun NovaProjectsScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(8.dp))
-                    .background(NovaSurface)
-                    .border(1.dp, NovaBorder, RoundedCornerShape(8.dp))
+                    .background(PocketSurface)
+                    .border(1.dp, PocketBorder, RoundedCornerShape(8.dp))
                     .padding(horizontal = 10.dp, vertical = 8.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -227,7 +227,7 @@ fun NovaProjectsScreen(
                 Icon(
                     imageVector = Icons.Default.Search,
                     contentDescription = "Search",
-                    tint = NovaTextMuted,
+                    tint = PocketTextMuted,
                     modifier = Modifier.size(16.dp)
                 )
                 BasicTextField(
@@ -235,17 +235,17 @@ fun NovaProjectsScreen(
                     onValueChange = { searchQuery = it },
                     modifier = Modifier.weight(1f),
                     textStyle = TextStyle(
-                        color = NovaTextPrimary,
+                        color = PocketTextPrimary,
                         fontSize = 13.sp,
                         fontWeight = FontWeight.Medium
                     ),
-                    cursorBrush = SolidColor(NovaEmerald),
+                    cursorBrush = SolidColor(PocketEmerald),
                     singleLine = true,
                     decorationBox = { innerTextField ->
                         if (searchQuery.isEmpty()) {
                             Text(
                                 text = "Filter projects by name or language…",
-                                color = NovaTextMuted,
+                                color = PocketTextMuted,
                                 fontSize = 13.sp
                             )
                         }
@@ -257,7 +257,7 @@ fun NovaProjectsScreen(
                         onClick = { searchQuery = "" },
                         modifier = Modifier.size(20.dp)
                     ) {
-                        Icon(Icons.Default.Close, contentDescription = "Clear", tint = NovaTextSecondary, modifier = Modifier.size(14.dp))
+                        Icon(Icons.Default.Close, contentDescription = "Clear", tint = PocketTextSecondary, modifier = Modifier.size(14.dp))
                     }
                 }
             }
@@ -275,23 +275,23 @@ fun NovaProjectsScreen(
                 Row(
                     modifier = Modifier
                         .clip(RoundedCornerShape(8.dp))
-                        .background(NovaSurface)
-                        .border(1.dp, NovaBorder, RoundedCornerShape(8.dp))
+                        .background(PocketSurface)
+                        .border(1.dp, PocketBorder, RoundedCornerShape(8.dp))
                         .clickable(onClick = onCreateQuickProject)
                         .padding(horizontal = 10.dp, vertical = 6.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(5.dp)
                 ) {
-                    Icon(Icons.Default.Bolt, contentDescription = null, tint = NovaEmerald, modifier = Modifier.size(14.dp))
-                    Text("Instant Sandbox", color = NovaTextPrimary, fontSize = 11.5.sp, fontWeight = FontWeight.Medium)
+                    Icon(Icons.Default.Bolt, contentDescription = null, tint = PocketEmerald, modifier = Modifier.size(14.dp))
+                    Text("Instant Sandbox", color = PocketTextPrimary, fontSize = 11.5.sp, fontWeight = FontWeight.Medium)
                 }
 
                 // Git Clone
                 Row(
                     modifier = Modifier
                         .clip(RoundedCornerShape(8.dp))
-                        .background(NovaSurface)
-                        .border(1.dp, NovaBorder, RoundedCornerShape(8.dp))
+                        .background(PocketSurface)
+                        .border(1.dp, PocketBorder, RoundedCornerShape(8.dp))
                         .clickable {
                             gitRepoUrl = ""
                             showGitDialog = true
@@ -300,31 +300,31 @@ fun NovaProjectsScreen(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(5.dp)
                 ) {
-                    Icon(Icons.Default.Code, contentDescription = null, tint = NovaIndigo, modifier = Modifier.size(14.dp))
-                    Text(if (state.gitCloneRunning) "Cloning…" else "Git Clone", color = NovaTextPrimary, fontSize = 11.5.sp, fontWeight = FontWeight.Medium)
+                    Icon(Icons.Default.Code, contentDescription = null, tint = PocketIndigo, modifier = Modifier.size(14.dp))
+                    Text(if (state.gitCloneRunning) "Cloning…" else "Git Clone", color = PocketTextPrimary, fontSize = 11.5.sp, fontWeight = FontWeight.Medium)
                 }
 
                 // ZIP Import
                 Row(
                     modifier = Modifier
                         .clip(RoundedCornerShape(8.dp))
-                        .background(NovaSurface)
-                        .border(1.dp, NovaBorder, RoundedCornerShape(8.dp))
+                        .background(PocketSurface)
+                        .border(1.dp, PocketBorder, RoundedCornerShape(8.dp))
                         .clickable { importZipLauncher.launch("*/*") }
                         .padding(horizontal = 10.dp, vertical = 6.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(5.dp)
                 ) {
-                    Icon(Icons.Default.CloudDownload, contentDescription = null, tint = NovaCyan, modifier = Modifier.size(14.dp))
-                    Text(if (state.projectImporting) "Importing…" else "Import ZIP", color = NovaTextPrimary, fontSize = 11.5.sp, fontWeight = FontWeight.Medium)
+                    Icon(Icons.Default.CloudDownload, contentDescription = null, tint = PocketCyan, modifier = Modifier.size(14.dp))
+                    Text(if (state.projectImporting) "Importing…" else "Import ZIP", color = PocketTextPrimary, fontSize = 11.5.sp, fontWeight = FontWeight.Medium)
                 }
 
                 // GitHub
                 Row(
                     modifier = Modifier
                         .clip(RoundedCornerShape(8.dp))
-                        .background(NovaSurface)
-                        .border(1.dp, NovaBorder, RoundedCornerShape(8.dp))
+                        .background(PocketSurface)
+                        .border(1.dp, PocketBorder, RoundedCornerShape(8.dp))
                         .clickable {
                             showGitHubDialog = true
                             if (state.githubAuthStatus == GitHubAuthStatus.CONNECTED && state.githubRepositories.isEmpty()) {
@@ -335,8 +335,8 @@ fun NovaProjectsScreen(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(5.dp)
                 ) {
-                    Icon(Icons.Default.Code, contentDescription = null, tint = NovaEmerald, modifier = Modifier.size(14.dp))
-                    Text(state.githubLogin?.let { "@$it" } ?: "GitHub", color = NovaTextPrimary, fontSize = 11.5.sp, fontWeight = FontWeight.Medium)
+                    Icon(Icons.Default.Code, contentDescription = null, tint = PocketEmerald, modifier = Modifier.size(14.dp))
+                    Text(state.githubLogin?.let { "@$it" } ?: "GitHub", color = PocketTextPrimary, fontSize = 11.5.sp, fontWeight = FontWeight.Medium)
                 }
             }
         }
@@ -347,8 +347,8 @@ fun NovaProjectsScreen(
                 Surface(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
-                    color = NovaSurface,
-                    border = BorderStroke(1.dp, NovaBorder)
+                    color = PocketSurface,
+                    border = BorderStroke(1.dp, PocketBorder)
                 ) {
                     Column(
                         modifier = Modifier
@@ -361,24 +361,24 @@ fun NovaProjectsScreen(
                             modifier = Modifier
                                 .size(42.dp)
                                 .clip(CircleShape)
-                                .background(NovaSurfaceElevated),
+                                .background(PocketSurfaceElevated),
                             contentAlignment = Alignment.Center
                         ) {
-                            Icon(Icons.Default.Folder, contentDescription = null, tint = NovaTextMuted, modifier = Modifier.size(20.dp))
+                            Icon(Icons.Default.Folder, contentDescription = null, tint = PocketTextMuted, modifier = Modifier.size(20.dp))
                         }
                         Text(
                             text = if (searchQuery.isNotBlank()) "No matching projects" else "No Projects Yet",
-                            color = NovaTextPrimary,
+                            color = PocketTextPrimary,
                             fontSize = 14.sp,
                             fontWeight = FontWeight.SemiBold
                         )
                         Text(
                             text = if (searchQuery.isNotBlank()) "Try searching with a different keyword." else "Create a project or start an instant sandbox to begin.",
-                            color = NovaTextMuted,
+                            color = PocketTextMuted,
                             fontSize = 12.sp
                         )
                         if (searchQuery.isBlank()) {
-                            NovaPrimaryButton(
+                            PocketPrimaryButton(
                                 text = "Start Sandbox",
                                 icon = Icons.Default.Bolt,
                                 onClick = onCreateQuickProject,
@@ -399,8 +399,8 @@ fun NovaProjectsScreen(
                         .clip(RoundedCornerShape(10.dp))
                         .clickable { onOpen(project) },
                     shape = RoundedCornerShape(10.dp),
-                    color = NovaSurface,
-                    border = BorderStroke(1.dp, if (isRunning) NovaEmerald else NovaBorder)
+                    color = PocketSurface,
+                    border = BorderStroke(1.dp, if (isRunning) PocketEmerald else PocketBorder)
                 ) {
                     Row(
                         modifier = Modifier
@@ -418,13 +418,13 @@ fun NovaProjectsScreen(
                                 modifier = Modifier
                                     .size(34.dp)
                                     .clip(RoundedCornerShape(8.dp))
-                                    .background(if (isRunning) NovaEmerald.copy(alpha = 0.15f) else NovaSurfaceElevated),
+                                    .background(if (isRunning) PocketEmerald.copy(alpha = 0.15f) else PocketSurfaceElevated),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Folder,
                                     contentDescription = null,
-                                    tint = if (isRunning) NovaEmerald else NovaTextSecondary,
+                                    tint = if (isRunning) PocketEmerald else PocketTextSecondary,
                                     modifier = Modifier.size(18.dp)
                                 )
                             }
@@ -436,7 +436,7 @@ fun NovaProjectsScreen(
                                 ) {
                                     Text(
                                         text = project.name,
-                                        color = NovaTextPrimary,
+                                        color = PocketTextPrimary,
                                         fontSize = 13.5.sp,
                                         fontWeight = FontWeight.SemiBold,
                                         maxLines = 1,
@@ -446,17 +446,17 @@ fun NovaProjectsScreen(
                                         Box(
                                             modifier = Modifier
                                                 .clip(RoundedCornerShape(4.dp))
-                                                .background(NovaEmerald.copy(alpha = 0.15f))
+                                                .background(PocketEmerald.copy(alpha = 0.15f))
                                                 .padding(horizontal = 4.dp, vertical = 1.dp)
                                         ) {
-                                            Text("RUNNING", color = NovaEmerald, fontSize = 9.sp, fontWeight = FontWeight.Bold)
+                                            Text("RUNNING", color = PocketEmerald, fontSize = 9.sp, fontWeight = FontWeight.Bold)
                                         }
                                     }
                                 }
 
                                 Text(
                                     text = "${project.language.ifBlank { "Linux" }} • Modified ${project.formattedUpdatedAt}",
-                                    color = NovaTextMuted,
+                                    color = PocketTextMuted,
                                     fontSize = 11.sp,
                                     maxLines = 1
                                 )
@@ -470,7 +470,7 @@ fun NovaProjectsScreen(
                             Box(
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(6.dp))
-                                    .background(NovaSurfaceElevated)
+                                    .background(PocketSurfaceElevated)
                                     .clickable { onOpen(project) }
                                     .padding(horizontal = 8.dp, vertical = 5.dp),
                                 contentAlignment = Alignment.Center
@@ -479,8 +479,8 @@ fun NovaProjectsScreen(
                                     verticalAlignment = Alignment.CenterVertically,
                                     horizontalArrangement = Arrangement.spacedBy(3.dp)
                                 ) {
-                                    Text("Open", color = NovaEmerald, fontSize = 11.5.sp, fontWeight = FontWeight.SemiBold)
-                                    Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null, tint = NovaEmerald, modifier = Modifier.size(12.dp))
+                                    Text("Open", color = PocketEmerald, fontSize = 11.5.sp, fontWeight = FontWeight.SemiBold)
+                                    Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null, tint = PocketEmerald, modifier = Modifier.size(12.dp))
                                 }
                             }
 
@@ -489,7 +489,7 @@ fun NovaProjectsScreen(
                                     onClick = { menuOpen = true },
                                     modifier = Modifier.size(28.dp)
                                 ) {
-                                    Icon(Icons.Default.MoreVert, contentDescription = "Menu", tint = NovaTextMuted, modifier = Modifier.size(16.dp))
+                                    Icon(Icons.Default.MoreVert, contentDescription = "Menu", tint = PocketTextMuted, modifier = Modifier.size(16.dp))
                                 }
                                 DropdownMenu(
                                     expanded = menuOpen,
@@ -504,8 +504,8 @@ fun NovaProjectsScreen(
                                         }
                                     )
                                     DropdownMenuItem(
-                                        text = { Text("Delete Project", color = NovaRose) },
-                                        leadingIcon = { Icon(Icons.Default.Delete, contentDescription = null, tint = NovaRose, modifier = Modifier.size(16.dp)) },
+                                        text = { Text("Delete Project", color = PocketRose) },
+                                        leadingIcon = { Icon(Icons.Default.Delete, contentDescription = null, tint = PocketRose, modifier = Modifier.size(16.dp)) },
                                         onClick = {
                                             menuOpen = false
                                             projectToDelete = project
@@ -529,7 +529,7 @@ fun NovaProjectsScreen(
     if (showCreateDialog) {
         AlertDialog(
             onDismissRequest = { showCreateDialog = false },
-            title = { Text("Create New Project", color = NovaTextPrimary, fontWeight = FontWeight.Bold) },
+            title = { Text("Create New Project", color = PocketTextPrimary, fontWeight = FontWeight.Bold) },
             text = {
                 OutlinedTextField(
                     value = newProjectName,
@@ -541,7 +541,7 @@ fun NovaProjectsScreen(
                 )
             },
             confirmButton = {
-                NovaPrimaryButton(
+                PocketPrimaryButton(
                     text = "Create",
                     onClick = {
                         val trimmed = newProjectName.trim()
@@ -555,10 +555,10 @@ fun NovaProjectsScreen(
             },
             dismissButton = {
                 TextButton(onClick = { showCreateDialog = false }) {
-                    Text("Cancel", color = NovaTextSecondary)
+                    Text("Cancel", color = PocketTextSecondary)
                 }
             },
-            containerColor = NovaSurface,
+            containerColor = PocketSurface,
             shape = RoundedCornerShape(14.dp)
         )
     }
@@ -567,10 +567,10 @@ fun NovaProjectsScreen(
     if (showGitDialog) {
         AlertDialog(
             onDismissRequest = { showGitDialog = false },
-            title = { Text("Clone Git Repository", color = NovaTextPrimary, fontWeight = FontWeight.Bold) },
+            title = { Text("Clone Git Repository", color = PocketTextPrimary, fontWeight = FontWeight.Bold) },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text("Enter public HTTPS Git repository URL:", color = NovaTextSecondary, fontSize = 12.5.sp)
+                    Text("Enter public HTTPS Git repository URL:", color = PocketTextSecondary, fontSize = 12.5.sp)
                     OutlinedTextField(
                         value = gitRepoUrl,
                         onValueChange = { gitRepoUrl = it },
@@ -582,7 +582,7 @@ fun NovaProjectsScreen(
                 }
             },
             confirmButton = {
-                NovaPrimaryButton(
+                PocketPrimaryButton(
                     text = "Clone",
                     onClick = {
                         val trimmed = gitRepoUrl.trim()
@@ -596,10 +596,10 @@ fun NovaProjectsScreen(
             },
             dismissButton = {
                 TextButton(onClick = { showGitDialog = false }) {
-                    Text("Cancel", color = NovaTextSecondary)
+                    Text("Cancel", color = PocketTextSecondary)
                 }
             },
-            containerColor = NovaSurface,
+            containerColor = PocketSurface,
             shape = RoundedCornerShape(14.dp)
         )
     }
@@ -609,7 +609,7 @@ fun NovaProjectsScreen(
         var renameText by remember { mutableStateOf(project.name) }
         AlertDialog(
             onDismissRequest = { projectToRename = null },
-            title = { Text("Rename Project", color = NovaTextPrimary, fontWeight = FontWeight.Bold) },
+            title = { Text("Rename Project", color = PocketTextPrimary, fontWeight = FontWeight.Bold) },
             text = {
                 OutlinedTextField(
                     value = renameText,
@@ -620,7 +620,7 @@ fun NovaProjectsScreen(
                 )
             },
             confirmButton = {
-                NovaPrimaryButton(
+                PocketPrimaryButton(
                     text = "Save",
                     onClick = {
                         val trimmed = renameText.trim()
@@ -634,10 +634,10 @@ fun NovaProjectsScreen(
             },
             dismissButton = {
                 TextButton(onClick = { projectToRename = null }) {
-                    Text("Cancel", color = NovaTextSecondary)
+                    Text("Cancel", color = PocketTextSecondary)
                 }
             },
-            containerColor = NovaSurface,
+            containerColor = PocketSurface,
             shape = RoundedCornerShape(14.dp)
         )
     }
@@ -646,9 +646,9 @@ fun NovaProjectsScreen(
     projectToDelete?.let { project ->
         AlertDialog(
             onDismissRequest = { projectToDelete = null },
-            title = { Text("Delete Project?", color = NovaRose, fontWeight = FontWeight.Bold) },
+            title = { Text("Delete Project?", color = PocketRose, fontWeight = FontWeight.Bold) },
             text = {
-                Text("Are you sure you want to delete \"${project.name}\"? All files in this project workspace will be deleted.", color = NovaTextSecondary)
+                Text("Are you sure you want to delete \"${project.name}\"? All files in this project workspace will be deleted.", color = PocketTextSecondary)
             },
             confirmButton = {
                 Button(
@@ -656,17 +656,17 @@ fun NovaProjectsScreen(
                         onDeleteProject(project.id)
                         projectToDelete = null
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = NovaRose)
+                    colors = ButtonDefaults.buttonColors(containerColor = PocketRose)
                 ) {
                     Text("Delete Permanently", color = Color.White)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { projectToDelete = null }) {
-                    Text("Cancel", color = NovaTextSecondary)
+                    Text("Cancel", color = PocketTextSecondary)
                 }
             },
-            containerColor = NovaSurface,
+            containerColor = PocketSurface,
             shape = RoundedCornerShape(14.dp)
         )
     }
@@ -678,7 +678,7 @@ fun NovaProjectsScreen(
             title = {
                 Text(
                     text = state.githubLogin?.let { "GitHub Repositories (@$it)" } ?: "Connect GitHub",
-                    color = NovaTextPrimary,
+                    color = PocketTextPrimary,
                     fontWeight = FontWeight.Bold
                 )
             },
@@ -692,29 +692,29 @@ fun NovaProjectsScreen(
                     if (state.githubAuthStatus != GitHubAuthStatus.CONNECTED) {
                         Text(
                             text = "Authenticate with GitHub to view and clone your repositories directly.",
-                            color = NovaTextSecondary,
+                            color = PocketTextSecondary,
                             fontSize = 13.sp
                         )
                         if (state.githubAuthStatus == GitHubAuthStatus.AWAITING_USER) {
                             Text(
                                 text = "Code: ${state.githubUserCode ?: "..."}",
-                                color = NovaEmerald,
+                                color = PocketEmerald,
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold,
                                 fontFamily = FontFamily.Monospace
                             )
                             state.githubVerificationUri?.let { uri ->
-                                Text("Open: $uri", color = NovaCyan, fontSize = 12.sp)
+                                Text("Open: $uri", color = PocketCyan, fontSize = 12.sp)
                             }
                         }
                     } else {
                         if (state.githubRepositoriesLoading) {
                             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                                CircularProgressIndicator(color = NovaEmerald, modifier = Modifier.size(28.dp))
+                                CircularProgressIndicator(color = PocketEmerald, modifier = Modifier.size(28.dp))
                             }
                         } else if (state.githubRepositories.isEmpty()) {
                             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                                Text("No repositories found", color = NovaTextMuted, fontSize = 13.sp)
+                                Text("No repositories found", color = PocketTextMuted, fontSize = 13.sp)
                             }
                         } else {
                             LazyColumn(
@@ -726,7 +726,7 @@ fun NovaProjectsScreen(
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .clip(RoundedCornerShape(8.dp))
-                                            .background(NovaSurfaceElevated)
+                                            .background(PocketSurfaceElevated)
                                             .clickable {
                                                 showGitHubDialog = false
                                                 onCloneGitHub(repo)
@@ -736,10 +736,10 @@ fun NovaProjectsScreen(
                                         horizontalArrangement = Arrangement.SpaceBetween
                                     ) {
                                         Column(modifier = Modifier.weight(1f)) {
-                                            Text(repo.fullName.substringAfterLast('/'), color = NovaTextPrimary, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, maxLines = 1)
-                                            Text(repo.fullName, color = NovaTextMuted, fontSize = 11.sp, maxLines = 1)
+                                            Text(repo.fullName.substringAfterLast('/'), color = PocketTextPrimary, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, maxLines = 1)
+                                            Text(repo.fullName, color = PocketTextMuted, fontSize = 11.sp, maxLines = 1)
                                         }
-                                        Icon(Icons.Default.CloudDownload, contentDescription = "Clone", tint = NovaEmerald, modifier = Modifier.size(16.dp))
+                                        Icon(Icons.Default.CloudDownload, contentDescription = "Clone", tint = PocketEmerald, modifier = Modifier.size(16.dp))
                                     }
                                 }
                             }
@@ -749,7 +749,7 @@ fun NovaProjectsScreen(
             },
             confirmButton = {
                 if (state.githubAuthStatus != GitHubAuthStatus.CONNECTED) {
-                    NovaPrimaryButton(
+                    PocketPrimaryButton(
                         text = "Sign in with GitHub",
                         onClick = onStartGitHubLogin,
                         height = 36.dp
@@ -757,20 +757,20 @@ fun NovaProjectsScreen(
                 } else {
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         TextButton(onClick = onRefreshGitHub) {
-                            Text("Refresh", color = NovaCyan)
+                            Text("Refresh", color = PocketCyan)
                         }
                         TextButton(onClick = onDisconnectGitHub) {
-                            Text("Disconnect", color = NovaRose)
+                            Text("Disconnect", color = PocketRose)
                         }
                     }
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showGitHubDialog = false }) {
-                    Text("Close", color = NovaTextSecondary)
+                    Text("Close", color = PocketTextSecondary)
                 }
             },
-            containerColor = NovaSurface,
+            containerColor = PocketSurface,
             shape = RoundedCornerShape(14.dp)
         )
     }
