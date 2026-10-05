@@ -1,4 +1,4 @@
-package com.novacode.studio.runtime
+package com.pocketide.app.runtime
 
 import java.io.File
 import java.io.RandomAccessFile
