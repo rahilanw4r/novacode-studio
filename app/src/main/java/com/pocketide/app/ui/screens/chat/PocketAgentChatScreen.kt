@@ -57,6 +57,14 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import android.widget.Toast
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -102,6 +110,8 @@ fun PocketAgentChatScreen(
     modifier: Modifier = Modifier
 ) {
     var promptInput by remember { mutableStateOf("") }
+    var isEditingPrompt by remember { mutableStateOf(false) }
+    val focusRequester = remember { FocusRequester() }
     val listState = rememberLazyListState()
 
     val quickPrompts = listOf(
@@ -141,7 +151,14 @@ fun PocketAgentChatScreen(
             }
 
             items(messages) { message ->
-                ChatMessageItem(message = message)
+                ChatMessageItem(
+                    message = message,
+                    onEditPrompt = { text ->
+                        promptInput = text
+                        isEditingPrompt = true
+                        focusRequester.requestFocus()
+                    }
+                )
             }
 
             // Live reasoning stream
@@ -244,6 +261,48 @@ fun PocketAgentChatScreen(
             }
         }
 
+        // Editing prompt indicator bar
+        if (isEditingPrompt) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(PocketSurfaceElevated)
+                    .border(1.dp, PocketBorder)
+                    .padding(horizontal = 12.dp, vertical = 6.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Edit,
+                        contentDescription = null,
+                        tint = PocketPrimaryBlue,
+                        modifier = Modifier.size(13.dp)
+                    )
+                    Text(
+                        text = "Editing prompt",
+                        color = PocketPrimaryBlue,
+                        fontSize = 11.5.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = "Cancel edit",
+                    tint = PocketTextMuted,
+                    modifier = Modifier
+                        .size(16.dp)
+                        .clickable {
+                            isEditingPrompt = false
+                            promptInput = ""
+                        }
+                )
+            }
+        }
+
         // Input bar
         Row(
             modifier = Modifier
@@ -277,10 +336,13 @@ fun PocketAgentChatScreen(
                         if (text.isNotEmpty() && !isRunning) {
                             onSend(text)
                             promptInput = ""
+                            isEditingPrompt = false
                         }
                     }
                 ),
-                modifier = Modifier.weight(1f),
+                modifier = Modifier
+                    .weight(1f)
+                    .focusRequester(focusRequester),
                 decorationBox = { inner ->
                     if (promptInput.isEmpty()) {
                         Text(
@@ -310,6 +372,7 @@ fun PocketAgentChatScreen(
                         if (text.isNotEmpty()) {
                             onSend(text)
                             promptInput = ""
+                            isEditingPrompt = false
                         }
                     },
                     enabled = promptInput.isNotBlank(),
@@ -366,8 +429,13 @@ private fun EmptyChatGreeting(onSelectPrompt: (String) -> Unit) {
 }
 
 @Composable
-private fun ChatMessageItem(message: ChatMessage) {
+private fun ChatMessageItem(
+    message: ChatMessage,
+    onEditPrompt: ((String) -> Unit)? = null
+) {
     val isUser = message.fromUser
+    val context = LocalContext.current
+    val clipboard = LocalClipboardManager.current
 
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -398,7 +466,7 @@ private fun ChatMessageItem(message: ChatMessage) {
                 .padding(10.dp)
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                // Header (Sender title)
+                // Header (Sender title + Action buttons: Edit, Copy)
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -411,6 +479,66 @@ private fun ChatMessageItem(message: ChatMessage) {
                         fontWeight = FontWeight.SemiBold,
                         fontFamily = FontFamily.Monospace
                     )
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        if (isUser && onEditPrompt != null) {
+                            Box(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(4.dp))
+                                    .clickable { onEditPrompt(message.text) }
+                                    .padding(horizontal = 4.dp, vertical = 2.dp)
+                            ) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(3.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Edit,
+                                        contentDescription = "Edit prompt",
+                                        tint = PocketTextMuted,
+                                        modifier = Modifier.size(12.dp)
+                                    )
+                                    Text(
+                                        text = "Edit",
+                                        color = PocketTextMuted,
+                                        fontSize = 10.5.sp,
+                                        fontWeight = FontWeight.Medium
+                                    )
+                                }
+                            }
+                        }
+
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(4.dp))
+                                .clickable {
+                                    clipboard.setText(AnnotatedString(message.text))
+                                    Toast.makeText(context, if (isUser) "Prompt copied" else "Response copied", Toast.LENGTH_SHORT).show()
+                                }
+                                .padding(horizontal = 4.dp, vertical = 2.dp)
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(3.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.ContentCopy,
+                                    contentDescription = "Copy message",
+                                    tint = PocketTextMuted,
+                                    modifier = Modifier.size(12.dp)
+                                )
+                                Text(
+                                    text = "Copy",
+                                    color = PocketTextMuted,
+                                    fontSize = 10.5.sp,
+                                    fontWeight = FontWeight.Medium
+                                )
+                            }
+                        }
+                    }
                 }
 
                 // Message Text / Markdown

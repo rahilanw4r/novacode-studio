@@ -140,9 +140,8 @@ fun PocketMasterWorkspace(
     modifier: Modifier = Modifier
 ) {
     BackHandler(onBack = onBack)
-    val context = LocalContext.current
-    var currentTab by rememberSaveable {
-        mutableStateOf(if (state.isRunning) PocketWorkspaceTab.AGENT else PocketWorkspaceTab.FILES)
+    var currentTab by rememberSaveable(state.activeProject?.id) {
+        mutableStateOf(PocketWorkspaceTab.AGENT)
     }
     var showCommandCenter by rememberSaveable { mutableStateOf(false) }
     var showChatSwitcher by rememberSaveable { mutableStateOf(false) }
