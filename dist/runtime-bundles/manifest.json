@@ -66,9 +66,9 @@
       "compressedBytes": 27752194,
       "uncompressedBytes": 249456640,
       "includes": [
-        "DeepSeek Harness 0.1.2-rc.1",
+        "DeepSeek Coder 0.1.2-rc.1",
         "Pinned npm dependency tree",
-        "DeepSeek Harness launcher"
+        "DeepSeek Coder launcher"
       ],
       "excludes": [
         "API keys",

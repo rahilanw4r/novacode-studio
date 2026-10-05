@@ -4,4 +4,4 @@
 set -e
 cd "$(dirname "$0")/.."
 ./gradlew :app:installOnlineDebug -x lint
-adb shell am start -n com.novacode.studio/.MainActivity --activity-single-top
+adb shell am start -n com.pocketide.app/.MainActivity --activity-single-top

@@ -791,7 +791,7 @@ private fun LegacySettingsScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable {
-                                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/rahilanw4r/novacode-studio"))
+                                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/rahilanw4r/pocket-ide"))
                                     context.startActivity(intent)
                                 },
                             horizontalArrangement = Arrangement.SpaceBetween,
@@ -801,7 +801,7 @@ private fun LegacySettingsScreen(
                                 Icon(Icons.Default.Code, contentDescription = null, tint = PocketEmerald, modifier = Modifier.size(16.dp))
                                 Column {
                                     Text("Official GitHub Repository", fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
-                                    Text("rahilanw4r/novacode-studio", fontSize = 11.5.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                    Text("rahilanw4r/pocket-ide", fontSize = 11.5.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                 }
                             }
                             Icon(Icons.AutoMirrored.Filled.OpenInNew, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(16.dp))

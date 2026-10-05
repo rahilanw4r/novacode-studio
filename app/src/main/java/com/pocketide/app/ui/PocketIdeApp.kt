@@ -3155,7 +3155,7 @@ private fun ProjectsScreen(
                         BrandMark(compact = true)
                         Spacer(Modifier.width(10.dp))
                         Text(
-                            "NOVACODE",
+                            "POCKET",
                             fontWeight = FontWeight.Black,
                             fontFamily = FontFamily.Monospace,
                             letterSpacing = 2.sp,
@@ -3163,7 +3163,7 @@ private fun ProjectsScreen(
                         )
                         Spacer(Modifier.width(5.dp))
                         Text(
-                            "STUDIO",
+                            "IDE",
                             fontWeight = FontWeight.Bold,
                             fontFamily = FontFamily.Monospace,
                             letterSpacing = 2.sp,

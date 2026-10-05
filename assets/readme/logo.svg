@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 108 108">
   <defs>
-    <linearGradient id="novaGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+    <linearGradient id="pocketGrad" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#6366F1" />
       <stop offset="50%" stop-color="#3B82F6" />
       <stop offset="100%" stop-color="#06B6D4" />
@@ -10,11 +10,11 @@
       <stop offset="100%" stop-color="#6366F1" stop-opacity="0" />
     </linearGradient>
   </defs>
-  <rect width="108" height="108" rx="26" fill="#090D16" stroke="url(#novaGrad)" stroke-width="2.5"/>
+  <rect width="108" height="108" rx="26" fill="#090D16" stroke="url(#pocketGrad)" stroke-width="2.5"/>
   <circle cx="54" cy="54" r="38" fill="url(#glowGrad)"/>
   <g transform="translate(24, 24)">
     <!-- Stylized 'N' & Code Spark -->
-    <path fill="url(#novaGrad)" d="M10 8 L18 8 L38 40 L38 8 L46 8 L46 52 L38 52 L18 20 L18 52 L10 52 Z"/>
+    <path fill="url(#pocketGrad)" d="M10 8 L18 8 L38 40 L38 8 L46 8 L46 52 L38 52 L18 20 L18 52 L10 52 Z"/>
     <polygon points="50,16 58,16 54,26 60,26 48,44 51,32 45,32" fill="#00E5FF"/>
   </g>
 </svg>

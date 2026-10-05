@@ -78,7 +78,7 @@ import com.pocketide.app.ui.theme.PocketTextSecondary
 
 private const val DEVELOPER_TELEGRAM_HANDLE = "@RahilAnw4r"
 private const val DEVELOPER_TELEGRAM_URL = "https://t.me/RahilAnw4r"
-private const val PROJECT_GITHUB_URL = "https://github.com/rahilanw4r/novacode-studio"
+private const val PROJECT_GITHUB_URL = "https://github.com/rahilanw4r/pocket-ide"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -302,7 +302,7 @@ fun PocketDeveloperScreen(
                                     }
                                     Column {
                                         Text("GitHub Repository", color = PocketTextPrimary, fontSize = 13.5.sp, fontWeight = FontWeight.SemiBold)
-                                        Text("rahilanw4r/novacode-studio", color = PocketTextMuted, fontSize = 11.5.sp, fontFamily = FontFamily.Monospace)
+                                        Text("rahilanw4r/pocket-ide", color = PocketTextMuted, fontSize = 11.5.sp, fontFamily = FontFamily.Monospace)
                                     }
                                 }
                                 Icon(Icons.AutoMirrored.Filled.OpenInNew, contentDescription = null, tint = PocketTextSecondary, modifier = Modifier.size(17.dp))

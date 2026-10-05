@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # Builds a newer debug APK and serves it (with a matching
-# novacode-studio-update.json) from a local HTTP directory so the in-app
+# pocket-ide-update.json) from a local HTTP directory so the in-app
 # updater can be exercised end-to-end without publishing to GitHub.
 #
 # Usage:
@@ -10,7 +10,7 @@
 # Examples:
 #   ./scripts/serve-update-server.sh 8080 https://example.trycloudflare.com 4 1.0.3-test
 #
-# Paste BASE_URL + /novacode-studio-update.json into the debug app's
+# Paste BASE_URL + /pocket-ide-update.json into the debug app's
 # Settings → Update channel and tap Use & check.
 
 set -euo pipefail
@@ -29,7 +29,7 @@ fi
 serve_dir="$project_dir/dist/update-test"
 flavor="online"
 variant="debug"
-apk_name="novacode-studio-${flavor}-${variant}.apk"
+apk_name="pocket-ide-${flavor}-${variant}.apk"
 
 cd "$project_dir"
 
@@ -53,7 +53,7 @@ cp "$apk_src" "$serve_dir/$apk_name"
 sha="$(shasum -a 256 "$serve_dir/$apk_name" | awk '{print $1}')"
 size="$(stat -f%z "$serve_dir/$apk_name")"
 
-cat > "$serve_dir/novacode-studio-update.json" <<JSON
+cat > "$serve_dir/pocket-ide-update.json" <<JSON
 {
   "versionCode": $version_code,
   "versionName": "$version_name",
@@ -72,21 +72,21 @@ cat > "$serve_dir/README.txt" <<TXT
 Local update test server.
 
 Files:
-  - novacode-studio-update.json
+  - pocket-ide-update.json
   - $apk_name  (sha256: $sha)
 
 APK URL baked into the manifest:
   $base_url/$apk_name
 
-In a debug build of NovaCode Studio, open Settings → Update channel, paste:
-  $base_url/novacode-studio-update.json
+In a debug build of Pocket IDE, open Settings → Update channel, paste:
+  $base_url/pocket-ide-update.json
 and tap Use & check.
 
 The app accepts this URL because the tunnel provides HTTPS. No LAN IP or
 cleartext network-security exception is required.
 TXT
 
-echo "==> Manifest ready at $base_url/novacode-studio-update.json"
+echo "==> Manifest ready at $base_url/pocket-ide-update.json"
 echo "    APK at $base_url/$apk_name"
 echo "    Files:"
 ls -lh "$serve_dir"

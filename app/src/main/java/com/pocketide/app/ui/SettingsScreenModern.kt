@@ -879,7 +879,7 @@ private fun DebugUpdateChannelSection(
         onClick = { expanded = !expanded },
     ) {
         Text(
-            "Debug builds only. Paste the temporary manifest URL from Cloudflare Tunnel, ngrok, or any HTTPS server hosting novacode-studio-update.json and a newer APK.",
+            "Debug builds only. Paste the temporary manifest URL from Cloudflare Tunnel, ngrok, or any HTTPS server hosting pocket-ide-update.json and a newer APK.",
             fontSize = 12.sp,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -888,7 +888,7 @@ private fun DebugUpdateChannelSection(
             value = url,
             onValueChange = { url = it },
             label = { Text("Manifest URL") },
-            placeholder = { Text("https://your-tunnel.example/novacode-studio-update.json") },
+            placeholder = { Text("https://your-tunnel.example/pocket-ide-update.json") },
             singleLine = true,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri),
             modifier = Modifier.fillMaxWidth(),

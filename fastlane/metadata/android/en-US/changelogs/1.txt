@@ -1,4 +1,4 @@
-Initial NovaCode Studio alpha:
+Initial Pocket IDE alpha:
 - Persistent projects and Quick Projects
 - Streaming AI coding chat and tool activity
 - Ubuntu 20.04 ARM64 local runtime

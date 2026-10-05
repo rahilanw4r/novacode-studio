@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.22.1)
-project(novacode_studio_native C ASM)
+project(pocket_ide_native C ASM)
 
 if(NOT ANDROID_ABI STREQUAL "arm64-v8a")
     message(FATAL_ERROR "Pocket IDE currently supports only arm64-v8a")
@@ -25,7 +25,7 @@ set_target_properties(talloc PROPERTIES OUTPUT_NAME talloc SOVERSION 2)
 
 add_library(android-shmem SHARED "${SHM_ROOT}/shmem.c")
 target_include_directories(android-shmem PUBLIC "${SHM_ROOT}")
-target_compile_definitions(android-shmem PRIVATE _PATH_TMP="/data/data/com.novacode.studio/cache/")
+target_compile_definitions(android-shmem PRIVATE _PATH_TMP="/data/data/com.pocketide.app/cache/")
 target_link_libraries(android-shmem PRIVATE log android)
 
 set(PROOT_SOURCES

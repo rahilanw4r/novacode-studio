@@ -1,5 +1,5 @@
-#ifndef NOVACODE_STUDIO_TALLOC_REPLACE_H
-#define NOVACODE_STUDIO_TALLOC_REPLACE_H
+#ifndef POCKET_IDE_TALLOC_REPLACE_H
+#define POCKET_IDE_TALLOC_REPLACE_H
 
 // Android/Bionic provides the portability functions used by talloc.c.
 #include <errno.h>

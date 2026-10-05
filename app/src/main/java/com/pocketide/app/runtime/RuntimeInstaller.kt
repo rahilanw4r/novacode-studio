@@ -1076,7 +1076,7 @@ class RuntimeInstaller(private val context: Context) {
 
         val candidateBaseUrls = listOf(
             BuildConfig.RUNTIME_RELEASE_BASE_URL.trimEnd('/'),
-            "https://github.com/rahilanw4r/novacode-studio/releases/download/runtime-2026.09.4"
+            "https://github.com/rahilanw4r/pocket-ide/releases/download/runtime-2026.09.4"
         ).distinct()
 
         var lastError: Exception? = null

@@ -658,7 +658,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             ?: return ProjectTerminalResult("Project is no longer available.", 1, cwd)
         val workspace = projectWorkspaceRoot(project)
         val guestWorkspacePath = projectGuestRoot(project)
-        val marker = "__NOVACODE_CWD_${UUID.randomUUID()}__"
+        val marker = "__POCKETIDE_CWD_${UUID.randomUUID()}__"
         val preparedCommand = prepareInteractiveShellCommand(command)
         val script = """
             cd -- ${shellQuote(cwd)} || exit 1
@@ -2273,7 +2273,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             val safeArchiveName = sanitizeAttachmentName(archiveName).let { name ->
                 if (name.endsWith(".zip", ignoreCase = true)) name else "$name.zip"
             }
-            val archiveFolder = File(projectRoot, ".novacode/imports").apply { mkdirs() }
+            val archiveFolder = File(projectRoot, ".pocketide/imports").apply { mkdirs() }
             val archivedSource = File(archiveFolder, safeArchiveName)
             var sourceBytes = 0L
             resolver.openInputStream(uri)?.buffered()?.use { input ->

@@ -2,10 +2,10 @@
 set -euo pipefail
 
 project_dir="$(cd "$(dirname "$0")/.." && pwd)"
-keystore_path="${MH_UPLOAD_STORE_FILE:-/home/novacode/.novacode-studio/novacode-studio-upload.jks}"
-key_alias="${MH_UPLOAD_KEY_ALIAS:-novacode-studio-upload}"
-keychain_account="com.novacode.studio"
-keychain_service="NovaCode Studio Upload Key"
+keystore_path="${MH_UPLOAD_STORE_FILE:-/home/pocketide/.pocket-ide/pocket-ide-upload.jks}"
+key_alias="${MH_UPLOAD_KEY_ALIAS:-pocket-ide-upload}"
+keychain_account="com.pocketide.app"
+keychain_service="Pocket IDE Upload Key"
 version_code="${1:-1}"
 version_name="${2:-1.0.0}"
 

@@ -50,7 +50,25 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           APK_FILE=$(ls app/build/outputs/apk/online/debug/*.apk | head -n 1)
-          cp "$APK_FILE" Pocket-IDE-v1.0.16.apk
-          gh release create v1.0.16 Pocket-IDE-v1.0.16.apk --title "Pocket IDE v1.0.16 — Official Pocket IDE Rebrand" --notes "Pocket IDE v1.0.16 — Your AI-powered development workspace, anywhere. Features complete app rebranding, redesigned glowing splash screen, high-resolution branding assets, and resilient AntiGravity OAuth parsing." || gh release upload v1.0.16 Pocket-IDE-v1.0.16.apk --clobber
+          VERSION_NAME=$(grep 'versionName =' app/build.gradle.kts | head -n 1 | awk -F'"' '{print $2}')
+          TAG="v${VERSION_NAME:-1.0.17}"
+          APK_NAME="Pocket-IDE-${TAG}.apk"
+          echo "Publishing release $TAG with $APK_NAME from $APK_FILE"
+          cp "$APK_FILE" "$APK_NAME"
+
+          gh release create "$TAG" "$APK_NAME" \
+            --title "Pocket IDE $TAG — Your AI-powered development workspace, anywhere" \
+            --notes "### Pocket IDE $TAG
+
+**Your AI-powered development workspace, anywhere.**
+
+#### Highlights:
+- **Official Rebrand**: Completely rebranded to **Pocket IDE** across all components, subsystems, packages, and assets.
+- **Clean Package Migration**: Cleanly migrated to \`com.pocketide.app\`.
+- **AI Coding Workspace**: Native autonomous coding agent pair programming with Google AntiGravity, Claude Code, and DeepSeek Coder.
+- **Standalone Linux Subsystem**: Full Ubuntu PRoot environment with Git, Node, Python, and C/C++ toolchains operating 100% locally on your phone." || (
+            gh release edit "$TAG" --title "Pocket IDE $TAG — Your AI-powered development workspace, anywhere" && \
+            gh release upload "$TAG" "$APK_NAME" --clobber
+          )
 
 

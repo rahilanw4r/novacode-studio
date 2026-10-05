@@ -21,6 +21,6 @@ Use these answers as a submission worksheet and revalidate them for the exact re
 
 ## Store listing contact
 
-- Website: `https://github.com/rahilanw4r/novacode-studio`
-- Support: `https://github.com/rahilanw4r/novacode-studio/issues`
+- Website: `https://github.com/rahilanw4r/pocket-ide`
+- Support: `https://github.com/rahilanw4r/pocket-ide/issues`
 - Email: provide a dedicated public support address in Play Console. Do not reuse a private signing or account email without explicit approval.
