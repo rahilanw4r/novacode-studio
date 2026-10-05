@@ -1,4 +1,4 @@
-package com.novacode.studio.ui.screens.developer
+package com.pocketide.app.ui.screens.developer
 
 import android.content.Intent
 import android.net.Uri
@@ -32,7 +32,7 @@ import androidx.compose.material.icons.filled.Memory
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material.icons.filled.Star
-import com.novacode.studio.BuildConfig
+import com.pocketide.app.BuildConfig
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -56,25 +56,25 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.novacode.studio.R
-import com.novacode.studio.ui.components.NovaGlassCard
-import com.novacode.studio.ui.components.NovaPrimaryButton
-import com.novacode.studio.ui.components.NovaSecondaryButton
-import com.novacode.studio.ui.components.liquidAuraBorder
-import com.novacode.studio.ui.components.liquidBounceClick
-import com.novacode.studio.ui.theme.NovaAmber
-import com.novacode.studio.ui.theme.NovaBorder
-import com.novacode.studio.ui.theme.NovaCyan
-import com.novacode.studio.ui.theme.NovaEmerald
-import com.novacode.studio.ui.theme.NovaIndigo
-import com.novacode.studio.ui.theme.NovaObsidian
-import com.novacode.studio.ui.theme.NovaPurple
-import com.novacode.studio.ui.theme.NovaSurface
-import com.novacode.studio.ui.theme.NovaSurfaceElevated
-import com.novacode.studio.ui.theme.NovaSurfaceVariant
-import com.novacode.studio.ui.theme.NovaTextMuted
-import com.novacode.studio.ui.theme.NovaTextPrimary
-import com.novacode.studio.ui.theme.NovaTextSecondary
+import com.pocketide.app.R
+import com.pocketide.app.ui.components.PocketGlassCard
+import com.pocketide.app.ui.components.PocketPrimaryButton
+import com.pocketide.app.ui.components.PocketSecondaryButton
+import com.pocketide.app.ui.components.liquidAuraBorder
+import com.pocketide.app.ui.components.liquidBounceClick
+import com.pocketide.app.ui.theme.PocketAmber
+import com.pocketide.app.ui.theme.PocketBorder
+import com.pocketide.app.ui.theme.PocketCyan
+import com.pocketide.app.ui.theme.PocketEmerald
+import com.pocketide.app.ui.theme.PocketIndigo
+import com.pocketide.app.ui.theme.PocketObsidian
+import com.pocketide.app.ui.theme.PocketPurple
+import com.pocketide.app.ui.theme.PocketSurface
+import com.pocketide.app.ui.theme.PocketSurfaceElevated
+import com.pocketide.app.ui.theme.PocketSurfaceVariant
+import com.pocketide.app.ui.theme.PocketTextMuted
+import com.pocketide.app.ui.theme.PocketTextPrimary
+import com.pocketide.app.ui.theme.PocketTextSecondary
 
 private const val DEVELOPER_TELEGRAM_HANDLE = "@RahilAnw4r"
 private const val DEVELOPER_TELEGRAM_URL = "https://t.me/RahilAnw4r"
@@ -82,7 +82,7 @@ private const val PROJECT_GITHUB_URL = "https://github.com/rahilanw4r/novacode-s
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NovaDeveloperScreen(
+fun PocketDeveloperScreen(
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -91,7 +91,7 @@ fun NovaDeveloperScreen(
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
-        containerColor = NovaObsidian,
+        containerColor = PocketObsidian,
         topBar = {
             TopAppBar(
                 title = {
@@ -99,7 +99,7 @@ fun NovaDeveloperScreen(
                         text = "Creator & Developer",
                         fontSize = 17.sp,
                         fontWeight = FontWeight.Bold,
-                        color = NovaTextPrimary
+                        color = PocketTextPrimary
                     )
                 },
                 navigationIcon = {
@@ -107,11 +107,11 @@ fun NovaDeveloperScreen(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back",
-                            tint = NovaTextPrimary
+                            tint = PocketTextPrimary
                         )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = NovaObsidian)
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = PocketObsidian)
             )
         }
     ) { padding ->
@@ -124,7 +124,7 @@ fun NovaDeveloperScreen(
         ) {
             // Hero Profile Card
             item {
-                NovaGlassCard(
+                PocketGlassCard(
                     modifier = Modifier
                         .fillMaxWidth()
                         .liquidAuraBorder(enabled = true, shape = RoundedCornerShape(16.dp), strokeWidth = 1.5.dp)
@@ -139,8 +139,8 @@ fun NovaDeveloperScreen(
                             modifier = Modifier
                                 .size(72.dp)
                                 .clip(RoundedCornerShape(18.dp))
-                                .background(NovaSurfaceElevated)
-                                .border(1.dp, NovaBorder, RoundedCornerShape(18.dp)),
+                                .background(PocketSurfaceElevated)
+                                .border(1.dp, PocketBorder, RoundedCornerShape(18.dp)),
                             contentAlignment = Alignment.Center
                         ) {
                             Image(
@@ -155,21 +155,21 @@ fun NovaDeveloperScreen(
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             Text(
                                 text = "Rahil Anwar",
-                                color = NovaTextPrimary,
+                                color = PocketTextPrimary,
                                 fontSize = 20.sp,
                                 fontWeight = FontWeight.Bold
                             )
                             Spacer(Modifier.height(2.dp))
                             Text(
                                 text = "Lead Creator & Systems Architect",
-                                color = NovaEmerald,
+                                color = PocketEmerald,
                                 fontSize = 13.sp,
                                 fontWeight = FontWeight.SemiBold
                             )
                             Spacer(Modifier.height(4.dp))
                             Text(
                                 text = DEVELOPER_TELEGRAM_HANDLE,
-                                color = NovaCyan,
+                                color = PocketCyan,
                                 fontSize = 12.sp,
                                 fontFamily = FontFamily.Monospace,
                                 fontWeight = FontWeight.Medium
@@ -178,7 +178,7 @@ fun NovaDeveloperScreen(
 
                         Text(
                             text = "Architect of Pocket IDE. Building autonomous AI coding environments and native on-device Linux virtualization for modern creators.",
-                            color = NovaTextSecondary,
+                            color = PocketTextSecondary,
                             fontSize = 12.5.sp,
                             lineHeight = 18.sp,
                             modifier = Modifier.padding(horizontal = 8.dp)
@@ -191,7 +191,7 @@ fun NovaDeveloperScreen(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.spacedBy(10.dp)
                         ) {
-                            NovaPrimaryButton(
+                            PocketPrimaryButton(
                                 text = "Telegram",
                                 icon = Icons.AutoMirrored.Filled.Send,
                                 onClick = {
@@ -201,7 +201,7 @@ fun NovaDeveloperScreen(
                                 modifier = Modifier.weight(1f),
                                 height = 44.dp
                             )
-                            NovaSecondaryButton(
+                            PocketSecondaryButton(
                                 text = "GitHub Repo",
                                 icon = Icons.Default.Code,
                                 onClick = {
@@ -221,12 +221,12 @@ fun NovaDeveloperScreen(
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text(
                         text = "Official Channels & Contact",
-                        color = NovaTextPrimary,
+                        color = PocketTextPrimary,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold
                     )
 
-                    NovaGlassCard(modifier = Modifier.fillMaxWidth()) {
+                    PocketGlassCard(modifier = Modifier.fillMaxWidth()) {
                         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                             // Telegram Row
                             Row(
@@ -247,20 +247,20 @@ fun NovaDeveloperScreen(
                                         modifier = Modifier
                                             .size(34.dp)
                                             .clip(RoundedCornerShape(8.dp))
-                                            .background(NovaCyan.copy(alpha = 0.15f)),
+                                            .background(PocketCyan.copy(alpha = 0.15f)),
                                         contentAlignment = Alignment.Center
                                     ) {
-                                        Icon(Icons.AutoMirrored.Filled.Send, contentDescription = null, tint = NovaCyan, modifier = Modifier.size(16.dp))
+                                        Icon(Icons.AutoMirrored.Filled.Send, contentDescription = null, tint = PocketCyan, modifier = Modifier.size(16.dp))
                                     }
                                     Column {
-                                        Text("Telegram Account", color = NovaTextPrimary, fontSize = 13.5.sp, fontWeight = FontWeight.SemiBold)
-                                        Text(DEVELOPER_TELEGRAM_HANDLE, color = NovaTextMuted, fontSize = 11.5.sp, fontFamily = FontFamily.Monospace)
+                                        Text("Telegram Account", color = PocketTextPrimary, fontSize = 13.5.sp, fontWeight = FontWeight.SemiBold)
+                                        Text(DEVELOPER_TELEGRAM_HANDLE, color = PocketTextMuted, fontSize = 11.5.sp, fontFamily = FontFamily.Monospace)
                                     }
                                 }
                                 Box(
                                     modifier = Modifier
                                         .clip(RoundedCornerShape(6.dp))
-                                        .background(NovaSurfaceElevated)
+                                        .background(PocketSurfaceElevated)
                                         .clickable {
                                             clipboardManager.setText(AnnotatedString(DEVELOPER_TELEGRAM_HANDLE))
                                             Toast.makeText(context, "Telegram copied: $DEVELOPER_TELEGRAM_HANDLE", Toast.LENGTH_SHORT).show()
@@ -268,13 +268,13 @@ fun NovaDeveloperScreen(
                                         .padding(horizontal = 8.dp, vertical = 5.dp)
                                 ) {
                                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                                        Icon(Icons.Default.ContentCopy, contentDescription = null, tint = NovaTextSecondary, modifier = Modifier.size(13.dp))
-                                        Text("Copy", color = NovaTextSecondary, fontSize = 11.sp, fontWeight = FontWeight.Medium)
+                                        Icon(Icons.Default.ContentCopy, contentDescription = null, tint = PocketTextSecondary, modifier = Modifier.size(13.dp))
+                                        Text("Copy", color = PocketTextSecondary, fontSize = 11.sp, fontWeight = FontWeight.Medium)
                                     }
                                 }
                             }
 
-                            HorizontalDivider(color = NovaBorder)
+                            HorizontalDivider(color = PocketBorder)
 
                             // GitHub Repository Row
                             Row(
@@ -295,17 +295,17 @@ fun NovaDeveloperScreen(
                                         modifier = Modifier
                                             .size(34.dp)
                                             .clip(RoundedCornerShape(8.dp))
-                                            .background(NovaEmerald.copy(alpha = 0.15f)),
+                                            .background(PocketEmerald.copy(alpha = 0.15f)),
                                         contentAlignment = Alignment.Center
                                     ) {
-                                        Icon(Icons.Default.Code, contentDescription = null, tint = NovaEmerald, modifier = Modifier.size(16.dp))
+                                        Icon(Icons.Default.Code, contentDescription = null, tint = PocketEmerald, modifier = Modifier.size(16.dp))
                                     }
                                     Column {
-                                        Text("GitHub Repository", color = NovaTextPrimary, fontSize = 13.5.sp, fontWeight = FontWeight.SemiBold)
-                                        Text("rahilanw4r/novacode-studio", color = NovaTextMuted, fontSize = 11.5.sp, fontFamily = FontFamily.Monospace)
+                                        Text("GitHub Repository", color = PocketTextPrimary, fontSize = 13.5.sp, fontWeight = FontWeight.SemiBold)
+                                        Text("rahilanw4r/novacode-studio", color = PocketTextMuted, fontSize = 11.5.sp, fontFamily = FontFamily.Monospace)
                                     }
                                 }
-                                Icon(Icons.AutoMirrored.Filled.OpenInNew, contentDescription = null, tint = NovaTextSecondary, modifier = Modifier.size(17.dp))
+                                Icon(Icons.AutoMirrored.Filled.OpenInNew, contentDescription = null, tint = PocketTextSecondary, modifier = Modifier.size(17.dp))
                             }
                         }
                     }
@@ -317,12 +317,12 @@ fun NovaDeveloperScreen(
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text(
                         text = "Engine & Architecture",
-                        color = NovaTextPrimary,
+                        color = PocketTextPrimary,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold
                     )
 
-                    NovaGlassCard(modifier = Modifier.fillMaxWidth()) {
+                    PocketGlassCard(modifier = Modifier.fillMaxWidth()) {
                         Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                             SpecRow(icon = Icons.Default.Shield, label = "Studio Version", value = "v${BuildConfig.VERSION_NAME} (Build ${BuildConfig.VERSION_CODE})")
                             SpecRow(icon = Icons.Default.Memory, label = "Virtualization Runtime", value = "PRoot Isolated ARM64")
@@ -344,9 +344,9 @@ private fun SpecRow(icon: ImageVector, label: String, value: String) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Icon(icon, contentDescription = null, tint = NovaTextSecondary, modifier = Modifier.size(15.dp))
-            Text(label, color = NovaTextSecondary, fontSize = 12.5.sp)
+            Icon(icon, contentDescription = null, tint = PocketTextSecondary, modifier = Modifier.size(15.dp))
+            Text(label, color = PocketTextSecondary, fontSize = 12.5.sp)
         }
-        Text(value, color = NovaTextPrimary, fontSize = 12.5.sp, fontWeight = FontWeight.SemiBold, fontFamily = FontFamily.Monospace)
+        Text(value, color = PocketTextPrimary, fontSize = 12.5.sp, fontWeight = FontWeight.SemiBold, fontFamily = FontFamily.Monospace)
     }
 }
