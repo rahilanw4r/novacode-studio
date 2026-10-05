@@ -1,4 +1,4 @@
-package com.novacode.studio.ui.screens.splash
+package com.pocketide.app.ui.screens.splash
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -44,23 +44,23 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.novacode.studio.BuildConfig
-import com.novacode.studio.R
-import com.novacode.studio.ui.theme.NovaBorder
-import com.novacode.studio.ui.theme.NovaCyan
-import com.novacode.studio.ui.theme.NovaEmerald
-import com.novacode.studio.ui.theme.NovaIndigo
-import com.novacode.studio.ui.theme.NovaObsidian
-import com.novacode.studio.ui.theme.NovaPurple
-import com.novacode.studio.ui.theme.NovaSurface
-import com.novacode.studio.ui.theme.NovaSurfaceElevated
-import com.novacode.studio.ui.theme.NovaTextMuted
-import com.novacode.studio.ui.theme.NovaTextPrimary
-import com.novacode.studio.ui.theme.NovaTextSecondary
+import com.pocketide.app.BuildConfig
+import com.pocketide.app.R
+import com.pocketide.app.ui.theme.PocketBorder
+import com.pocketide.app.ui.theme.PocketCyan
+import com.pocketide.app.ui.theme.PocketEmerald
+import com.pocketide.app.ui.theme.PocketIndigo
+import com.pocketide.app.ui.theme.PocketObsidian
+import com.pocketide.app.ui.theme.PocketPurple
+import com.pocketide.app.ui.theme.PocketSurface
+import com.pocketide.app.ui.theme.PocketSurfaceElevated
+import com.pocketide.app.ui.theme.PocketTextMuted
+import com.pocketide.app.ui.theme.PocketTextPrimary
+import com.pocketide.app.ui.theme.PocketTextSecondary
 import kotlinx.coroutines.delay
 
 @Composable
-fun NovaSplashScreen(
+fun PocketSplashScreen(
     onSplashFinished: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -128,7 +128,7 @@ fun NovaSplashScreen(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(NovaObsidian),
+            .background(PocketObsidian),
         contentAlignment = Alignment.Center
     ) {
         // Multi-Layer Ambient Background Glow
@@ -140,9 +140,9 @@ fun NovaSplashScreen(
                 .background(
                     Brush.radialGradient(
                         listOf(
-                            NovaIndigo.copy(alpha = glowAlpha * 0.40f),
-                            NovaCyan.copy(alpha = glowAlpha * 0.25f),
-                            NovaPurple.copy(alpha = glowAlpha * 0.12f),
+                            PocketIndigo.copy(alpha = glowAlpha * 0.40f),
+                            PocketCyan.copy(alpha = glowAlpha * 0.25f),
+                            PocketPurple.copy(alpha = glowAlpha * 0.12f),
                             Color.Transparent
                         )
                     )
@@ -172,7 +172,7 @@ fun NovaSplashScreen(
                     .border(
                         width = 1.5.dp,
                         brush = Brush.linearGradient(
-                            listOf(NovaIndigo, NovaCyan, NovaEmerald)
+                            listOf(PocketIndigo, PocketCyan, PocketEmerald)
                         ),
                         shape = RoundedCornerShape(28.dp)
                     )
@@ -198,7 +198,7 @@ fun NovaSplashScreen(
             ) {
                 Text(
                     text = "POCKET",
-                    color = NovaTextPrimary,
+                    color = PocketTextPrimary,
                     fontSize = 28.sp,
                     fontWeight = FontWeight.Black,
                     letterSpacing = 4.sp,
@@ -206,7 +206,7 @@ fun NovaSplashScreen(
                 )
                 Text(
                     text = "IDE",
-                    color = NovaCyan,
+                    color = PocketCyan,
                     fontSize = 28.sp,
                     fontWeight = FontWeight.Black,
                     letterSpacing = 4.sp,
@@ -218,7 +218,7 @@ fun NovaSplashScreen(
 
             Text(
                 text = "Your AI-powered development workspace, anywhere.",
-                color = NovaTextSecondary,
+                color = PocketTextSecondary,
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Medium,
                 letterSpacing = 0.3.sp,
@@ -242,7 +242,7 @@ fun NovaSplashScreen(
                         .height(4.dp)
                         .background(
                             Brush.horizontalGradient(
-                                listOf(NovaIndigo, NovaCyan, NovaEmerald)
+                                listOf(PocketIndigo, PocketCyan, PocketEmerald)
                             )
                         )
                 )
@@ -260,11 +260,11 @@ fun NovaSplashScreen(
                         .size(6.dp)
                         .scale(dotPulse)
                         .clip(CircleShape)
-                        .background(NovaCyan)
+                        .background(PocketCyan)
                 )
                 Text(
                     text = bootStep,
-                    color = NovaTextSecondary,
+                    color = PocketTextSecondary,
                     fontSize = 11.5.sp,
                     fontFamily = FontFamily.Monospace
                 )
@@ -282,13 +282,13 @@ fun NovaSplashScreen(
             Box(
                 modifier = Modifier
                     .clip(RoundedCornerShape(6.dp))
-                    .background(NovaSurface)
-                    .border(0.8.dp, NovaBorder, RoundedCornerShape(6.dp))
+                    .background(PocketSurface)
+                    .border(0.8.dp, PocketBorder, RoundedCornerShape(6.dp))
                     .padding(horizontal = 9.dp, vertical = 3.dp)
             ) {
                 Text(
                     text = "v${BuildConfig.VERSION_NAME}",
-                    color = NovaEmerald,
+                    color = PocketEmerald,
                     fontSize = 10.5.sp,
                     fontWeight = FontWeight.SemiBold,
                     fontFamily = FontFamily.Monospace
@@ -297,7 +297,7 @@ fun NovaSplashScreen(
 
             Text(
                 text = "ARM64 Autonomous Workspace",
-                color = NovaTextMuted,
+                color = PocketTextMuted,
                 fontSize = 10.5.sp,
                 fontWeight = FontWeight.Medium
             )
