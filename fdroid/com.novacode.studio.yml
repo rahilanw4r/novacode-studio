@@ -2,15 +2,15 @@ Categories:
   - Development
   - System
 License: MIT
-AuthorName: NovaCode
-SourceCode: https://github.com/rahilanw4r/novacode-studio
-IssueTracker: https://github.com/rahilanw4r/novacode-studio/issues
-Changelog: https://github.com/rahilanw4r/novacode-studio/releases
+AuthorName: Pocket IDE
+SourceCode: https://github.com/rahilanw4r/pocket-ide
+IssueTracker: https://github.com/rahilanw4r/pocket-ide/issues
+Changelog: https://github.com/rahilanw4r/pocket-ide/releases
 
 AutoName: Pocket IDE
 
 RepoType: git
-Repo: https://github.com/rahilanw4r/novacode-studio.git
+Repo: https://github.com/rahilanw4r/pocket-ide.git
 
 AntiFeatures:
   - NonFreeNet
