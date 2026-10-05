@@ -2,7 +2,7 @@
 
 **Effective date:** August 24, 2026
 
-Pocket IDE is a local-first Android development workspace. This policy explains what information the app handles, where it is stored, and when information leaves the device.
+Pocket IDE is a local-first Android development environment. This policy explains what information the app handles, where it is stored, and when information leaves the device.
 
 ## Information handled by the app
 
