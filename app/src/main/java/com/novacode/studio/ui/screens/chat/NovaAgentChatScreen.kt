@@ -1,4 +1,4 @@
-package com.novacode.studio.ui.screens.chat
+package com.pocketide.app.ui.screens.chat
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
@@ -59,31 +59,31 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.novacode.studio.model.ActivityItem
-import com.novacode.studio.model.ChatAttachment
-import com.novacode.studio.model.ChatMessage
-import com.novacode.studio.model.ToolRequest
-import com.novacode.studio.ui.MarkdownText
-import com.novacode.studio.ui.components.NovaGlassCard
-import com.novacode.studio.ui.components.NovaStatusPill
-import com.novacode.studio.ui.components.ReasoningChainBlock
-import com.novacode.studio.ui.components.ToolExecutionCard
-import com.novacode.studio.ui.theme.NovaAmber
-import com.novacode.studio.ui.theme.NovaBorder
-import com.novacode.studio.ui.theme.NovaCyan
-import com.novacode.studio.ui.theme.NovaEmerald
-import com.novacode.studio.ui.theme.NovaIndigo
-import com.novacode.studio.ui.theme.NovaObsidian
-import com.novacode.studio.ui.theme.NovaPurple
-import com.novacode.studio.ui.theme.NovaRose
-import com.novacode.studio.ui.theme.NovaSurface
-import com.novacode.studio.ui.theme.NovaSurfaceElevated
-import com.novacode.studio.ui.theme.NovaTextMuted
-import com.novacode.studio.ui.theme.NovaTextPrimary
-import com.novacode.studio.ui.theme.NovaTextSecondary
+import com.pocketide.app.model.ActivityItem
+import com.pocketide.app.model.ChatAttachment
+import com.pocketide.app.model.ChatMessage
+import com.pocketide.app.model.ToolRequest
+import com.pocketide.app.ui.MarkdownText
+import com.pocketide.app.ui.components.PocketGlassCard
+import com.pocketide.app.ui.components.PocketStatusPill
+import com.pocketide.app.ui.components.ReasoningChainBlock
+import com.pocketide.app.ui.components.ToolExecutionCard
+import com.pocketide.app.ui.theme.PocketAmber
+import com.pocketide.app.ui.theme.PocketBorder
+import com.pocketide.app.ui.theme.PocketCyan
+import com.pocketide.app.ui.theme.PocketEmerald
+import com.pocketide.app.ui.theme.PocketIndigo
+import com.pocketide.app.ui.theme.PocketObsidian
+import com.pocketide.app.ui.theme.PocketPurple
+import com.pocketide.app.ui.theme.PocketRose
+import com.pocketide.app.ui.theme.PocketSurface
+import com.pocketide.app.ui.theme.PocketSurfaceElevated
+import com.pocketide.app.ui.theme.PocketTextMuted
+import com.pocketide.app.ui.theme.PocketTextPrimary
+import com.pocketide.app.ui.theme.PocketTextSecondary
 
 @Composable
-fun NovaAgentChatScreen(
+fun PocketAgentChatScreen(
     messages: List<ChatMessage>,
     liveProcess: List<ActivityItem>,
     liveThinking: Boolean,
@@ -120,7 +120,7 @@ fun NovaAgentChatScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(NovaObsidian)
+            .background(PocketObsidian)
             .imePadding()
     ) {
         // Chat Messages Stream
@@ -193,14 +193,14 @@ fun NovaAgentChatScreen(
                     Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(16.dp))
-                            .background(NovaSurfaceElevated)
-                            .border(1.dp, NovaBorder, RoundedCornerShape(16.dp))
+                            .background(PocketSurfaceElevated)
+                            .border(1.dp, PocketBorder, RoundedCornerShape(16.dp))
                             .clickable { promptInput = prompt.substringAfter(' ') }
                             .padding(horizontal = 10.dp, vertical = 6.dp)
                     ) {
                         Text(
                             text = prompt,
-                            color = NovaCyan,
+                            color = PocketCyan,
                             fontSize = 11.5.sp,
                             fontWeight = FontWeight.Medium
                         )
@@ -214,7 +214,7 @@ fun NovaAgentChatScreen(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(NovaSurface)
+                    .background(PocketSurface)
                     .horizontalScroll(rememberScrollState())
                     .padding(horizontal = 10.dp, vertical = 4.dp),
                 horizontalArrangement = Arrangement.spacedBy(6.dp)
@@ -223,18 +223,18 @@ fun NovaAgentChatScreen(
                     Row(
                         modifier = Modifier
                             .clip(RoundedCornerShape(8.dp))
-                            .background(NovaSurfaceElevated)
-                            .border(1.dp, NovaBorder, RoundedCornerShape(8.dp))
+                            .background(PocketSurfaceElevated)
+                            .border(1.dp, PocketBorder, RoundedCornerShape(8.dp))
                             .padding(horizontal = 8.dp, vertical = 4.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
-                        Icon(Icons.Default.AttachFile, contentDescription = null, tint = NovaCyan, modifier = Modifier.size(13.dp))
-                        Text(att.displayName, color = NovaTextPrimary, fontSize = 11.sp, maxLines = 1)
+                        Icon(Icons.Default.AttachFile, contentDescription = null, tint = PocketCyan, modifier = Modifier.size(13.dp))
+                        Text(att.displayName, color = PocketTextPrimary, fontSize = 11.sp, maxLines = 1)
                         Icon(
                             imageVector = Icons.Default.Close,
                             contentDescription = "Remove",
-                            tint = NovaTextMuted,
+                            tint = PocketTextMuted,
                             modifier = Modifier.size(14.dp).clickable { onRemoveAttachment(att.id) }
                         )
                     }
@@ -246,8 +246,8 @@ fun NovaAgentChatScreen(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(NovaSurface)
-                .border(1.dp, NovaBorder)
+                .background(PocketSurface)
+                .border(1.dp, PocketBorder)
                 .padding(horizontal = 10.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -256,18 +256,18 @@ fun NovaAgentChatScreen(
                 onClick = onPickAttachment,
                 modifier = Modifier.size(32.dp)
             ) {
-                Icon(Icons.Default.AttachFile, contentDescription = "Attach", tint = NovaTextSecondary, modifier = Modifier.size(18.dp))
+                Icon(Icons.Default.AttachFile, contentDescription = "Attach", tint = PocketTextSecondary, modifier = Modifier.size(18.dp))
             }
 
             BasicTextField(
                 value = promptInput,
                 onValueChange = { promptInput = it },
                 textStyle = TextStyle(
-                    color = NovaTextPrimary,
+                    color = PocketTextPrimary,
                     fontSize = 13.sp,
                     lineHeight = 18.sp
                 ),
-                cursorBrush = SolidColor(NovaCyan),
+                cursorBrush = SolidColor(PocketCyan),
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
                 keyboardActions = KeyboardActions(
                     onSend = {
@@ -283,7 +283,7 @@ fun NovaAgentChatScreen(
                     if (promptInput.isEmpty()) {
                         Text(
                             text = if (isRunning) "Agent is executing tasks…" else "Ask agent to write, refactor, or build…",
-                            color = NovaTextMuted,
+                            color = PocketTextMuted,
                             fontSize = 13.sp
                         )
                     }
@@ -297,7 +297,7 @@ fun NovaAgentChatScreen(
                     modifier = Modifier
                         .size(36.dp)
                         .clip(CircleShape)
-                        .background(NovaRose)
+                        .background(PocketRose)
                 ) {
                     Icon(Icons.Default.Stop, contentDescription = "Stop", tint = Color.White, modifier = Modifier.size(18.dp))
                 }
@@ -314,12 +314,12 @@ fun NovaAgentChatScreen(
                     modifier = Modifier
                         .size(36.dp)
                         .clip(CircleShape)
-                        .background(if (promptInput.isNotBlank()) NovaIndigo else NovaSurfaceElevated)
+                        .background(if (promptInput.isNotBlank()) PocketIndigo else PocketSurfaceElevated)
                 ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.Send,
                         contentDescription = "Send",
-                        tint = if (promptInput.isNotBlank()) Color.White else NovaTextMuted,
+                        tint = if (promptInput.isNotBlank()) Color.White else PocketTextMuted,
                         modifier = Modifier.size(18.dp)
                     )
                 }
@@ -341,21 +341,21 @@ private fun EmptyChatGreeting(onSelectPrompt: (String) -> Unit) {
             modifier = Modifier
                 .size(54.dp)
                 .clip(CircleShape)
-                .background(NovaIndigo.copy(alpha = 0.15f))
-                .border(1.dp, NovaIndigo.copy(alpha = 0.4f), CircleShape),
+                .background(PocketIndigo.copy(alpha = 0.15f))
+                .border(1.dp, PocketIndigo.copy(alpha = 0.4f), CircleShape),
             contentAlignment = Alignment.Center
         ) {
-            Icon(Icons.Default.AutoAwesome, contentDescription = null, tint = NovaCyan, modifier = Modifier.size(28.dp))
+            Icon(Icons.Default.AutoAwesome, contentDescription = null, tint = PocketCyan, modifier = Modifier.size(28.dp))
         }
         Text(
             text = "Pocket IDE Autonomous Agent",
-            color = NovaTextPrimary,
+            color = PocketTextPrimary,
             fontSize = 17.sp,
             fontWeight = FontWeight.Bold
         )
         Text(
             text = "Your AI-powered development workspace, anywhere.",
-            color = NovaTextSecondary,
+            color = PocketTextSecondary,
             fontSize = 13.sp,
             modifier = Modifier.padding(horizontal = 24.dp)
         )
@@ -381,10 +381,10 @@ private fun ChatMessageItem(message: ChatMessage) {
                         bottomEnd = if (isUser) 2.dp else 14.dp
                     )
                 )
-                .background(if (isUser) NovaIndigo.copy(alpha = 0.18f) else NovaSurfaceElevated)
+                .background(if (isUser) PocketIndigo.copy(alpha = 0.18f) else PocketSurfaceElevated)
                 .border(
                     width = 1.dp,
-                    color = if (isUser) NovaIndigo.copy(alpha = 0.4f) else NovaBorder,
+                    color = if (isUser) PocketIndigo.copy(alpha = 0.4f) else PocketBorder,
                     shape = RoundedCornerShape(
                         topStart = 14.dp,
                         topEnd = 14.dp,
@@ -402,8 +402,8 @@ private fun ChatMessageItem(message: ChatMessage) {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = if (isUser) "You" else "Nova Agent",
-                        color = if (isUser) NovaCyan else NovaIndigo,
+                        text = if (isUser) "You" else "Pocket Agent",
+                        color = if (isUser) PocketCyan else PocketIndigo,
                         fontSize = 11.5.sp,
                         fontWeight = FontWeight.Bold
                     )
@@ -413,14 +413,14 @@ private fun ChatMessageItem(message: ChatMessage) {
                 if (isUser) {
                     Text(
                         text = message.text,
-                        color = NovaTextPrimary,
+                        color = PocketTextPrimary,
                         fontSize = 13.sp,
                         lineHeight = 18.sp
                     )
                 } else {
                     MarkdownText(
                         markdown = message.text,
-                        color = NovaTextPrimary
+                        color = PocketTextPrimary
                     )
                 }
 
@@ -450,9 +450,9 @@ private fun ToolApprovalCard(
     onApprove: () -> Unit,
     onReject: () -> Unit
 ) {
-    NovaGlassCard(
+    PocketGlassCard(
         modifier = Modifier.fillMaxWidth(),
-        borderColor = NovaAmber,
+        borderColor = PocketAmber,
         glowEffect = true
     ) {
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -460,17 +460,17 @@ private fun ToolApprovalCard(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(6.dp)
             ) {
-                Icon(Icons.Default.Warning, contentDescription = null, tint = NovaAmber, modifier = Modifier.size(18.dp))
+                Icon(Icons.Default.Warning, contentDescription = null, tint = PocketAmber, modifier = Modifier.size(18.dp))
                 Text(
                     text = "Permission Request: ${request.toolName}",
-                    color = NovaAmber,
+                    color = PocketAmber,
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Bold
                 )
             }
             Text(
                 text = request.explanation,
-                color = NovaTextPrimary,
+                color = PocketTextPrimary,
                 fontSize = 12.sp
             )
             request.commandPreview?.let { cmd ->
@@ -478,12 +478,12 @@ private fun ToolApprovalCard(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(6.dp))
-                        .background(NovaObsidian)
+                        .background(PocketObsidian)
                         .padding(8.dp)
                 ) {
                     Text(
                         text = cmd,
-                        color = NovaCyan,
+                        color = PocketCyan,
                         fontSize = 11.5.sp,
                         fontFamily = FontFamily.Monospace
                     )
@@ -498,17 +498,17 @@ private fun ToolApprovalCard(
                     Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(8.dp))
-                            .background(NovaRose.copy(alpha = 0.2f))
-                            .border(1.dp, NovaRose, RoundedCornerShape(8.dp))
+                            .background(PocketRose.copy(alpha = 0.2f))
+                            .border(1.dp, PocketRose, RoundedCornerShape(8.dp))
                             .clickable(onClick = onReject)
                             .padding(horizontal = 12.dp, vertical = 6.dp)
                     ) {
-                        Text("Deny", color = NovaRose, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                        Text("Deny", color = PocketRose, fontSize = 12.sp, fontWeight = FontWeight.Bold)
                     }
                     Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(8.dp))
-                            .background(NovaEmerald)
+                            .background(PocketEmerald)
                             .clickable(onClick = onApprove)
                             .padding(horizontal = 14.dp, vertical = 6.dp)
                     ) {
