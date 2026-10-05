@@ -54,6 +54,9 @@ import com.pocketide.app.runtime.RuntimeSetupStatus
 import com.pocketide.app.runtime.readTailText
 import com.pocketide.app.runtime.supportsArm64Runtime
 import com.pocketide.app.runtime.AndroidAppInstaller
+import com.pocketide.app.runtime.LocalStaticServer
+import com.pocketide.app.runtime.ProjectWebDetector
+import com.pocketide.app.runtime.ProjectWebKind
 import com.pocketide.app.update.AppUpdateInfo
 import com.pocketide.app.update.AppUpdater
 import java.io.File
@@ -207,6 +210,7 @@ data class AppUiState(
     val currentTaskRequest: String? = null,
     val previewReady: Boolean = false,
     val previewUrl: String? = null,
+    val projectWebKind: String? = null,
     val isRunning: Boolean = false,
     val activeSessionId: String? = null,
     val toastMessage: String? = null,
@@ -292,6 +296,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private var activeRuntimeRequest: RuntimeRetryRequest? = null
     private val failedApiKeyIds = mutableSetOf<String>()
     private val transcriptWrites = Channel<TranscriptWrite>(Channel.UNLIMITED)
+    private val staticServer = LocalStaticServer()
     private val initialAgentKind = AgentKind.fromStored(preferences.agentKind)
     private val initialPrimaryAgentKind = preferences.primaryAgentKind
         .takeIf(String::isNotBlank)
@@ -791,11 +796,24 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private fun detectServerUrl(command: String): String? {
-        val match = Regex("""python(?:3)?\s+-m\s+http\.server(?:\s+(\d{2,5}))?""")
-            .find(command)
-            ?: return null
-        val port = match.groupValues.getOrNull(1)?.toIntOrNull() ?: 8000
-        return port.takeIf { it in 1..65535 }?.let { "http://127.0.0.1:$it/" }
+        val lower = command.lowercase(java.util.Locale.ROOT)
+        val pythonMatch = Regex("""python(?:3)?\s+-m\s+http\.server(?:\s+(\d{2,5}))?""").find(lower)
+        if (pythonMatch != null) {
+            val port = pythonMatch.groupValues.getOrNull(1)?.toIntOrNull() ?: 8000
+            return port.takeIf { it in 1..65535 }?.let { "http://127.0.0.1:$it/" }
+        }
+        if (lower.contains("vite") || lower.contains("npm run dev") || lower.contains("yarn dev") || lower.contains("pnpm dev") || lower.contains("bun dev")) {
+            return "http://127.0.0.1:5173/"
+        }
+        if (lower.contains("next dev") || lower.contains("npm start") || lower.contains("yarn start")) {
+            return "http://127.0.0.1:3000/"
+        }
+        if (lower.contains("uvicorn") || lower.contains("flask run")) {
+            val portMatch = Regex("""--port\s+(\d{2,5})""").find(lower)
+            val port = portMatch?.groupValues?.getOrNull(1)?.toIntOrNull() ?: 8000
+            return "http://127.0.0.1:$port/"
+        }
+        return null
     }
 
     private fun shellQuote(value: String): String = "'${value.replace("'", "'\\''")}'"
@@ -2061,9 +2079,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 suggestedProjectRoot = null,
                 previewReady = false,
                 previewUrl = null,
+                projectWebKind = null,
                 pendingAttachments = emptyList(),
             )
         }
+        staticServer.stop()
     }
 
     fun closeReadOnlyProject() {
@@ -2880,24 +2900,41 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    private data class WorkspaceScanResult(
+        val files: List<WorkspaceEntry>,
+        val suggestedRoot: String?,
+        val isAndroid: Boolean,
+        val webKind: ProjectWebKind,
+        val staticPort: Int
+    )
+
     fun refreshProjectFiles() {
         val project = _state.value.activeProject ?: return
         _state.update { it.copy(filesLoading = true) }
         viewModelScope.launch {
-            val (entries, suggestedRoot, androidProjectDetected) = withContext(Dispatchers.IO) {
-                Triple(
-                    readWorkspace(project),
-                    if (project.rootPath.isBlank()) detectNestedProjectRoot(project) else null,
-                    findAndroidGradleProjectRoot(projectWorkspaceRoot(project)) != null,
-                )
+            val scan = withContext(Dispatchers.IO) {
+                val root = projectWorkspaceRoot(project)
+                val files = readWorkspace(project)
+                val suggested = if (project.rootPath.isBlank()) detectNestedProjectRoot(project) else null
+                val isAndroid = findAndroidGradleProjectRoot(root) != null
+                val kind = ProjectWebDetector.detect(root)
+                val staticPort = if (kind == ProjectWebKind.STATIC_HTML) {
+                    staticServer.startServing(root)
+                } else 0
+                WorkspaceScanResult(files, suggested, isAndroid, kind, staticPort)
             }
             if (_state.value.activeProject?.id == project.id) {
-                _state.update {
-                    it.copy(
-                        workspaceFiles = entries,
+                _state.update { current ->
+                    val url = if (scan.staticPort > 0) "http://127.0.0.1:${scan.staticPort}/" else current.previewUrl ?: "http://127.0.0.1:${scan.webKind.defaultPort}/"
+                    val ready = current.previewReady || scan.staticPort > 0
+                    current.copy(
+                        workspaceFiles = scan.files,
                         filesLoading = false,
-                        suggestedProjectRoot = suggestedRoot,
-                        androidProjectDetected = androidProjectDetected,
+                        suggestedProjectRoot = scan.suggestedRoot,
+                        androidProjectDetected = scan.isAndroid,
+                        projectWebKind = scan.webKind.label,
+                        previewUrl = url,
+                        previewReady = ready,
                     )
                 }
             }
@@ -3486,10 +3523,17 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                             isCommand = event.toolName == "Bash",
                         )
                     }
+                    val detectedInSummary = detectPreviewUrl(event.summary)
+                    val detectedInDetail = if (runningIndex >= 0) detectPreviewUrl(current.liveProcess[runningIndex].detail) else null
+                    val detectedFromCmd = detectServerUrl(event.summary)
+                    val detectedPreviewUrl = detectedInSummary ?: detectedInDetail ?: detectedFromCmd
+
                     current.copy(
                         activity = listOf(ActivityItem(event.summary, event.toolName)) + current.activity,
                         liveProcess = process,
                         liveThinking = false,
+                        previewReady = current.previewReady || detectedPreviewUrl != null,
+                        previewUrl = detectedPreviewUrl ?: current.previewUrl,
                         workSegmentStartedAtMillis = current.workSegmentStartedAtMillis ?: System.currentTimeMillis(),
                     )
                 }
@@ -3654,6 +3698,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             current.copy(projectChats = chats)
         }
         preferences.saveProjectChats(project.id, _state.value.projectChats)
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        staticServer.stop()
     }
 
     companion object {

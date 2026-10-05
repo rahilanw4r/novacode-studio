@@ -37,12 +37,14 @@ import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Psychology
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Terminal
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import com.pocketide.app.model.ActivityItem
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -260,7 +262,9 @@ fun DeveloperKeyToolbar(
 }
 
 /**
- * Collapsible Thinking & Reasoning Chain Block (DeepSeek R1 / Claude 3.7 style).
+ * Compact Thinking & Reasoning Chain Block.
+ * Collapses by default once finished into a subtle "✓ Planned approach",
+ * without polluting the screen with raw reasoning text unless explicitly tapped.
  */
 @Composable
 fun ReasoningChainBlock(
@@ -269,15 +273,15 @@ fun ReasoningChainBlock(
     tokenCount: Int = 0,
     modifier: Modifier = Modifier
 ) {
-    var expanded by remember { mutableStateOf(isStreaming) }
+    var expanded by remember { mutableStateOf(false) }
 
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
-            .background(PocketPurple.copy(alpha = 0.08f))
-            .border(1.dp, PocketPurple.copy(alpha = 0.25f), RoundedCornerShape(12.dp))
-            .padding(10.dp)
+            .clip(RoundedCornerShape(8.dp))
+            .background(PocketPurple.copy(alpha = 0.07f))
+            .border(1.dp, PocketPurple.copy(alpha = 0.2f), RoundedCornerShape(8.dp))
+            .padding(horizontal = 10.dp, vertical = 6.dp)
     ) {
         Row(
             modifier = Modifier
@@ -288,52 +292,68 @@ fun ReasoningChainBlock(
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(6.dp)
             ) {
-                Icon(
-                    imageVector = Icons.Default.Psychology,
-                    contentDescription = null,
-                    tint = PocketPurple,
-                    modifier = Modifier.size(18.dp)
-                )
-                Text(
-                    text = if (isStreaming) "Thinking process…" else "Reasoning completed",
-                    color = PocketPurple,
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.SemiBold
-                )
+                if (isStreaming) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(12.dp),
+                        strokeWidth = 1.5.dp,
+                        color = PocketPurple
+                    )
+                    Text(
+                        text = "Thinking…",
+                        color = PocketPurple,
+                        fontSize = 11.5.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+                } else {
+                    Icon(
+                        imageVector = Icons.Default.Check,
+                        contentDescription = null,
+                        tint = PocketPurple,
+                        modifier = Modifier.size(12.dp)
+                    )
+                    Text(
+                        text = "Planned approach",
+                        color = PocketPurple,
+                        fontSize = 11.5.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+
                 if (tokenCount > 0) {
                     Text(
-                        text = "($tokenCount tokens)",
+                        text = "(${tokenCount}t)",
                         color = PocketTextMuted,
-                        fontSize = 11.sp,
+                        fontSize = 10.sp,
                         fontFamily = FontFamily.Monospace
                     )
                 }
             }
+
             Icon(
                 imageVector = if (expanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
                 contentDescription = null,
-                tint = PocketPurple,
-                modifier = Modifier.size(18.dp)
+                tint = PocketPurple.copy(alpha = 0.7f),
+                modifier = Modifier.size(14.dp)
             )
         }
 
         AnimatedVisibility(visible = expanded) {
-            Column(modifier = Modifier.padding(top = 8.dp)) {
+            Column(modifier = Modifier.padding(top = 6.dp)) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(RoundedCornerShape(8.dp))
+                        .clip(RoundedCornerShape(6.dp))
                         .background(PocketObsidian)
-                        .padding(10.dp)
+                        .padding(8.dp)
                 ) {
                     Text(
                         text = reasoningText.ifBlank { "Analyzing workspace context and planning actions..." },
                         color = PocketTextSecondary,
-                        fontSize = 11.5.sp,
+                        fontSize = 11.sp,
                         fontFamily = FontFamily.Monospace,
-                        lineHeight = 16.sp
+                        lineHeight = 15.sp
                     )
                 }
             }
@@ -342,7 +362,192 @@ fun ReasoningChainBlock(
 }
 
 /**
- * Tool Execution Card showing command execution, file modifications, or test results.
+ * Compact Activity Timeline.
+ * Replaces heavy card-per-tool execution blocks with a slim, collapsible timeline.
+ */
+@Composable
+fun CompactActivityTimeline(
+    items: List<ActivityItem>,
+    modifier: Modifier = Modifier,
+    isLive: Boolean = false,
+) {
+    if (items.isEmpty()) return
+
+    var expandedGroup by remember { mutableStateOf(isLive) }
+
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(8.dp))
+            .background(PocketSurfaceElevated.copy(alpha = 0.5f))
+            .border(1.dp, PocketBorder, RoundedCornerShape(8.dp))
+            .padding(horizontal = 8.dp, vertical = 6.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        if (!isLive && items.size > 2) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { expandedGroup = !expandedGroup }
+                    .padding(vertical = 3.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Check,
+                        contentDescription = null,
+                        tint = PocketEmerald,
+                        modifier = Modifier.size(12.dp)
+                    )
+                    Text(
+                        text = "${items.size} activities completed",
+                        color = PocketTextSecondary,
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+                Icon(
+                    imageVector = if (expandedGroup) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                    contentDescription = null,
+                    tint = PocketTextMuted,
+                    modifier = Modifier.size(13.dp)
+                )
+            }
+        }
+
+        if (isLive || items.size <= 2 || expandedGroup) {
+            items.forEach { item ->
+                CompactTimelineRow(item = item)
+            }
+        }
+    }
+}
+
+@Composable
+fun CompactTimelineRow(
+    item: ActivityItem,
+    modifier: Modifier = Modifier
+) {
+    var expanded by remember { mutableStateOf(false) }
+    val isRunning = !item.isComplete
+    val isError = item.title.contains("failed", ignoreCase = true) || item.title.contains("error", ignoreCase = true)
+
+    val cleanLabel = formatActivityLabel(item)
+
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(6.dp))
+            .clickable(enabled = item.detail.isNotBlank()) { expanded = !expanded }
+            .padding(horizontal = 4.dp, vertical = 3.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Row(
+                modifier = Modifier.weight(1f),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
+                if (isRunning) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(11.dp),
+                        strokeWidth = 1.5.dp,
+                        color = PocketCyan
+                    )
+                } else if (isError) {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = null,
+                        tint = PocketRose,
+                        modifier = Modifier.size(11.dp)
+                    )
+                } else {
+                    Icon(
+                        imageVector = Icons.Default.Check,
+                        contentDescription = null,
+                        tint = PocketEmerald,
+                        modifier = Modifier.size(11.dp)
+                    )
+                }
+
+                Text(
+                    text = cleanLabel,
+                    color = if (isRunning) PocketCyan else PocketTextPrimary,
+                    fontSize = 11.sp,
+                    fontFamily = FontFamily.Monospace,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+
+            if (item.detail.isNotBlank()) {
+                Icon(
+                    imageVector = if (expanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                    contentDescription = null,
+                    tint = PocketTextMuted,
+                    modifier = Modifier.size(12.dp)
+                )
+            }
+        }
+
+        if (expanded && item.detail.isNotBlank()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 4.dp, start = 18.dp)
+                    .clip(RoundedCornerShape(4.dp))
+                    .background(PocketObsidian)
+                    .border(1.dp, PocketBorder, RoundedCornerShape(4.dp))
+                    .padding(6.dp)
+            ) {
+                Text(
+                    text = item.detail,
+                    color = PocketTextSecondary,
+                    fontSize = 10.5.sp,
+                    fontFamily = FontFamily.Monospace,
+                    lineHeight = 14.sp
+                )
+            }
+        }
+    }
+}
+
+private fun formatActivityLabel(item: ActivityItem): String {
+    val title = item.title.trim()
+    val detail = item.detail.trim()
+
+    return when {
+        title.contains("Preview ready", ignoreCase = true) -> "Started preview: ${detail.ifBlank { "localhost" }}"
+        title.contains("Bash", ignoreCase = true) || item.isCommand -> {
+            val cmd = detail.lineSequence().firstOrNull()?.trim()?.take(45) ?: "command"
+            if (!item.isComplete) "Running $cmd" else "Ran $cmd"
+        }
+        title.contains("Read", ignoreCase = true) -> {
+            val file = detail.substringAfterLast('/').take(35)
+            if (!item.isComplete) "Reading $file" else "Read $file"
+        }
+        title.contains("Write", ignoreCase = true) || title.contains("Edit", ignoreCase = true) -> {
+            val file = detail.substringAfterLast('/').take(35)
+            if (!item.isComplete) "Writing $file" else "Saved $file"
+        }
+        title.contains("Files changed", ignoreCase = true) -> "Updated $detail"
+        else -> {
+            val clean = title.removeSuffix(" completed").removePrefix("Running ")
+            if (!item.isComplete) "Running $clean" else clean
+        }
+    }
+}
+
+/**
+ * Compact Tool Execution Card.
+ * Uses a subtle ✓ indicator instead of large green "DONE" pills.
  */
 @Composable
 fun ToolExecutionCard(
@@ -352,81 +557,15 @@ fun ToolExecutionCard(
     isError: Boolean = false,
     modifier: Modifier = Modifier
 ) {
-    var expanded by remember { mutableStateOf(false) }
-    val statusColor = when {
-        isError -> PocketRose
-        !isComplete -> PocketAmber
-        else -> PocketEmerald
-    }
-
-    Column(
+    CompactTimelineRow(
+        item = ActivityItem(
+            title = toolName,
+            detail = detail,
+            isComplete = isComplete,
+            isCommand = toolName.contains("bash", ignoreCase = true) || toolName.contains("command", ignoreCase = true)
+        ),
         modifier = modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(8.dp))
-            .background(PocketSurfaceElevated)
-            .border(1.dp, if (expanded) statusColor.copy(alpha = 0.5f) else PocketBorder, RoundedCornerShape(8.dp))
-            .clickable { expanded = !expanded }
-            .padding(10.dp),
-        verticalArrangement = Arrangement.spacedBy(6.dp)
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(10.dp)
-        ) {
-            Icon(
-                imageVector = when {
-                    toolName.contains("bash", ignoreCase = true) || toolName.contains("exec", ignoreCase = true) || toolName.contains("command", ignoreCase = true) -> Icons.Default.Terminal
-                    toolName.contains("file", ignoreCase = true) || toolName.contains("write", ignoreCase = true) || toolName.contains("edit", ignoreCase = true) -> Icons.Default.Code
-                    else -> Icons.Default.AutoAwesome
-                },
-                contentDescription = null,
-                tint = statusColor,
-                modifier = Modifier.size(16.dp)
-            )
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = toolName,
-                    color = PocketTextPrimary,
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.SemiBold
-                )
-                if (!expanded) {
-                    Text(
-                        text = detail,
-                        color = PocketTextSecondary,
-                        fontSize = 11.sp,
-                        fontFamily = FontFamily.Monospace,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                }
-            }
-            PocketStatusPill(
-                statusText = if (isComplete) "DONE" else "RUNNING",
-                isRunning = !isComplete,
-                color = statusColor
-            )
-        }
-        if (expanded && detail.isNotBlank()) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(6.dp))
-                    .background(PocketObsidian)
-                    .border(1.dp, PocketBorder, RoundedCornerShape(6.dp))
-                    .padding(8.dp)
-            ) {
-                Text(
-                    text = detail,
-                    color = PocketTextPrimary,
-                    fontSize = 11.sp,
-                    fontFamily = FontFamily.Monospace,
-                    lineHeight = 15.sp
-                )
-            }
-        }
-    }
+    )
 }
 
 /**

@@ -73,10 +73,13 @@ import com.pocketide.app.model.ChatAttachment
 import com.pocketide.app.model.ChatMessage
 import com.pocketide.app.model.ToolRequest
 import com.pocketide.app.ui.MarkdownText
+import com.pocketide.app.ui.components.CompactActivityTimeline
 import com.pocketide.app.ui.components.PocketGlassCard
 import com.pocketide.app.ui.components.PocketStatusPill
 import com.pocketide.app.ui.components.ReasoningChainBlock
 import com.pocketide.app.ui.components.ToolExecutionCard
+import androidx.compose.material.icons.filled.Folder
+import androidx.compose.material.icons.filled.Language
 import com.pocketide.app.ui.theme.PocketAmber
 import com.pocketide.app.ui.theme.PocketBorder
 import com.pocketide.app.ui.theme.PocketCyan
@@ -107,6 +110,10 @@ fun PocketAgentChatScreen(
     onApproval: (Boolean) -> Unit,
     onPickAttachment: () -> Unit,
     onRemoveAttachment: (String) -> Unit,
+    previewReady: Boolean = false,
+    previewUrl: String? = null,
+    onOpenPreview: (() -> Unit)? = null,
+    onOpenFiles: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     var promptInput by remember { mutableStateOf("") }
@@ -153,6 +160,9 @@ fun PocketAgentChatScreen(
             items(messages) { message ->
                 ChatMessageItem(
                     message = message,
+                    previewReady = previewReady,
+                    onOpenPreview = onOpenPreview,
+                    onOpenFiles = onOpenFiles,
                     onEditPrompt = { text ->
                         promptInput = text
                         isEditingPrompt = true
@@ -172,18 +182,13 @@ fun PocketAgentChatScreen(
                 }
             }
 
-            // Live tool execution items
+            // Live tool execution items: sleek compact timeline
             if (liveProcess.isNotEmpty()) {
                 item {
-                    Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                        liveProcess.forEach { item ->
-                            ToolExecutionCard(
-                                toolName = item.title,
-                                detail = item.detail,
-                                isComplete = item.isComplete
-                            )
-                        }
-                    }
+                    CompactActivityTimeline(
+                        items = liveProcess,
+                        isLive = true
+                    )
                 }
             }
 
@@ -431,6 +436,9 @@ private fun EmptyChatGreeting(onSelectPrompt: (String) -> Unit) {
 @Composable
 private fun ChatMessageItem(
     message: ChatMessage,
+    previewReady: Boolean = false,
+    onOpenPreview: (() -> Unit)? = null,
+    onOpenFiles: (() -> Unit)? = null,
     onEditPrompt: ((String) -> Unit)? = null
 ) {
     val isUser = message.fromUser
@@ -550,24 +558,85 @@ private fun ChatMessageItem(
                         lineHeight = 18.sp
                     )
                 } else {
-                    MarkdownText(
-                        markdown = message.text,
-                        color = PocketTextPrimary
-                    )
-                }
+                    if (message.text.isNotBlank()) {
+                        MarkdownText(
+                            markdown = message.text,
+                            color = PocketTextPrimary
+                        )
+                    }
 
-                // Completed Work items summary
-                if (message.workItems.isNotEmpty()) {
-                    Column(
-                        modifier = Modifier.padding(top = 4.dp),
-                        verticalArrangement = Arrangement.spacedBy(4.dp)
-                    ) {
-                        message.workItems.forEach { work ->
-                            ToolExecutionCard(
-                                toolName = work.title,
-                                detail = work.detail,
-                                isComplete = work.isComplete
-                            )
+                    // Completed Work items: compact timeline
+                    if (message.workItems.isNotEmpty()) {
+                        CompactActivityTimeline(
+                            items = message.workItems,
+                            isLive = false
+                        )
+
+                        // Result summary actions
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 2.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
+                            if (previewReady && onOpenPreview != null) {
+                                Box(
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(6.dp))
+                                        .background(PocketCyan.copy(alpha = 0.15f))
+                                        .border(1.dp, PocketCyan.copy(alpha = 0.4f), RoundedCornerShape(6.dp))
+                                        .clickable { onOpenPreview() }
+                                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                                ) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.Language,
+                                            contentDescription = null,
+                                            tint = PocketCyan,
+                                            modifier = Modifier.size(12.dp)
+                                        )
+                                        Text(
+                                            text = "Open Preview",
+                                            color = PocketCyan,
+                                            fontSize = 10.5.sp,
+                                            fontWeight = FontWeight.SemiBold
+                                        )
+                                    }
+                                }
+                            }
+
+                            if (onOpenFiles != null) {
+                                Box(
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(6.dp))
+                                        .background(PocketPrimaryBlue.copy(alpha = 0.12f))
+                                        .border(1.dp, PocketPrimaryBlue.copy(alpha = 0.35f), RoundedCornerShape(6.dp))
+                                        .clickable { onOpenFiles() }
+                                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                                ) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.Folder,
+                                            contentDescription = null,
+                                            tint = PocketPrimaryBlue,
+                                            modifier = Modifier.size(12.dp)
+                                        )
+                                        Text(
+                                            text = "View Files",
+                                            color = PocketPrimaryBlue,
+                                            fontSize = 10.5.sp,
+                                            fontWeight = FontWeight.SemiBold
+                                        )
+                                    }
+                                }
+                            }
                         }
                     }
                 }

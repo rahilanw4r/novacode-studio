@@ -373,11 +373,15 @@ fun PocketMasterWorkspace(
                         isRunning = state.isRunning,
                         pendingApproval = state.pendingApproval,
                         attachments = state.pendingAttachments,
+                        previewReady = state.previewReady,
+                        previewUrl = state.previewUrl,
                         onSend = onSend,
                         onStop = onStop,
                         onApproval = onApproval,
                         onPickAttachment = { attachmentLauncher.launch(arrayOf("*/*")) },
-                        onRemoveAttachment = onRemoveAttachment
+                        onRemoveAttachment = onRemoveAttachment,
+                        onOpenPreview = { currentTab = PocketWorkspaceTab.PREVIEW },
+                        onOpenFiles = { currentTab = PocketWorkspaceTab.FILES },
                     )
                 }
                 PocketWorkspaceTab.TERMINAL -> {
@@ -393,7 +397,11 @@ fun PocketMasterWorkspace(
                 }
                 PocketWorkspaceTab.PREVIEW -> {
                     PocketWebPreviewScreen(
-                        initialUrl = "http://localhost:5173"
+                        initialUrl = state.previewUrl ?: "http://127.0.0.1:5173",
+                        project = state.activeProject,
+                        projectWebKind = state.projectWebKind,
+                        onStartDevServer = { cmd -> onTerminalRun(cmd) },
+                        onSwitchToTerminal = { currentTab = PocketWorkspaceTab.TERMINAL }
                     )
                 }
             }
