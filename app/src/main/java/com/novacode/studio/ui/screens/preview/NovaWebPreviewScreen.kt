@@ -1,4 +1,4 @@
-package com.novacode.studio.ui.screens.preview
+package com.pocketide.app.ui.screens.preview
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -64,8 +64,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
-import com.novacode.studio.ui.components.NovaGlassCard
-import com.novacode.studio.ui.theme.*
+import com.pocketide.app.ui.components.PocketGlassCard
+import com.pocketide.app.ui.theme.*
 
 enum class DevicePreset(val label: String, val widthDp: Int?) {
     RESPONSIVE("Fluid", null),
@@ -82,7 +82,7 @@ data class ConsoleLogItem(
 
 @SuppressLint("SetJavaScriptEnabled")
 @Composable
-fun NovaWebPreviewScreen(
+fun PocketWebPreviewScreen(
     initialUrl: String = "http://localhost:5173",
     modifier: Modifier = Modifier
 ) {
@@ -99,13 +99,13 @@ fun NovaWebPreviewScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(NovaObsidian)
+            .background(PocketObsidian)
     ) {
         // Navigation & Controls Bar
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(NovaSurface)
+                .background(PocketSurface)
                 .padding(horizontal = 8.dp, vertical = 6.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(6.dp)
@@ -115,13 +115,13 @@ fun NovaWebPreviewScreen(
                 enabled = webViewRef?.canGoBack() == true,
                 modifier = Modifier.size(30.dp)
             ) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = NovaTextSecondary, modifier = Modifier.size(16.dp))
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = PocketTextSecondary, modifier = Modifier.size(16.dp))
             }
             IconButton(
                 onClick = { webViewRef?.reload() },
                 modifier = Modifier.size(30.dp)
             ) {
-                Icon(Icons.Default.Refresh, contentDescription = "Reload", tint = NovaCyan, modifier = Modifier.size(16.dp))
+                Icon(Icons.Default.Refresh, contentDescription = "Reload", tint = PocketCyan, modifier = Modifier.size(16.dp))
             }
 
             // URL Bar
@@ -129,8 +129,8 @@ fun NovaWebPreviewScreen(
                 modifier = Modifier
                     .weight(1f)
                     .clip(RoundedCornerShape(8.dp))
-                    .background(NovaSurfaceElevated)
-                    .border(1.dp, NovaBorder, RoundedCornerShape(8.dp))
+                    .background(PocketSurfaceElevated)
+                    .border(1.dp, PocketBorder, RoundedCornerShape(8.dp))
                     .padding(horizontal = 8.dp, vertical = 6.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -138,11 +138,11 @@ fun NovaWebPreviewScreen(
                     value = urlInput,
                     onValueChange = { urlInput = it },
                     textStyle = TextStyle(
-                        color = NovaTextPrimary,
+                        color = PocketTextPrimary,
                         fontSize = 12.sp,
                         fontFamily = FontFamily.Monospace
                     ),
-                    cursorBrush = SolidColor(NovaCyan),
+                    cursorBrush = SolidColor(PocketCyan),
                     singleLine = true,
                     modifier = Modifier.weight(1f)
                 )
@@ -156,7 +156,7 @@ fun NovaWebPreviewScreen(
                 },
                 modifier = Modifier.size(30.dp)
             ) {
-                Icon(Icons.Default.OpenInBrowser, contentDescription = "Open in Browser", tint = NovaIndigo, modifier = Modifier.size(18.dp))
+                Icon(Icons.Default.OpenInBrowser, contentDescription = "Open in Browser", tint = PocketIndigo, modifier = Modifier.size(18.dp))
             }
 
             // Toggle DevTools Console
@@ -167,7 +167,7 @@ fun NovaWebPreviewScreen(
                 Icon(
                     Icons.Default.Terminal,
                     contentDescription = "Console",
-                    tint = if (showConsole) NovaEmerald else NovaTextSecondary,
+                    tint = if (showConsole) PocketEmerald else PocketTextSecondary,
                     modifier = Modifier.size(16.dp)
                 )
             }
@@ -177,7 +177,7 @@ fun NovaWebPreviewScreen(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(NovaSurfaceVariant)
+                .background(PocketSurfaceVariant)
                 .horizontalScroll(rememberScrollState())
                 .padding(horizontal = 8.dp, vertical = 4.dp),
             verticalAlignment = Alignment.CenterVertically,
@@ -189,14 +189,14 @@ fun NovaWebPreviewScreen(
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(6.dp))
-                        .background(if (active) NovaCyan.copy(alpha = 0.2f) else Color.Transparent)
-                        .border(1.dp, if (active) NovaCyan else Color.Transparent, RoundedCornerShape(6.dp))
+                        .background(if (active) PocketCyan.copy(alpha = 0.2f) else Color.Transparent)
+                        .border(1.dp, if (active) PocketCyan else Color.Transparent, RoundedCornerShape(6.dp))
                         .clickable { selectedPreset = preset }
                         .padding(horizontal = 8.dp, vertical = 3.dp)
                 ) {
                     Text(
                         text = preset.label,
-                        color = if (active) NovaCyan else NovaTextMuted,
+                        color = if (active) PocketCyan else PocketTextMuted,
                         fontSize = 11.sp,
                         fontWeight = FontWeight.SemiBold
                     )
@@ -212,7 +212,7 @@ fun NovaWebPreviewScreen(
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(6.dp))
-                        .background(if (active) NovaIndigo.copy(alpha = 0.25f) else NovaSurfaceElevated)
+                        .background(if (active) PocketIndigo.copy(alpha = 0.25f) else PocketSurfaceElevated)
                         .clickable {
                             urlInput = target
                             currentUrl = target
@@ -222,7 +222,7 @@ fun NovaWebPreviewScreen(
                 ) {
                     Text(
                         text = ":$port ($name)",
-                        color = if (active) NovaIndigo else NovaTextSecondary,
+                        color = if (active) PocketIndigo else PocketTextSecondary,
                         fontSize = 10.5.sp,
                         fontFamily = FontFamily.Monospace
                     )
@@ -230,7 +230,7 @@ fun NovaWebPreviewScreen(
             }
         }
 
-        HorizontalDivider(color = NovaBorder)
+        HorizontalDivider(color = PocketBorder)
 
         // Web Preview Container
         Box(
@@ -243,7 +243,7 @@ fun NovaWebPreviewScreen(
                 Modifier
                     .width(selectedPreset.widthDp!!.dp)
                     .fillMaxHeight()
-                    .border(1.dp, NovaBorder, RoundedCornerShape(8.dp))
+                    .border(1.dp, PocketBorder, RoundedCornerShape(8.dp))
                     .clip(RoundedCornerShape(8.dp))
             } else {
                 Modifier.fillMaxSize()
@@ -302,8 +302,8 @@ fun NovaWebPreviewScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(180.dp)
-                    .background(NovaSurfaceElevated)
-                    .border(1.dp, NovaBorder)
+                    .background(PocketSurfaceElevated)
+                    .border(1.dp, PocketBorder)
                     .padding(8.dp)
             ) {
                 Row(
@@ -313,21 +313,21 @@ fun NovaWebPreviewScreen(
                 ) {
                     Text(
                         text = "Browser Console (${consoleLogs.size})",
-                        color = NovaTextPrimary,
+                        color = PocketTextPrimary,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold
                     )
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         Text(
                             text = "Clear",
-                            color = NovaCyan,
+                            color = PocketCyan,
                             fontSize = 11.sp,
                             modifier = Modifier.clickable { consoleLogs.clear() }
                         )
                         Icon(
                             imageVector = Icons.Default.Close,
                             contentDescription = "Close",
-                            tint = NovaTextMuted,
+                            tint = PocketTextMuted,
                             modifier = Modifier.size(16.dp).clickable { showConsole = false }
                         )
                     }
@@ -335,9 +335,9 @@ fun NovaWebPreviewScreen(
                 LazyColumn(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     items(consoleLogs) { log ->
                         val (textColor, prefix) = when (log.level) {
-                            ConsoleMessage.MessageLevel.ERROR -> NovaRose to "[ERR]"
-                            ConsoleMessage.MessageLevel.WARNING -> NovaAmber to "[WARN]"
-                            else -> NovaTextSecondary to "[LOG]"
+                            ConsoleMessage.MessageLevel.ERROR -> PocketRose to "[ERR]"
+                            ConsoleMessage.MessageLevel.WARNING -> PocketAmber to "[WARN]"
+                            else -> PocketTextSecondary to "[LOG]"
                         }
                         Text(
                             text = "$prefix ${log.message}",
