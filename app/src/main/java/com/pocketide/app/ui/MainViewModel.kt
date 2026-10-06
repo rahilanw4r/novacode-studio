@@ -493,6 +493,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             preferences.saveProjects(cleanedProjects)
             _state.update { it.copy(projects = cleanedProjects) }
         }
+        checkForAppUpdate()
     }
 
     val state: StateFlow<AppUiState> = _state.asStateFlow()
@@ -1286,7 +1287,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun checkForAppUpdate(force: Boolean = false) {
-        if (!force && System.currentTimeMillis() - preferences.lastAppUpdateCheckMillis < 24L * 60L * 60L * 1000L) return
+        if (!force && System.currentTimeMillis() - preferences.lastAppUpdateCheckMillis < 2L * 60L * 1000L) return
         viewModelScope.launch(Dispatchers.IO) {
             val update = runCatching { appUpdater().check() }.getOrNull()
             preferences.lastAppUpdateCheckMillis = System.currentTimeMillis()

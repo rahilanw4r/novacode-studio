@@ -32,31 +32,115 @@ class AppUpdater(
 ) {
     fun check(): AppUpdateInfo? {
         val manifestUrl = manifestUrlOverride.ifBlank { BuildConfig.APP_UPDATE_MANIFEST_URL }
+        val info = runCatching { fetchManifest(manifestUrl) }.getOrNull()
+        if (info != null) return info
+
+        if (manifestUrlOverride.isBlank()) {
+            return runCatching { fetchFromGitHubReleases() }.getOrNull()
+        }
+        return null
+    }
+
+    private fun fetchManifest(manifestUrl: String): AppUpdateInfo? {
         if (!manifestUrl.startsWith("https://")) return null
         val connection = URL(manifestUrl).openConnection() as HttpURLConnection
         return try {
             connection.connectTimeout = 8_000
             connection.readTimeout = 10_000
             connection.instanceFollowRedirects = true
+            connection.setRequestProperty("User-Agent", "Pocket-IDE-AppUpdater")
             connection.setRequestProperty("Accept", "application/json")
             val code = connection.responseCode
             if (code !in 200..299) return null
             val body = connection.inputStream.bufferedReader().use { it.readText() }
-            val root = JSONObject(body)
-            val versionCode = root.optLong("versionCode")
-            if (versionCode <= BuildConfig.VERSION_CODE) return null
-            val artifact = root.optJSONObject("artifacts")?.optJSONObject(BuildConfig.APP_VARIANT)
-                ?: root.optJSONObject(BuildConfig.APP_VARIANT)
-                ?: root
-            val url = artifact.optString("url").ifBlank { artifact.optString("apkUrl") }
-            if (!url.startsWith("https://")) return null
+            parseManifest(body)
+        } finally {
+            connection.disconnect()
+        }
+    }
+
+    private fun parseManifest(body: String): AppUpdateInfo? {
+        val root = JSONObject(body)
+        val versionCode = root.optLong("versionCode")
+        if (versionCode <= BuildConfig.VERSION_CODE) return null
+        val artifact = root.optJSONObject("artifacts")?.optJSONObject(BuildConfig.APP_VARIANT)
+            ?: root.optJSONObject(BuildConfig.APP_VARIANT)
+            ?: root
+        val url = artifact.optString("url").ifBlank { artifact.optString("apkUrl") }
+        if (!url.startsWith("https://")) return null
+        return AppUpdateInfo(
+            versionCode = versionCode,
+            versionName = root.optString("versionName", versionCode.toString()),
+            apkUrl = url,
+            sha256 = artifact.optString("sha256").lowercase(),
+            sizeBytes = artifact.optLong("sizeBytes", -1L),
+            notes = root.optString("notes"),
+        )
+    }
+
+    private fun fetchFromGitHubReleases(): AppUpdateInfo? {
+        val apiUrl = "https://api.github.com/repos/rahilanw4r/pocket-ide/releases/latest"
+        val connection = URL(apiUrl).openConnection() as HttpURLConnection
+        return try {
+            connection.connectTimeout = 8_000
+            connection.readTimeout = 10_000
+            connection.instanceFollowRedirects = true
+            connection.setRequestProperty("User-Agent", "Pocket-IDE-AppUpdater")
+            connection.setRequestProperty("Accept", "application/vnd.github.v3+json")
+            val code = connection.responseCode
+            if (code !in 200..299) return null
+            val body = connection.inputStream.bufferedReader().use { it.readText() }
+            val release = JSONObject(body)
+            val assets = release.optJSONArray("assets") ?: return null
+
+            // 1. Try finding pocket-ide-update.json asset directly
+            for (i in 0 until assets.length()) {
+                val asset = assets.getJSONObject(i)
+                if (asset.optString("name").equals("pocket-ide-update.json", ignoreCase = true)) {
+                    val downloadUrl = asset.optString("browser_download_url")
+                    if (downloadUrl.startsWith("https://")) {
+                        val manifestInfo = fetchManifest(downloadUrl)
+                        if (manifestInfo != null) return manifestInfo
+                    }
+                }
+            }
+
+            // 2. Direct APK asset fallback
+            var apkUrl: String? = null
+            var apkSize = -1L
+            var apkSha256 = ""
+            for (i in 0 until assets.length()) {
+                val asset = assets.getJSONObject(i)
+                val name = asset.optString("name")
+                if (name.endsWith(".apk", ignoreCase = true)) {
+                    apkUrl = asset.optString("browser_download_url")
+                    apkSize = asset.optLong("size", -1L)
+                    val digest = asset.optString("digest")
+                    if (digest.startsWith("sha256:")) {
+                        apkSha256 = digest.removePrefix("sha256:")
+                    }
+                    break
+                }
+            }
+            if (apkUrl.isNullOrBlank() || !apkUrl.startsWith("https://")) return null
+
+            val tagName = release.optString("tag_name")
+            val releaseNotes = release.optString("body")
+            val versionCodeMatch = Regex("""versionCode:\s*(\d+)""").find(releaseNotes)
+            val extractedVersionCode = versionCodeMatch?.groupValues?.get(1)?.toLongOrNull() ?: 0L
+
+            if (extractedVersionCode > 0L && extractedVersionCode <= BuildConfig.VERSION_CODE) {
+                return null
+            }
+
+            val versionName = tagName.removePrefix("v").ifBlank { release.optString("name") }
             AppUpdateInfo(
-                versionCode = versionCode,
-                versionName = root.optString("versionName", versionCode.toString()),
-                apkUrl = url,
-                sha256 = artifact.optString("sha256").lowercase(),
-                sizeBytes = artifact.optLong("sizeBytes", -1L),
-                notes = root.optString("notes"),
+                versionCode = extractedVersionCode,
+                versionName = versionName,
+                apkUrl = apkUrl,
+                sha256 = apkSha256.lowercase(),
+                sizeBytes = apkSize,
+                notes = releaseNotes,
             )
         } finally {
             connection.disconnect()
@@ -108,7 +192,7 @@ class AppUpdater(
             ?: error("Downloaded file is not a valid APK")
         check(archive.packageName == context.packageName) { "Update package name does not match Pocket IDE" }
         val archiveVersion = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) archive.longVersionCode else archive.versionCode.toLong()
-        check(archiveVersion == expectedVersionCode && archiveVersion > BuildConfig.VERSION_CODE) { "Update version does not match its manifest" }
+        check((expectedVersionCode <= 0L || archiveVersion == expectedVersionCode) && archiveVersion > BuildConfig.VERSION_CODE) { "Update version does not match its manifest" }
         val installed = context.packageManager.getPackageInfo(context.packageName, flags)
         val archiveSignatures = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) archive.signingInfo?.apkContentsSigners else archive.signatures
         val installedSignatures = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) installed.signingInfo?.apkContentsSigners else installed.signatures

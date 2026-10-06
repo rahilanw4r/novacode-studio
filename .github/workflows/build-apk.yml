@@ -51,25 +51,49 @@ jobs:
         run: |
           APK_FILE=$(ls app/build/outputs/apk/online/debug/*.apk | head -n 1)
           VERSION_NAME=$(grep 'versionName =' app/build.gradle.kts | head -n 1 | awk -F'"' '{print $2}')
-          TAG="v${VERSION_NAME:-1.0.17}"
+          VERSION_CODE=$(grep 'versionCode =' app/build.gradle.kts | head -n 1 | awk '{print $NF}' | tr -d '\r\n')
+          TAG="v${VERSION_NAME:-1.0.24}"
           APK_NAME="Pocket-IDE-${TAG}.apk"
           echo "Publishing release $TAG with $APK_NAME from $APK_FILE"
           cp "$APK_FILE" "$APK_NAME"
 
+          SHA256=$(sha256sum "$APK_NAME" | awk '{print $1}')
+          SIZE_BYTES=$(stat -c%s "$APK_NAME" 2>/dev/null || stat -f%z "$APK_NAME")
+          APK_DOWNLOAD_URL="https://github.com/rahilanw4r/pocket-ide/releases/download/${TAG}/${APK_NAME}"
+
+          cat << EOF > pocket-ide-update.json
+          {
+            "versionCode": ${VERSION_CODE},
+            "versionName": "${VERSION_NAME}",
+            "notes": "Pocket IDE ${TAG} — Clean minimal developer UI, fixed duplicate cards and ghost messages, auto-updates.",
+            "artifacts": {
+              "online": {
+                "url": "${APK_DOWNLOAD_URL}",
+                "sha256": "${SHA256}",
+                "sizeBytes": ${SIZE_BYTES}
+              }
+            },
+            "url": "${APK_DOWNLOAD_URL}",
+            "sha256": "${SHA256}",
+            "sizeBytes": ${SIZE_BYTES}
+          }
+          EOF
+
           cat << 'EOF' > release_notes.md
-          ### Pocket IDE v1.0.23
+          ### Pocket IDE v1.0.24
+          <!-- versionCode: 25 -->
 
           **Your on-device AI-powered development workspace.**
 
           #### What's New:
-          - **Fix Runtime Setup & dpkg Conffile Freezes**: Fully non-interactive apt & dpkg configuration (`--force-confdef`, `--force-confold`, `UCF_FORCE_CONFFOLD=1`, `DEBIAN_PRIORITY=critical`) so Ubuntu package installs (PHP, C++, dev stacks) never stall or error out on interactive conffile prompts.
-          - **Resilient Guest Configuration**: Persistent `/etc/dpkg/dpkg.cfg.d/` and `/etc/apt/apt.conf.d/` non-interactive defaults directly configured in the Linux environment.
-          - **Accurate Setup Error Reporting**: Improved setup error parsing to clearly distinguish genuine terminal failure messages from benign package manager progress notices.
+          - **Minimal Dark Developer UI**: Streamlined dark neutral theme with reduced visual noise, clean status indicators, and fixed layout.
+          - **Clean AI Chat & Lifecycle**: Eliminated duplicate error cards and empty assistant messages; tool activities and reasoning are compact and collapsible.
+          - **Automated In-App Updates**: Built-in update manifest and GitHub Releases fallback so updates download and install automatically.
           EOF
 
-          gh release create "$TAG" "$APK_NAME" \
+          gh release create "$TAG" "$APK_NAME" pocket-ide-update.json \
             --title "Pocket IDE $TAG — Your AI-powered development workspace, anywhere" \
             --notes-file release_notes.md || (
             gh release edit "$TAG" --title "Pocket IDE $TAG — Your AI-powered development workspace, anywhere" --notes-file release_notes.md && \
-            gh release upload "$TAG" "$APK_NAME" --clobber
+            gh release upload "$TAG" "$APK_NAME" pocket-ide-update.json --clobber
           )

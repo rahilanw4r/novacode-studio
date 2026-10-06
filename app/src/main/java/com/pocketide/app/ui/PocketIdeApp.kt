@@ -283,6 +283,9 @@ fun PocketIDEApp(viewModel: MainViewModel = viewModel()) {
             viewModel.consumeToast()
         }
     }
+    LaunchedEffect(Unit) {
+        viewModel.checkForAppUpdate()
+    }
     when {
         state.startupStage == StartupStage.CHECKING -> StartupLoadingScreen(
             state = state,
