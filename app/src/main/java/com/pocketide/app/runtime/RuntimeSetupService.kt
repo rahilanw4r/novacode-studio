@@ -152,9 +152,20 @@ object RuntimeSetupController {
         val friendly = when {
             offline -> "Connect to Wi-Fi or mobile data, then resume setup."
             interruptedDpkg -> "Android interrupted Linux setup. Pocket IDE will repair it when you try again."
-            else -> error.message.orEmpty().lineSequence().lastOrNull { it.isNotBlank() }
-                ?.take(220)
-                ?: "Pocket IDE could not finish setup."
+            else -> {
+                val lines = error.message.orEmpty().lineSequence().map(String::trim).filter(String::isNotBlank).toList()
+                val realError = lines.asReversed().firstOrNull { line ->
+                    line.startsWith("E: ", ignoreCase = true) ||
+                        line.startsWith("dpkg: error", ignoreCase = true) ||
+                        line.startsWith("dpkg-deb: error", ignoreCase = true) ||
+                        line.startsWith("apt-get: error", ignoreCase = true) ||
+                        line.contains("subprocess returned error exit status", ignoreCase = true) ||
+                        line.startsWith("proot error:", ignoreCase = true) ||
+                        line.startsWith("error: ", ignoreCase = true) ||
+                        line.startsWith("fatal: ", ignoreCase = true)
+                }
+                (realError ?: lines.lastOrNull())?.take(220) ?: "Pocket IDE could not finish setup."
+            }
         }
         val current = mutableSnapshot.value
         set(

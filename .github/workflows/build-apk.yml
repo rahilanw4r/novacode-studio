@@ -57,16 +57,14 @@ jobs:
           cp "$APK_FILE" "$APK_NAME"
 
           cat << 'EOF' > release_notes.md
-          ### Pocket IDE v1.0.22
+          ### Pocket IDE v1.0.23
 
           **Your on-device AI-powered development workspace.**
 
           #### What's New:
-          - **Developer-Focused Minimal UI Redesign**: Transitioned to a clean, dark neutral developer palette (slate/charcoal) with crisp typography and subtle borders.
-          - **Restrained Semantic Colors**: Strictly restricted colors by role — Blue exclusively for primary actions/selection, Green exclusively for running/success states, and Red for errors/destructive actions.
-          - **Streamlined AI Workspace**: Conversation is front and center; completed reasoning/thinking auto-collapses into a compact status row; tool executions are formatted as compact, expandable single-line items.
-          - **Clean Project Workspace Dock**: Fast, unobtrusive switching between Agent, Files, Terminal, and Preview with understated active indicators.
-          - **Minimalist Terminal & Preview**: Clean monospace terminal session tabs and developer preview toolbar without decorative gradients or colorful distractions.
+          - **Fix Runtime Setup & dpkg Conffile Freezes**: Fully non-interactive apt & dpkg configuration (`--force-confdef`, `--force-confold`, `UCF_FORCE_CONFFOLD=1`, `DEBIAN_PRIORITY=critical`) so Ubuntu package installs (PHP, C++, dev stacks) never stall or error out on interactive conffile prompts.
+          - **Resilient Guest Configuration**: Persistent `/etc/dpkg/dpkg.cfg.d/` and `/etc/apt/apt.conf.d/` non-interactive defaults directly configured in the Linux environment.
+          - **Accurate Setup Error Reporting**: Improved setup error parsing to clearly distinguish genuine terminal failure messages from benign package manager progress notices.
           EOF
 
           gh release create "$TAG" "$APK_NAME" \

@@ -768,9 +768,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             .replace(Regex("(?<![\\w-])apt\\s+"), "apt-get ")
             .replace(
                 Regex("(?<![\\w-])apt-get\\s+(install|upgrade|full-upgrade|dist-upgrade|remove|autoremove|fix-broken)\\b"),
-                "apt-get -y -o Dpkg::Options::=--force-confold $1",
+                "apt-get -y -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confold $1",
             )
-        return "export DEBIAN_FRONTEND=noninteractive APT_LISTCHANGES_FRONTEND=none UCF_FORCE_CONFFOLD=1 NEEDRESTART_MODE=a TZ=Etc/UTC LC_ALL=C.UTF-8; $normalizedApt"
+        return "export DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical APT_LISTCHANGES_FRONTEND=none UCF_FORCE_CONFFOLD=1 NEEDRESTART_MODE=a TZ=Etc/UTC LC_ALL=C.UTF-8; $normalizedApt"
     }
 
     private fun shouldAutoConfirmPackageCommand(command: String, output: String): Boolean {

@@ -1338,11 +1338,11 @@ class RuntimeInstaller(private val context: Context) {
             ),
         )
         writeResolver()
-        val command = "export DEBIAN_FRONTEND=noninteractive; " +
-            "dpkg --configure -a && " +
-            "apt-get -o DPkg::Lock::Timeout=120 -f install -y && " +
+        val command = "export DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical APT_LISTCHANGES_FRONTEND=none UCF_FORCE_CONFFOLD=1 NEEDRESTART_MODE=a TZ=Etc/UTC; " +
+            "dpkg --configure --force-confdef --force-confold -a && " +
+            "apt-get -o DPkg::Lock::Timeout=120 -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confold -f install -y && " +
             "apt-get -o DPkg::Lock::Timeout=120 update && " +
-            "apt-get -o DPkg::Lock::Timeout=120 upgrade -y"
+            "apt-get -o DPkg::Lock::Timeout=120 -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confold upgrade -y"
         runGuestCommand(
             proot = proot,
             command = command,
@@ -1363,11 +1363,11 @@ class RuntimeInstaller(private val context: Context) {
         require(packages.isNotEmpty()) { "No packages selected" }
         writeResolver()
         val packageNames = packages.joinToString(" ")
-        val command = "export DEBIAN_FRONTEND=noninteractive; " +
-            "dpkg --configure -a && " +
-            "apt-get -o DPkg::Lock::Timeout=120 -f install -y && " +
+        val command = "export DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical APT_LISTCHANGES_FRONTEND=none UCF_FORCE_CONFFOLD=1 NEEDRESTART_MODE=a TZ=Etc/UTC; " +
+            "dpkg --configure --force-confdef --force-confold -a && " +
+            "apt-get -o DPkg::Lock::Timeout=120 -o DPkg::Options::=--force-confdef -o Dpkg::Options::=--force-confold -f install -y && " +
             "apt-get -o DPkg::Lock::Timeout=120 update && " +
-            "apt-get -o DPkg::Lock::Timeout=120 install -y --no-install-recommends $packageNames && " +
+            "apt-get -o DPkg::Lock::Timeout=120 -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confold install -y --no-install-recommends $packageNames && " +
             "apt-get clean && rm -rf /var/lib/apt/lists/*"
         runGuestCommand(
             proot = proot,
@@ -1388,8 +1388,8 @@ class RuntimeInstaller(private val context: Context) {
     ) {
         require(packages.isNotEmpty()) { "No packages selected" }
         val packageNames = packages.joinToString(" ")
-        val command = "export DEBIAN_FRONTEND=noninteractive; " +
-            "apt-get -o DPkg::Lock::Timeout=120 purge -y $packageNames && " +
+        val command = "export DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical APT_LISTCHANGES_FRONTEND=none UCF_FORCE_CONFFOLD=1 NEEDRESTART_MODE=a TZ=Etc/UTC; " +
+            "apt-get -o DPkg::Lock::Timeout=120 -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confold purge -y $packageNames && " +
             "apt-get clean && rm -rf /var/lib/apt/lists/*"
         runGuestCommand(
             proot = proot,
@@ -1552,7 +1552,20 @@ class RuntimeInstaller(private val context: Context) {
         val primaryProotError = lines.firstOrNull {
             it.startsWith("proot error:") && !it.contains("can't chmod")
         } ?: lines.firstOrNull { it.startsWith("proot error:") }
-        return primaryProotError ?: output.trim().takeLast(1_000).ifBlank { fallback }
+        if (primaryProotError != null) return primaryProotError
+
+        val realError = lines.asReversed().firstOrNull { line ->
+            line.startsWith("E: ", ignoreCase = true) ||
+                line.startsWith("dpkg: error", ignoreCase = true) ||
+                line.startsWith("dpkg-deb: error", ignoreCase = true) ||
+                line.startsWith("apt-get: error", ignoreCase = true) ||
+                line.contains("subprocess returned error exit status", ignoreCase = true) ||
+                line.startsWith("error: ", ignoreCase = true) ||
+                line.startsWith("fatal: ", ignoreCase = true)
+        }
+        if (realError != null) return realError
+
+        return output.trim().takeLast(1_000).ifBlank { fallback }
     }
 
     /**
@@ -1653,7 +1666,14 @@ class RuntimeInstaller(private val context: Context) {
                     put("PATH", basePath)
                 }
                 put("LANG", "C.UTF-8")
+                put("LC_ALL", "C.UTF-8")
                 put("TERM", "xterm-256color")
+                put("DEBIAN_FRONTEND", "noninteractive")
+                put("DEBIAN_PRIORITY", "critical")
+                put("APT_LISTCHANGES_FRONTEND", "none")
+                put("UCF_FORCE_CONFFOLD", "1")
+                put("NEEDRESTART_MODE", "a")
+                put("TZ", "Etc/UTC")
                 put("LD_LIBRARY_PATH", context.applicationInfo.nativeLibraryDir)
                 put("PROOT_NO_SECCOMP", "1")
                 put("PROOT_TMP_DIR", prootTemp.absolutePath)
@@ -1715,6 +1735,32 @@ printf '%s\n' '{"hookSpecificOutput":{"hookEventName":"PermissionRequest","decis
         for (target in settingsPaths) {
             target.parentFile?.mkdirs()
             target.writeText(settingsContent)
+        }
+        // Ensure dpkg and ucf never prompt interactively even if invoked by subshells or external scripts
+        runCatching {
+            val dpkgCfg = File(rootfs, "etc/dpkg/dpkg.cfg.d/01pocket-noninteractive")
+            dpkgCfg.parentFile?.mkdirs()
+            dpkgCfg.writeText("force-confdef\nforce-confold\n")
+
+            val aptCfg = File(rootfs, "etc/apt/apt.conf.d/01pocket-noninteractive")
+            aptCfg.parentFile?.mkdirs()
+            aptCfg.writeText(
+                """DPkg::Options {
+   "--force-confdef";
+   "--force-confold";
+};
+APT::Get::Assume-Yes "true";
+APT::Get::force-yes "true";
+"""
+            )
+
+            val ucfConf = File(rootfs, "etc/ucf.conf")
+            if (ucfConf.parentFile?.isDirectory == true) {
+                val existing = if (ucfConf.isFile) ucfConf.readText() else ""
+                if (!existing.contains("conf_force_conffold")) {
+                    ucfConf.appendText("\nconf_force_conffold=YES\n")
+                }
+            }
         }
         ensureWorkspaceTrust("/workspace")
     }
