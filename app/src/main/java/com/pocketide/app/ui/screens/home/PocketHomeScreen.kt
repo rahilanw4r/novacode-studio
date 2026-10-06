@@ -96,6 +96,8 @@ fun PocketHomeScreen(
     var showCreateDialog by remember { mutableStateOf(false) }
     var newProjectName by remember { mutableStateOf("") }
     var copilotPrompt by remember { mutableStateOf("") }
+    var showCommunityCard by remember { mutableStateOf(true) }
+    val context = androidx.compose.ui.platform.LocalContext.current
 
     val recentProjects = remember(state.projects) {
         state.projects.take(4)
@@ -406,6 +408,123 @@ fun PocketHomeScreen(
                                         modifier = Modifier.size(18.dp)
                                     )
                                 }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // 6. Community & Updates (Telegram Channel & Group)
+        if (showCommunityCard) {
+            item {
+                Surface(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                    color = PocketSurface,
+                    border = androidx.compose.foundation.BorderStroke(1.dp, PocketBorder)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 14.dp, vertical = 12.dp),
+                        verticalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(28.dp)
+                                        .clip(RoundedCornerShape(6.dp))
+                                        .background(PocketPrimaryBlue.copy(alpha = 0.15f)),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text("✈", color = PocketPrimaryBlue, fontSize = 14.sp)
+                                }
+                                Column {
+                                    Text(
+                                        text = "Pocket IDE Community",
+                                        color = PocketTextPrimary,
+                                        fontSize = 13.5.sp,
+                                        fontWeight = FontWeight.SemiBold
+                                    )
+                                    Text(
+                                        text = "Official updates & support",
+                                        color = PocketTextSecondary,
+                                        fontSize = 11.sp
+                                    )
+                                }
+                            }
+
+                            // Dismiss / Hide button
+                            Text(
+                                text = "Hide",
+                                color = PocketTextMuted,
+                                fontSize = 11.5.sp,
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(4.dp))
+                                    .clickable { showCommunityCard = false }
+                                    .padding(horizontal = 6.dp, vertical = 2.dp)
+                            )
+                        }
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            // Channel button
+                            Box(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .clip(RoundedCornerShape(8.dp))
+                                    .background(PocketSurfaceElevated)
+                                    .border(1.dp, PocketBorder, RoundedCornerShape(8.dp))
+                                    .clickable {
+                                        try {
+                                            val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse("https://t.me/PocketIDE"))
+                                            context.startActivity(intent)
+                                        } catch (_: Exception) {}
+                                    }
+                                    .padding(vertical = 8.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = "📢 Channel",
+                                    color = PocketTextPrimary,
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                            }
+
+                            // Group button
+                            Box(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .clip(RoundedCornerShape(8.dp))
+                                    .background(PocketSurfaceElevated)
+                                    .border(1.dp, PocketBorder, RoundedCornerShape(8.dp))
+                                    .clickable {
+                                        try {
+                                            val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse("https://t.me/PocketIDECommunity"))
+                                            context.startActivity(intent)
+                                        } catch (_: Exception) {}
+                                    }
+                                    .padding(vertical = 8.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = "💬 Community",
+                                    color = PocketTextPrimary,
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.SemiBold
+                                )
                             }
                         }
                     }

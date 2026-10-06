@@ -87,10 +87,11 @@ import com.pocketide.app.ui.theme.PocketTextPrimary
 import com.pocketide.app.ui.theme.PocketTextSecondary
 import kotlinx.coroutines.delay
 
-enum class DevicePreset(val label: String, val widthDp: Int?) {
-    RESPONSIVE("Fluid", null),
-    MOBILE("Mobile (375px)", 375),
-    TABLET("Tablet (768px)", 768),
+enum class DevicePreset(val label: String, val widthDp: Int?, val isDesktop: Boolean = false) {
+    RESPONSIVE("Fluid", null, false),
+    MOBILE("Mobile (375px)", 375, false),
+    TABLET("Tablet (768px)", 768, false),
+    DESKTOP("Desktop (1280px)", null, true),
 }
 
 data class ConsoleLogItem(
@@ -421,6 +422,16 @@ fun PocketWebPreviewScreen(
                         settings.domStorageEnabled = true
                         settings.allowFileAccess = true
                         settings.allowContentAccess = true
+                        settings.useWideViewPort = true
+                        settings.loadWithOverviewMode = true
+                        settings.setSupportZoom(true)
+                        settings.builtInZoomControls = true
+                        settings.displayZoomControls = false
+
+                        if (selectedPreset.isDesktop) {
+                            settings.userAgentString = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+                        }
+
                         webViewClient = object : WebViewClient() {
                             override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
                                 val reqUrl = request?.url?.toString() ?: return false
@@ -474,6 +485,14 @@ fun PocketWebPreviewScreen(
                     }
                 },
                 update = { view ->
+                    val desktopUa = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+                    if (selectedPreset.isDesktop && view.settings.userAgentString != desktopUa) {
+                        view.settings.userAgentString = desktopUa
+                        view.reload()
+                    } else if (!selectedPreset.isDesktop && view.settings.userAgentString == desktopUa) {
+                        view.settings.userAgentString = null
+                        view.reload()
+                    }
                     if (view.url != currentUrl) {
                         view.loadUrl(currentUrl)
                     }

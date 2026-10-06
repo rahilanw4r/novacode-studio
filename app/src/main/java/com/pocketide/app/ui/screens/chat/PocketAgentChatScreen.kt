@@ -59,6 +59,7 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import android.widget.Toast
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
@@ -346,11 +347,43 @@ fun PocketAgentChatScreen(
             }
         }
 
+        // Live Agent Working Indicator
+        if (isRunning || liveThinking) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 4.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(12.dp),
+                    strokeWidth = 2.dp,
+                    color = PocketPrimaryBlue
+                )
+                Text(
+                    text = when {
+                        liveThinking -> "Thinking & planning…"
+                        liveProcess.isNotEmpty() -> {
+                            val last = liveProcess.lastOrNull()
+                            if (last != null && last.title.isNotBlank()) "${last.title} · ${last.detail.take(35)}" else "Agent is executing code…"
+                        }
+                        else -> "Working on your request…"
+                    },
+                    color = PocketTextSecondary,
+                    fontSize = 11.5.sp,
+                    fontFamily = FontFamily.Monospace,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+        }
+
         // ChatGPT style floating capsule input bar
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 12.dp, vertical = 8.dp)
+                .padding(horizontal = 12.dp, vertical = 6.dp)
         ) {
             Row(
                 modifier = Modifier
@@ -690,26 +723,26 @@ private fun ChatMessageItem(
             if (previewReady && onOpenPreview != null) {
                 Box(
                     modifier = Modifier
-                        .clip(RoundedCornerShape(4.dp))
-                        .background(PocketPrimaryBlue.copy(alpha = 0.12f))
-                        .border(1.dp, PocketPrimaryBlue.copy(alpha = 0.4f), RoundedCornerShape(4.dp))
+                        .clip(RoundedCornerShape(6.dp))
+                        .background(PocketSurfaceElevated)
+                        .border(1.dp, PocketBorder, RoundedCornerShape(6.dp))
                         .clickable { onOpenPreview() }
-                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                        .padding(horizontal = 10.dp, vertical = 6.dp)
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
                         Icon(
                             imageVector = Icons.Default.Language,
                             contentDescription = null,
                             tint = PocketPrimaryBlue,
-                            modifier = Modifier.size(12.dp)
+                            modifier = Modifier.size(13.dp)
                         )
                         Text(
                             text = "Open Preview",
-                            color = PocketPrimaryBlue,
-                            fontSize = 11.sp,
+                            color = PocketTextPrimary,
+                            fontSize = 11.5.sp,
                             fontWeight = FontWeight.SemiBold
                         )
                     }

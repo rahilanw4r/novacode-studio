@@ -224,7 +224,36 @@ fun PocketMoreScreen(
             }
         }
 
-        // 5. ABOUT SECTION
+        // 5. COMMUNITY SECTION
+        item {
+            MoreSection(title = "Community & Support") {
+                MoreSettingRow(
+                    icon = Icons.Default.Language,
+                    title = "Telegram Channel",
+                    value = "Updates & APKs",
+                    onClick = {
+                        try {
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://t.me/PocketIDE"))
+                            context.startActivity(intent)
+                        } catch (_: Exception) {}
+                    }
+                )
+                HorizontalDivider(color = PocketBorder)
+                MoreSettingRow(
+                    icon = Icons.Default.Language,
+                    title = "Community Discussion",
+                    value = "Help & Suggestions",
+                    onClick = {
+                        try {
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://t.me/PocketIDECommunity"))
+                            context.startActivity(intent)
+                        } catch (_: Exception) {}
+                    }
+                )
+            }
+        }
+
+        // 6. ABOUT SECTION
         item {
             MoreSection(title = "About") {
                 MoreSettingRow(

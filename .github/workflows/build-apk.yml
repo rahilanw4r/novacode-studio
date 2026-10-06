@@ -80,16 +80,17 @@ jobs:
           EOF
 
           cat << 'EOF' > release_notes.md
-          ### Pocket IDE v1.0.27
-          <!-- versionCode: 28 -->
+          ### Pocket IDE v1.0.28
+          <!-- versionCode: 29 -->
 
-          **Refined developer home screen with rich project cards and hero context.**
+          **Live agent status, preview desktop viewport, keyboard gap fix, and Telegram community.**
 
           #### What's New:
-          - **Refined Home Screen**: Added clear hero title ("Build from your phone") and description highlighting mobile developer capabilities.
-          - **Bring Existing Project**: Added quick import option for ZIP files, Git repositories, or existing workspaces.
-          - **Rich Project Cards**: Upgraded recent project cards with workspace paths, language tags, and clean empty state guidance.
-          - **ChatGPT Aesthetic**: Kept the fast, dark neutral ChatGPT theme (`#212121`, `#171717`, `#2F2F2F`) and OpenAI green accents.
+          - **Live Agent Progress Indicator**: Real-time status row showing what the agent is currently thinking, reading, writing, or executing right above the input bar.
+          - **Preview Viewport & Desktop Mode**: Fixed preview responsiveness; added Desktop (1280px) mode with desktop user-agent, overview zoom, and wide viewport.
+          - **Keyboard & Input Bar Spacing**: Removed excessive double padding when keyboard opens so the input field sits flush with the virtual keyboard.
+          - **Clean Bottom Dock**: Redesigned bottom workspace dock to be compact, centered, and minimal.
+          - **Community & Support**: Added official Telegram Channel (`@PocketIDE`) and Discussion Community (`@PocketIDECommunity`) on the Home page (dismissible/hideable) and in Settings.
           EOF
 
           gh release create "$TAG" "$APK_NAME" pocket-ide-update.json \

@@ -451,18 +451,14 @@ fun PocketMasterWorkspace(
 
         // Workspace Dock: [ Agent ] [ Files ] [ Terminal ] [ Preview ]
         Surface(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 12.dp, vertical = 6.dp),
-            shape = RoundedCornerShape(12.dp),
+            modifier = Modifier.fillMaxWidth(),
             color = PocketSurface,
-            border = BorderStroke(1.dp, PocketBorder),
-            shadowElevation = 2.dp
+            border = BorderStroke(1.dp, PocketBorder)
         ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 4.dp, horizontal = 4.dp),
+                    .padding(vertical = 4.dp, horizontal = 8.dp),
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -472,32 +468,36 @@ fun PocketMasterWorkspace(
                     modifier = Modifier
                         .weight(1f)
                         .clip(RoundedCornerShape(8.dp))
-                        .background(if (agentActive) PocketSurfaceElevated else Color.Transparent)
                         .clickable { currentTab = PocketWorkspaceTab.AGENT }
                         .padding(vertical = 6.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                        Icon(
-                            imageVector = Icons.Default.AutoAwesome,
-                            contentDescription = "Agent",
-                            tint = if (agentActive) PocketPrimaryBlue else PocketTextMuted,
-                            modifier = Modifier.size(16.dp)
-                        )
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(2.dp)
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                            Icon(
+                                imageVector = Icons.Default.AutoAwesome,
+                                contentDescription = "Agent",
+                                tint = if (agentActive) PocketPrimaryBlue else PocketTextMuted,
+                                modifier = Modifier.size(18.dp)
+                            )
+                            if (state.isRunning) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(6.dp)
+                                        .clip(CircleShape)
+                                        .background(PocketEmerald)
+                                )
+                            }
+                        }
                         Text(
                             text = "Agent",
                             color = if (agentActive) PocketPrimaryBlue else PocketTextMuted,
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.SemiBold
+                            fontSize = 10.5.sp,
+                            fontWeight = if (agentActive) FontWeight.Bold else FontWeight.Medium
                         )
-                        if (state.isRunning) {
-                            Box(
-                                modifier = Modifier
-                                    .size(6.dp)
-                                    .clip(CircleShape)
-                                    .background(PocketEmerald)
-                            )
-                        }
                     }
                 }
 
@@ -507,7 +507,6 @@ fun PocketMasterWorkspace(
                     modifier = Modifier
                         .weight(1f)
                         .clip(RoundedCornerShape(8.dp))
-                        .background(if (filesActive) PocketSurfaceElevated else Color.Transparent)
                         .clickable {
                             currentTab = PocketWorkspaceTab.FILES
                             onRefreshFiles()
@@ -515,28 +514,33 @@ fun PocketMasterWorkspace(
                         .padding(vertical = 6.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                        Icon(
-                            imageVector = Icons.Default.Folder,
-                            contentDescription = "Files",
-                            tint = if (filesActive) PocketPrimaryBlue else PocketTextMuted,
-                            modifier = Modifier.size(16.dp)
-                        )
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(2.dp)
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                            Icon(
+                                imageVector = Icons.Default.Folder,
+                                contentDescription = "Files",
+                                tint = if (filesActive) PocketPrimaryBlue else PocketTextMuted,
+                                modifier = Modifier.size(18.dp)
+                            )
+                            if (state.changes.isNotEmpty()) {
+                                Text(
+                                    text = "${state.changes.size}",
+                                    color = PocketPrimaryBlue,
+                                    fontSize = 10.sp,
+                                    fontFamily = FontFamily.Monospace,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        }
                         Text(
                             text = "Files",
                             color = if (filesActive) PocketPrimaryBlue else PocketTextMuted,
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.SemiBold
+                            fontSize = 10.5.sp,
+                            fontWeight = if (filesActive) FontWeight.Bold else FontWeight.Medium
                         )
-                        if (state.changes.isNotEmpty()) {
-                            Text(
-                                text = "(${state.changes.size})",
-                                color = PocketPrimaryBlue,
-                                fontSize = 10.sp,
-                                fontFamily = FontFamily.Monospace,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
                     }
                 }
 
@@ -546,32 +550,36 @@ fun PocketMasterWorkspace(
                     modifier = Modifier
                         .weight(1f)
                         .clip(RoundedCornerShape(8.dp))
-                        .background(if (termActive) PocketSurfaceElevated else Color.Transparent)
                         .clickable { currentTab = PocketWorkspaceTab.TERMINAL }
                         .padding(vertical = 6.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                        Icon(
-                            imageVector = Icons.Default.Terminal,
-                            contentDescription = "Terminal",
-                            tint = if (termActive) PocketPrimaryBlue else PocketTextMuted,
-                            modifier = Modifier.size(16.dp)
-                        )
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(2.dp)
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                            Icon(
+                                imageVector = Icons.Default.Terminal,
+                                contentDescription = "Terminal",
+                                tint = if (termActive) PocketPrimaryBlue else PocketTextMuted,
+                                modifier = Modifier.size(18.dp)
+                            )
+                            if (state.projectTerminalRunning) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(6.dp)
+                                        .clip(CircleShape)
+                                        .background(PocketEmerald)
+                                )
+                            }
+                        }
                         Text(
                             text = "Terminal",
                             color = if (termActive) PocketPrimaryBlue else PocketTextMuted,
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.SemiBold
+                            fontSize = 10.5.sp,
+                            fontWeight = if (termActive) FontWeight.Bold else FontWeight.Medium
                         )
-                        if (state.projectTerminalRunning) {
-                            Box(
-                                modifier = Modifier
-                                    .size(6.dp)
-                                    .clip(CircleShape)
-                                    .background(PocketEmerald)
-                            )
-                        }
                     }
                 }
 
@@ -581,23 +589,25 @@ fun PocketMasterWorkspace(
                     modifier = Modifier
                         .weight(1f)
                         .clip(RoundedCornerShape(8.dp))
-                        .background(if (previewActive) PocketSurfaceElevated else Color.Transparent)
                         .clickable { currentTab = PocketWorkspaceTab.PREVIEW }
                         .padding(vertical = 6.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(2.dp)
+                    ) {
                         Icon(
                             imageVector = Icons.Default.Language,
                             contentDescription = "Preview",
                             tint = if (previewActive) PocketPrimaryBlue else PocketTextMuted,
-                            modifier = Modifier.size(16.dp)
+                            modifier = Modifier.size(18.dp)
                         )
                         Text(
                             text = "Preview",
                             color = if (previewActive) PocketPrimaryBlue else PocketTextMuted,
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.SemiBold
+                            fontSize = 10.5.sp,
+                            fontWeight = if (previewActive) FontWeight.Bold else FontWeight.Medium
                         )
                     }
                 }
