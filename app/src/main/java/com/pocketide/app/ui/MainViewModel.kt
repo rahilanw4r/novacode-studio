@@ -3501,8 +3501,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private fun finishWorkSegment(current: AppUiState, finishedAt: Long = System.currentTimeMillis()): AppUiState {
         val meaningfulItems = current.liveProcess.filterNot(::isNoisyRuntimeItem)
             .map { if (it.isComplete) it else it.copy(isComplete = true) }
-        if (!current.liveThinking && meaningfulItems.isEmpty()) {
-            return current.copy(liveProcess = emptyList(), workSegmentStartedAtMillis = null)
+        if (meaningfulItems.isEmpty()) {
+            return current.copy(
+                liveProcess = emptyList(),
+                liveThinking = false,
+                activeThinkingBlockId = null,
+                workSegmentStartedAtMillis = null
+            )
         }
         val startedAt = current.workSegmentStartedAtMillis ?: current.taskStartedAtMillis ?: finishedAt
         val block = ChatMessage(

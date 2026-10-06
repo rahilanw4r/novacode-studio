@@ -153,6 +153,12 @@ fun PocketAgentChatScreen(
             .background(PocketObsidian)
             .imePadding()
     ) {
+        val visibleMessages = remember(messages) {
+            messages.filterNot { msg ->
+                !msg.fromUser && msg.text.isBlank() && msg.workItems.isEmpty() && !msg.isTaskFailed && msg.changedFiles.isEmpty()
+            }
+        }
+
         // Chat Messages Stream
         LazyColumn(
             state = listState,
@@ -162,13 +168,13 @@ fun PocketAgentChatScreen(
                 .padding(horizontal = 12.dp, vertical = 8.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            if (messages.isEmpty() && liveProcess.isEmpty() && !liveThinking && taskLifecycle != AgentTaskLifecycle.FAILED) {
+            if (visibleMessages.isEmpty() && liveProcess.isEmpty() && !liveThinking && taskLifecycle != AgentTaskLifecycle.FAILED) {
                 item {
                     EmptyChatGreeting(onSelectPrompt = { promptInput = it })
                 }
             }
 
-            items(messages) { message ->
+            items(visibleMessages) { message ->
                 ChatMessageItem(
                     message = message,
                     previewReady = previewReady,
@@ -208,8 +214,9 @@ fun PocketAgentChatScreen(
                 }
             }
 
-            // Live task failure recovery card (when task failed)
-            if (taskLifecycle == AgentTaskLifecycle.FAILED && taskFailureReason != null) {
+            // Live task failure recovery card (when task failed and not already rendered by a failed message)
+            val lastIsFailed = visibleMessages.lastOrNull()?.isTaskFailed == true
+            if (taskLifecycle == AgentTaskLifecycle.FAILED && taskFailureReason != null && !lastIsFailed) {
                 item {
                     TaskFailureCard(
                         title = taskFailureReason,
@@ -480,277 +487,223 @@ private fun ChatMessageItem(
     val context = LocalContext.current
     val clipboard = LocalClipboardManager.current
 
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = if (isUser) Arrangement.End else Arrangement.Start
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth(if (isUser) 0.85f else 0.95f)
-                .clip(
-                    RoundedCornerShape(
-                        topStart = 8.dp,
-                        topEnd = 8.dp,
-                        bottomStart = if (isUser) 8.dp else 2.dp,
-                        bottomEnd = if (isUser) 2.dp else 8.dp
-                    )
-                )
-                .background(if (isUser) PocketPrimaryBlue.copy(alpha = 0.12f) else PocketSurfaceElevated)
-                .border(
-                    width = 1.dp,
-                    color = if (isUser) PocketPrimaryBlue.copy(alpha = 0.35f) else PocketBorder,
-                    shape = RoundedCornerShape(
-                        topStart = 8.dp,
-                        topEnd = 8.dp,
-                        bottomStart = if (isUser) 8.dp else 2.dp,
-                        bottomEnd = if (isUser) 2.dp else 8.dp
-                    )
-                )
-                .padding(10.dp)
+    // If task failed, render TaskFailureCard directly without double-nesting inside another bubble
+    if (message.isTaskFailed) {
+        TaskFailureCard(
+            title = message.taskFailureReason ?: "Task failed",
+            details = message.taskFailureDetails,
+            onRetry = onRetry,
+            onChangeModel = onChangeModel,
+            onChangeProvider = onChangeProvider,
+            onContinue = onContinue,
+        )
+        return
+    }
+
+    // Skip empty ghost messages completely
+    if (!isUser && message.text.isBlank() && message.workItems.isEmpty() && message.changedFiles.isEmpty()) {
+        return
+    }
+
+    if (isUser) {
+        // User message: Clean, subtle bubble, right-aligned, dark neutral theme
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End
         ) {
-            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                // Header (Sender title + Action buttons: Edit, Copy)
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = if (isUser) "You" else "Agent",
-                        color = if (isUser) PocketPrimaryBlue else if (message.isTaskFailed) PocketRose else PocketEmerald,
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        fontFamily = FontFamily.Monospace
-                    )
-
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(0.85f)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(PocketSurfaceElevated)
+                    .border(1.dp, PocketBorder, RoundedCornerShape(8.dp))
+                    .padding(horizontal = 12.dp, vertical = 9.dp)
+            ) {
+                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        if (isUser && onEditPrompt != null) {
-                            Box(
-                                modifier = Modifier
-                                    .clip(RoundedCornerShape(4.dp))
-                                    .clickable { onEditPrompt(message.text) }
-                                    .padding(horizontal = 4.dp, vertical = 2.dp)
-                            ) {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(3.dp)
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Edit,
-                                        contentDescription = "Edit prompt",
-                                        tint = PocketTextMuted,
-                                        modifier = Modifier.size(12.dp)
-                                    )
-                                    Text(
-                                        text = "Edit",
-                                        color = PocketTextMuted,
-                                        fontSize = 10.5.sp,
-                                        fontWeight = FontWeight.Medium
-                                    )
-                                }
+                        Text(
+                            text = "You",
+                            color = PocketTextSecondary,
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            fontFamily = FontFamily.Monospace
+                        )
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(6.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            if (onEditPrompt != null) {
+                                Icon(
+                                    imageVector = Icons.Default.Edit,
+                                    contentDescription = "Edit prompt",
+                                    tint = PocketTextMuted,
+                                    modifier = Modifier
+                                        .size(13.dp)
+                                        .clickable { onEditPrompt(message.text) }
+                                )
                             }
-                        }
-
-                        if (message.text.isNotBlank()) {
-                            Box(
+                            Icon(
+                                imageVector = Icons.Default.ContentCopy,
+                                contentDescription = "Copy prompt",
+                                tint = PocketTextMuted,
                                 modifier = Modifier
-                                    .clip(RoundedCornerShape(4.dp))
+                                    .size(13.dp)
                                     .clickable {
                                         clipboard.setText(AnnotatedString(message.text))
-                                        Toast.makeText(context, if (isUser) "Prompt copied" else "Response copied", Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(context, "Prompt copied", Toast.LENGTH_SHORT).show()
                                     }
-                                    .padding(horizontal = 4.dp, vertical = 2.dp)
-                            ) {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(3.dp)
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.ContentCopy,
-                                        contentDescription = "Copy message",
-                                        tint = PocketTextMuted,
-                                        modifier = Modifier.size(12.dp)
-                                    )
-                                    Text(
-                                        text = "Copy",
-                                        color = PocketTextMuted,
-                                        fontSize = 10.5.sp,
-                                        fontWeight = FontWeight.Medium
-                                    )
-                                }
-                            }
+                            )
                         }
                     }
-                }
-
-                // Message Text / Markdown or Task Failure Card
-                if (isUser) {
                     Text(
                         text = message.text,
                         color = PocketTextPrimary,
-                        fontSize = 13.sp,
-                        lineHeight = 18.sp
+                        fontSize = 13.5.sp,
+                        lineHeight = 19.sp
                     )
-                } else if (message.isTaskFailed) {
-                    TaskFailureCard(
-                        title = message.taskFailureReason ?: "Task failed",
-                        details = message.taskFailureDetails,
-                        onRetry = onRetry,
-                        onChangeModel = onChangeModel,
-                        onChangeProvider = onChangeProvider,
-                        onContinue = onContinue,
-                    )
-                } else {
-                    if (message.text.isNotBlank()) {
+                }
+            }
+        }
+    } else {
+        // Agent message: Clean, full width, minimal borderless layout
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 2.dp),
+            verticalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
+            // Completed Work items (tools, bash, build, git): compact timeline
+            if (message.workItems.isNotEmpty()) {
+                CompactActivityTimeline(
+                    items = message.workItems,
+                    isLive = false
+                )
+            }
+
+            // Message text/markdown
+            if (message.text.isNotBlank()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(6.dp))
+                        .background(PocketSurface)
+                        .padding(horizontal = 10.dp, vertical = 8.dp)
+                ) {
+                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                         MarkdownText(
                             markdown = message.text,
                             color = PocketTextPrimary
                         )
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.End
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.ContentCopy,
+                                contentDescription = "Copy response",
+                                tint = PocketTextMuted,
+                                modifier = Modifier
+                                    .size(13.dp)
+                                    .clickable {
+                                        clipboard.setText(AnnotatedString(message.text))
+                                        Toast.makeText(context, "Response copied", Toast.LENGTH_SHORT).show()
+                                    }
+                            )
+                        }
                     }
+                }
+            }
 
-                    // Completed Work items: compact timeline
-                    if (message.workItems.isNotEmpty()) {
-                        CompactActivityTimeline(
-                            items = message.workItems,
-                            isLive = false
-                        )
-                    }
-
-                    // Changed files chips
-                    if (message.changedFiles.isNotEmpty()) {
-                        Column(
-                            modifier = Modifier.padding(top = 4.dp),
-                            verticalArrangement = Arrangement.spacedBy(4.dp)
+            // Changed files (only show if files actually changed)
+            if (message.changedFiles.isNotEmpty()) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState()),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Files (${message.changedFiles.size}):",
+                        color = PocketTextSecondary,
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        fontFamily = FontFamily.Monospace
+                    )
+                    message.changedFiles.take(5).forEach { filePath ->
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(4.dp))
+                                .background(PocketSurfaceElevated)
+                                .border(1.dp, PocketBorder, RoundedCornerShape(4.dp))
+                                .padding(horizontal = 6.dp, vertical = 3.dp)
                         ) {
                             Text(
-                                text = "Changed files (${message.changedFiles.size}):",
-                                color = PocketTextSecondary,
+                                text = filePath.substringAfterLast('/'),
+                                color = PocketPrimaryBlue,
+                                fontSize = 11.sp,
+                                fontFamily = FontFamily.Monospace
+                            )
+                        }
+                    }
+                    if (onOpenFiles != null) {
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(4.dp))
+                                .background(PocketPrimaryBlue.copy(alpha = 0.15f))
+                                .border(1.dp, PocketPrimaryBlue.copy(alpha = 0.4f), RoundedCornerShape(4.dp))
+                                .clickable { onOpenFiles() }
+                                .padding(horizontal = 7.dp, vertical = 3.dp)
+                        ) {
+                            Text(
+                                text = "View Files",
+                                color = PocketPrimaryBlue,
                                 fontSize = 11.sp,
                                 fontWeight = FontWeight.SemiBold
                             )
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .horizontalScroll(rememberScrollState()),
-                                horizontalArrangement = Arrangement.spacedBy(4.dp)
-                            ) {
-                                message.changedFiles.take(5).forEach { filePath ->
-                                    Box(
-                                        modifier = Modifier
-                                            .clip(RoundedCornerShape(4.dp))
-                                            .background(PocketSurface)
-                                            .border(1.dp, PocketBorder, RoundedCornerShape(4.dp))
-                                            .padding(horizontal = 6.dp, vertical = 3.dp)
-                                    ) {
-                                        Row(
-                                            verticalAlignment = Alignment.CenterVertically,
-                                            horizontalArrangement = Arrangement.spacedBy(3.dp)
-                                        ) {
-                                            Icon(
-                                                imageVector = Icons.Default.Description,
-                                                contentDescription = null,
-                                                tint = PocketPrimaryBlue,
-                                                modifier = Modifier.size(11.dp)
-                                            )
-                                            Text(
-                                                text = filePath.substringAfterLast('/'),
-                                                color = PocketTextPrimary,
-                                                fontSize = 10.5.sp,
-                                                fontFamily = FontFamily.Monospace
-                                            )
-                                        }
-                                    }
-                                }
-                                if (message.changedFiles.size > 5) {
-                                    Text(
-                                        text = "+${message.changedFiles.size - 5} more",
-                                        color = PocketTextMuted,
-                                        fontSize = 10.5.sp,
-                                        modifier = Modifier.padding(top = 2.dp)
-                                    )
-                                }
-                            }
                         }
-                    } else if (message.noFilesReason != null || (message.workItems.isNotEmpty() && message.changedFiles.isEmpty())) {
-                        Text(
-                            text = message.noFilesReason ?: "No files were modified (read-only inspection or query response).",
-                            color = PocketTextMuted,
-                            fontSize = 11.sp,
-                            fontFamily = FontFamily.Monospace,
-                            modifier = Modifier.padding(top = 2.dp)
-                        )
                     }
+                }
+            } else if (message.noFilesReason != null && message.workItems.isNotEmpty()) {
+                Text(
+                    text = message.noFilesReason,
+                    color = PocketTextMuted,
+                    fontSize = 11.sp,
+                    fontFamily = FontFamily.Monospace,
+                    modifier = Modifier.padding(start = 2.dp)
+                )
+            }
 
-                    // Actions row: [Open Preview] [View Files]
-                    if ((previewReady && onOpenPreview != null) || onOpenFiles != null) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 4.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(6.dp)
-                        ) {
-                            if (previewReady && onOpenPreview != null) {
-                                Box(
-                                    modifier = Modifier
-                                        .clip(RoundedCornerShape(6.dp))
-                                        .background(PocketPrimaryBlue.copy(alpha = 0.12f))
-                                        .border(1.dp, PocketPrimaryBlue.copy(alpha = 0.35f), RoundedCornerShape(6.dp))
-                                        .clickable { onOpenPreview() }
-                                        .padding(horizontal = 8.dp, vertical = 4.dp)
-                                ) {
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.spacedBy(4.dp)
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.Default.Language,
-                                            contentDescription = null,
-                                            tint = PocketPrimaryBlue,
-                                            modifier = Modifier.size(12.dp)
-                                        )
-                                        Text(
-                                            text = "Open Preview",
-                                            color = PocketPrimaryBlue,
-                                            fontSize = 10.5.sp,
-                                            fontWeight = FontWeight.SemiBold
-                                        )
-                                    }
-                                }
-                            }
-
-                            if (onOpenFiles != null) {
-                                Box(
-                                    modifier = Modifier
-                                        .clip(RoundedCornerShape(6.dp))
-                                        .background(PocketPrimaryBlue.copy(alpha = 0.12f))
-                                        .border(1.dp, PocketPrimaryBlue.copy(alpha = 0.35f), RoundedCornerShape(6.dp))
-                                        .clickable { onOpenFiles() }
-                                        .padding(horizontal = 8.dp, vertical = 4.dp)
-                                ) {
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.spacedBy(4.dp)
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.Default.Folder,
-                                            contentDescription = null,
-                                            tint = PocketPrimaryBlue,
-                                            modifier = Modifier.size(12.dp)
-                                        )
-                                        Text(
-                                            text = "View Files",
-                                            color = PocketPrimaryBlue,
-                                            fontSize = 10.5.sp,
-                                            fontWeight = FontWeight.SemiBold
-                                        )
-                                    }
-                                }
-                            }
-                        }
+            // Preview button (only if web preview is ready)
+            if (previewReady && onOpenPreview != null) {
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(4.dp))
+                        .background(PocketPrimaryBlue.copy(alpha = 0.12f))
+                        .border(1.dp, PocketPrimaryBlue.copy(alpha = 0.4f), RoundedCornerShape(4.dp))
+                        .clickable { onOpenPreview() }
+                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Language,
+                            contentDescription = null,
+                            tint = PocketPrimaryBlue,
+                            modifier = Modifier.size(12.dp)
+                        )
+                        Text(
+                            text = "Open Preview",
+                            color = PocketPrimaryBlue,
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.SemiBold
+                        )
                     }
                 }
             }
@@ -774,11 +727,11 @@ private fun TaskFailureCard(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(8.dp))
-            .background(PocketSurfaceElevated)
-            .border(1.dp, PocketRose.copy(alpha = 0.5f), RoundedCornerShape(8.dp))
+            .clip(RoundedCornerShape(6.dp))
+            .background(PocketSurface)
+            .border(1.dp, PocketRose.copy(alpha = 0.4f), RoundedCornerShape(6.dp))
             .padding(10.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -793,13 +746,19 @@ private fun TaskFailureCard(
                     imageVector = Icons.Default.Warning,
                     contentDescription = null,
                     tint = PocketRose,
-                    modifier = Modifier.size(15.dp)
+                    modifier = Modifier.size(14.dp)
                 )
                 Text(
                     text = title,
                     color = PocketRose,
-                    fontSize = 12.5.sp,
-                    fontWeight = FontWeight.Bold
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = FontFamily.Monospace
+                )
+                Text(
+                    text = "· Task stopped",
+                    color = PocketTextMuted,
+                    fontSize = 11.sp
                 )
             }
             if (onDismiss != null) {
@@ -807,16 +766,12 @@ private fun TaskFailureCard(
                     imageVector = Icons.Default.Close,
                     contentDescription = "Dismiss",
                     tint = PocketTextMuted,
-                    modifier = Modifier.size(15.dp).clickable { onDismiss() }
+                    modifier = Modifier
+                        .size(14.dp)
+                        .clickable { onDismiss() }
                 )
             }
         }
-
-        Text(
-            text = "Task could not continue.",
-            color = PocketTextSecondary,
-            fontSize = 11.5.sp
-        )
 
         if (!details.isNullOrBlank()) {
             Row(
@@ -825,10 +780,10 @@ private fun TaskFailureCard(
                     .clickable { expanded = !expanded }
                     .padding(vertical = 2.dp),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                horizontalArrangement = Arrangement.spacedBy(3.dp)
             ) {
                 Text(
-                    text = if (expanded) "Hide details" else "View error details",
+                    text = if (expanded) "Hide details" else "Error details",
                     color = PocketPrimaryBlue,
                     fontSize = 11.sp,
                     fontWeight = FontWeight.Medium
@@ -837,7 +792,7 @@ private fun TaskFailureCard(
                     imageVector = if (expanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
                     contentDescription = null,
                     tint = PocketPrimaryBlue,
-                    modifier = Modifier.size(13.dp)
+                    modifier = Modifier.size(12.dp)
                 )
             }
 
@@ -861,7 +816,7 @@ private fun TaskFailureCard(
             }
         }
 
-        // Action Recovery Buttons: Retry, Change Model, Change Provider, Continue
+        // Action Recovery Buttons
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -872,15 +827,15 @@ private fun TaskFailureCard(
             if (onRetry != null) {
                 Box(
                     modifier = Modifier
-                        .clip(RoundedCornerShape(6.dp))
+                        .clip(RoundedCornerShape(4.dp))
                         .background(PocketPrimaryBlue)
                         .clickable(onClick = onRetry)
-                        .padding(horizontal = 10.dp, vertical = 5.dp)
+                        .padding(horizontal = 9.dp, vertical = 4.dp)
                 ) {
                     Text(
                         text = "Retry",
                         color = Color.White,
-                        fontSize = 11.5.sp,
+                        fontSize = 11.sp,
                         fontWeight = FontWeight.SemiBold
                     )
                 }
@@ -889,16 +844,16 @@ private fun TaskFailureCard(
             if (onChangeModel != null) {
                 Box(
                     modifier = Modifier
-                        .clip(RoundedCornerShape(6.dp))
-                        .background(PocketSurface)
-                        .border(1.dp, PocketBorder, RoundedCornerShape(6.dp))
+                        .clip(RoundedCornerShape(4.dp))
+                        .background(PocketSurfaceElevated)
+                        .border(1.dp, PocketBorder, RoundedCornerShape(4.dp))
                         .clickable(onClick = onChangeModel)
-                        .padding(horizontal = 10.dp, vertical = 5.dp)
+                        .padding(horizontal = 9.dp, vertical = 4.dp)
                 ) {
                     Text(
                         text = "Change Model",
                         color = PocketTextPrimary,
-                        fontSize = 11.5.sp,
+                        fontSize = 11.sp,
                         fontWeight = FontWeight.Medium
                     )
                 }
@@ -907,16 +862,16 @@ private fun TaskFailureCard(
             if (onChangeProvider != null) {
                 Box(
                     modifier = Modifier
-                        .clip(RoundedCornerShape(6.dp))
-                        .background(PocketSurface)
-                        .border(1.dp, PocketBorder, RoundedCornerShape(6.dp))
+                        .clip(RoundedCornerShape(4.dp))
+                        .background(PocketSurfaceElevated)
+                        .border(1.dp, PocketBorder, RoundedCornerShape(4.dp))
                         .clickable(onClick = onChangeProvider)
-                        .padding(horizontal = 10.dp, vertical = 5.dp)
+                        .padding(horizontal = 9.dp, vertical = 4.dp)
                 ) {
                     Text(
                         text = "Change Provider",
                         color = PocketTextPrimary,
-                        fontSize = 11.5.sp,
+                        fontSize = 11.sp,
                         fontWeight = FontWeight.Medium
                     )
                 }
@@ -925,16 +880,16 @@ private fun TaskFailureCard(
             if (onContinue != null) {
                 Box(
                     modifier = Modifier
-                        .clip(RoundedCornerShape(6.dp))
-                        .background(PocketSurface)
-                        .border(1.dp, PocketBorder, RoundedCornerShape(6.dp))
+                        .clip(RoundedCornerShape(4.dp))
+                        .background(PocketSurfaceElevated)
+                        .border(1.dp, PocketBorder, RoundedCornerShape(4.dp))
                         .clickable(onClick = onContinue)
-                        .padding(horizontal = 10.dp, vertical = 5.dp)
+                        .padding(horizontal = 9.dp, vertical = 4.dp)
                 ) {
                     Text(
                         text = "Continue",
                         color = PocketTextPrimary,
-                        fontSize = 11.5.sp,
+                        fontSize = 11.sp,
                         fontWeight = FontWeight.Medium
                     )
                 }

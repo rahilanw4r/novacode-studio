@@ -229,26 +229,42 @@ fun PocketMasterWorkspace(
                             }
                         }
                     }
-                    Text(
-                        text = state.agentKind.title,
-                        color = PocketTextSecondary,
-                        fontSize = 10.5.sp,
-                        fontFamily = FontFamily.Monospace,
-                        maxLines = 1
-                    )
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(5.dp)) {
+                        Text(
+                            text = state.agentKind.title,
+                            color = PocketTextSecondary,
+                            fontSize = 10.5.sp,
+                            fontFamily = FontFamily.Monospace,
+                            maxLines = 1
+                        )
+                        if (state.isRunning) {
+                            Box(
+                                modifier = Modifier
+                                    .size(5.dp)
+                                    .clip(CircleShape)
+                                    .background(PocketEmerald)
+                            )
+                            Text(
+                                text = "Running",
+                                color = PocketEmerald,
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        }
+                    }
                 }
             }
 
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(6.dp)
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 // Quick Run Button in Header
                 Box(
                     modifier = Modifier
-                        .clip(RoundedCornerShape(6.dp))
-                        .background(PocketEmerald.copy(alpha = 0.15f))
-                        .border(1.dp, PocketEmerald.copy(alpha = 0.5f), RoundedCornerShape(6.dp))
+                        .clip(RoundedCornerShape(4.dp))
+                        .background(if (state.isRunning) PocketEmerald.copy(alpha = 0.15f) else PocketSurfaceElevated)
+                        .border(1.dp, if (state.isRunning) PocketEmerald.copy(alpha = 0.4f) else PocketBorder, RoundedCornerShape(4.dp))
                         .clickable {
                             if (state.androidProjectDetected) onBuildAndRunAndroid()
                             else {
@@ -256,35 +272,28 @@ fun PocketMasterWorkspace(
                                 currentTab = PocketWorkspaceTab.TERMINAL
                             }
                         }
-                        .padding(horizontal = 8.dp, vertical = 5.dp)
+                        .padding(horizontal = 7.dp, vertical = 4.dp)
                 ) {
-                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                        Icon(Icons.Default.PlayArrow, contentDescription = "Run", tint = PocketEmerald, modifier = Modifier.size(13.dp))
-                        Text("Run", color = PocketEmerald, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(3.dp)) {
+                        Icon(Icons.Default.PlayArrow, contentDescription = "Run", tint = if (state.isRunning) PocketEmerald else PocketTextPrimary, modifier = Modifier.size(12.dp))
+                        Text("Run", color = if (state.isRunning) PocketEmerald else PocketTextPrimary, fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
                     }
                 }
 
                 // Chat History Button
-                IconButton(onClick = { showChatSwitcher = true }, modifier = Modifier.size(30.dp)) {
+                IconButton(onClick = { showChatSwitcher = true }, modifier = Modifier.size(28.dp)) {
                     Icon(
                         imageVector = Icons.Default.History,
                         contentDescription = "Chats",
                         tint = PocketTextSecondary,
-                        modifier = Modifier.size(18.dp)
+                        modifier = Modifier.size(16.dp)
                     )
                 }
 
-                // Status Pill
-                PocketStatusPill(
-                    statusText = if (state.isRunning) "RUNNING" else "READY",
-                    isRunning = state.isRunning,
-                    color = if (state.isRunning) PocketEmerald else PocketTextMuted
-                )
-
                 // Menu ⋮
                 Box {
-                    IconButton(onClick = { workspaceMenuOpen = true }, modifier = Modifier.size(30.dp)) {
-                        Icon(Icons.Default.MoreVert, contentDescription = "Menu", tint = PocketTextSecondary, modifier = Modifier.size(18.dp))
+                    IconButton(onClick = { workspaceMenuOpen = true }, modifier = Modifier.size(28.dp)) {
+                        Icon(Icons.Default.MoreVert, contentDescription = "Menu", tint = PocketTextSecondary, modifier = Modifier.size(16.dp))
                     }
                     DropdownMenu(
                         expanded = workspaceMenuOpen,
