@@ -444,10 +444,15 @@ fun PocketHomeScreen(
                                     modifier = Modifier
                                         .size(28.dp)
                                         .clip(RoundedCornerShape(6.dp))
-                                        .background(PocketPrimaryBlue.copy(alpha = 0.15f)),
+                                        .background(PocketSurfaceElevated),
                                     contentAlignment = Alignment.Center
                                 ) {
-                                    Text("✈", color = PocketPrimaryBlue, fontSize = 14.sp)
+                                    Icon(
+                                        painter = painterResource(R.drawable.ic_telegram),
+                                        contentDescription = "Telegram",
+                                        tint = Color.Unspecified,
+                                        modifier = Modifier.size(22.dp)
+                                    )
                                 }
                                 Column {
                                     Text(

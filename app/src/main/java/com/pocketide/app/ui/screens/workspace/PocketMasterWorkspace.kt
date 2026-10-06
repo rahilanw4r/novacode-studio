@@ -42,6 +42,7 @@ import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.automirrored.filled.Undo
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -230,13 +231,33 @@ fun PocketMasterWorkspace(
                             }
                         }
                     }
-                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(5.dp)) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(4.dp))
+                            .clickable {
+                                if (onChangeModel != null) onChangeModel.invoke()
+                                else showModelDialog = true
+                            }
+                            .padding(vertical = 1.dp)
+                    ) {
+                        val currentModelName = if (state.agentKind == AgentKind.ANTIGRAVITY) {
+                            if (state.antigravityModel.isNotBlank()) state.antigravityModel.substringAfterLast('-') else "Gemini"
+                        } else {
+                            if (state.provider.model.isNotBlank()) state.provider.model.substringAfterLast('/').substringAfterLast('-') else state.provider.kind.title
+                        }
                         Text(
-                            text = state.agentKind.title,
+                            text = "${state.agentKind.title} · $currentModelName",
                             color = PocketTextSecondary,
                             fontSize = 10.5.sp,
-                            fontFamily = FontFamily.Monospace,
                             maxLines = 1
+                        )
+                        Icon(
+                            imageVector = Icons.Default.KeyboardArrowDown,
+                            contentDescription = "Switch model",
+                            tint = PocketTextMuted,
+                            modifier = Modifier.size(12.dp)
                         )
                         if (state.isRunning) {
                             Box(

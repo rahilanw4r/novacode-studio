@@ -80,15 +80,16 @@ jobs:
           EOF
 
           cat << 'EOF' > release_notes.md
-          ### Pocket IDE v1.0.31
-          <!-- versionCode: 32 -->
+          ### Pocket IDE v1.0.32
+          <!-- versionCode: 33 -->
 
-          **Fixed Preview Navbar and Navigation Dock Refinements.**
+          **UI/UX Refinements, Official Telegram Logo, and Clean Developer Hierarchy.**
 
           #### What's New:
-          - **Fixed Missing / Clipped Webpage Navbars**: Eliminated root-level zoom and document-width overrides that broke `position: fixed` stacking contexts in Chromium. Fixed headers, desktop navbars, and mobile drawer overlays now stay pinned at `top: 0` and align correctly across Fluid, Mobile, Tablet, and Desktop presets.
-          - **Clean Preset Pills & System Dock Padding**: Shortened preset labels to `Fluid`, `Mobile`, `Tablet`, `Desktop` so they never cut off on narrow screens, and added proper navigation bar padding so bottom dock tabs never collide with Android system navigation gestures.
-          - **Consistent Developer Palette**: Unified selection states to clean blue, running/success states to emerald, error states to red, and quiet neutral tones across preview and workspace navigation.
+          - **Official Telegram Logo**: Replaced the plane symbol with the authentic vector Telegram logo in the Community card and settings.
+          - **AI Response Hierarchy**: Assistant messages now display the final answer and code first, changed files second, and expandable tool execution timeline third.
+          - **Compact Interactive Model Selector**: Tapping the agent/model title in the workspace header now instantly opens the model switcher dialog.
+          - **Streamlined Settings Structure**: Grouped settings cleanly into General, Development, AI, Privacy, Updates, Support, and About.
           EOF
 
           gh release create "$TAG" "$APK_NAME" pocket-ide-update.json \

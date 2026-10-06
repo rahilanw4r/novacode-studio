@@ -57,7 +57,9 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.painterResource
 import com.pocketide.app.BuildConfig
+import com.pocketide.app.R
 import com.pocketide.app.ui.AppUiState
 import com.pocketide.app.ui.theme.AppThemeMode
 import com.pocketide.app.ui.theme.PocketBorder
@@ -202,17 +204,29 @@ fun PocketMoreScreen(
                     value = "Settings",
                     onClick = onOpenAiSettings
                 )
-                HorizontalDivider(color = PocketBorder)
+            }
+        }
+
+        // 4. PRIVACY SECTION
+        item {
+            MoreSection(title = "Privacy") {
                 MoreSettingRow(
                     icon = Icons.Default.Security,
-                    title = "Privacy",
+                    title = "Credentials & Security",
                     value = "Local encrypted keys",
+                    onClick = { showPrivacyDialog = true }
+                )
+                HorizontalDivider(color = PocketBorder)
+                MoreSettingRow(
+                    icon = Icons.Default.PrivacyTip,
+                    title = "Privacy Policy",
+                    value = "Local-first",
                     onClick = { showPrivacyDialog = true }
                 )
             }
         }
 
-        // 4. UPDATES SECTION
+        // 5. UPDATES SECTION
         item {
             MoreSection(title = "Updates") {
                 MoreSettingRow(
@@ -224,11 +238,11 @@ fun PocketMoreScreen(
             }
         }
 
-        // 5. COMMUNITY SECTION
+        // 6. SUPPORT & COMMUNITY SECTION
         item {
-            MoreSection(title = "Community & Support") {
+            MoreSection(title = "Support") {
                 MoreSettingRow(
-                    icon = Icons.Default.Language,
+                    iconRes = R.drawable.ic_telegram,
                     title = "Telegram Channel",
                     value = "Updates & APKs",
                     onClick = {
@@ -240,7 +254,7 @@ fun PocketMoreScreen(
                 )
                 HorizontalDivider(color = PocketBorder)
                 MoreSettingRow(
-                    icon = Icons.Default.Language,
+                    iconRes = R.drawable.ic_telegram,
                     title = "Community Discussion",
                     value = "Help & Suggestions",
                     onClick = {
@@ -253,7 +267,7 @@ fun PocketMoreScreen(
             }
         }
 
-        // 6. ABOUT SECTION
+        // 7. ABOUT SECTION
         item {
             MoreSection(title = "About") {
                 MoreSettingRow(
@@ -424,7 +438,8 @@ private fun MoreSection(
 
 @Composable
 private fun MoreSettingRow(
-    icon: ImageVector,
+    icon: ImageVector? = null,
+    iconRes: Int? = null,
     title: String,
     value: String? = null,
     onClick: () -> Unit
@@ -449,7 +464,21 @@ private fun MoreSettingRow(
                     .background(PocketSurfaceElevated),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(imageVector = icon, contentDescription = null, tint = PocketPrimaryBlue, modifier = Modifier.size(16.dp))
+                if (iconRes != null) {
+                    Icon(
+                        painter = painterResource(id = iconRes),
+                        contentDescription = null,
+                        tint = PocketPrimaryBlue,
+                        modifier = Modifier.size(16.dp)
+                    )
+                } else if (icon != null) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = null,
+                        tint = PocketPrimaryBlue,
+                        modifier = Modifier.size(16.dp)
+                    )
+                }
             }
             Text(
                 text = title,

@@ -621,15 +621,7 @@ private fun ChatMessageItem(
                 .padding(vertical = 4.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            // Completed Work items (tools, bash, build, git): compact timeline
-            if (message.workItems.isNotEmpty()) {
-                CompactActivityTimeline(
-                    items = message.workItems,
-                    isLive = false
-                )
-            }
-
-            // Message text/markdown
+            // 1. Message text / final result FIRST
             if (message.text.isNotBlank()) {
                 Column(
                     modifier = Modifier.fillMaxWidth(),
@@ -659,7 +651,7 @@ private fun ChatMessageItem(
                 }
             }
 
-            // Changed files (only show if files actually changed)
+            // 2. Changed files SECOND (only show if files actually changed)
             if (message.changedFiles.isNotEmpty()) {
                 Row(
                     modifier = Modifier
@@ -716,6 +708,14 @@ private fun ChatMessageItem(
                     fontSize = 11.sp,
                     fontFamily = FontFamily.Monospace,
                     modifier = Modifier.padding(start = 2.dp)
+                )
+            }
+
+            // 3. Completed Work items (tools, bash, build, git): compact timeline THIRD
+            if (message.workItems.isNotEmpty()) {
+                CompactActivityTimeline(
+                    items = message.workItems,
+                    isLive = false
                 )
             }
 
