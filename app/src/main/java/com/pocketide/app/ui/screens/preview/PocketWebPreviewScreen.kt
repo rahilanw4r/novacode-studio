@@ -141,6 +141,25 @@ fun PocketWebPreviewScreen(
 
     val currentPort = Regex(""":(\d{2,5})""").find(currentUrl)?.groupValues?.get(1)?.toIntOrNull()
 
+    // Auto-reconnect polling loop: automatically refresh when server port becomes available
+    LaunchedEffect(isConnectionError, currentUrl) {
+        if (isConnectionError) {
+            val portToCheck = currentPort ?: 5173
+            while (isConnectionError) {
+                delay(2000)
+                val checkList = listOf(portToCheck, 3000, 5000, 5173, 5500, 8000, 8080).distinct()
+                val checked = PreviewHealthChecker.checkPorts(ports = checkList)
+                activePorts = checked
+                if (checked.contains(portToCheck)) {
+                    isConnectionError = false
+                    errorMessage = null
+                    webViewRef?.reload()
+                    break
+                }
+            }
+        }
+    }
+
     val stackPort = when {
         projectWebKind?.contains("Vite", ignoreCase = true) == true -> 5173
         projectWebKind?.contains("Next", ignoreCase = true) == true -> 3000

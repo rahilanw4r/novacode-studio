@@ -374,6 +374,11 @@ class AppPreferences(private val context: Context) {
                     }
                 })
                 put("workedMillis", m.workedMillis)
+                put("isTaskFailed", m.isTaskFailed)
+                if (m.taskFailureReason != null) put("taskFailureReason", m.taskFailureReason)
+                if (m.taskFailureDetails != null) put("taskFailureDetails", m.taskFailureDetails)
+                if (m.noFilesReason != null) put("noFilesReason", m.noFilesReason)
+                put("changedFiles", JSONArray().apply { m.changedFiles.forEach { put(it) } })
                 put("workItems", JSONArray().apply {
                     m.workItems.forEach { item ->
                         put(JSONObject().apply {
@@ -434,6 +439,13 @@ class AppPreferences(private val context: Context) {
                         }
                     }.orEmpty(),
                     workedMillis = obj.optLong("workedMillis", 0L),
+                    isTaskFailed = obj.optBoolean("isTaskFailed", false),
+                    taskFailureReason = obj.optString("taskFailureReason").takeIf(String::isNotBlank),
+                    taskFailureDetails = obj.optString("taskFailureDetails").takeIf(String::isNotBlank),
+                    noFilesReason = obj.optString("noFilesReason").takeIf(String::isNotBlank),
+                    changedFiles = obj.optJSONArray("changedFiles")?.let { filesArr ->
+                        (0 until filesArr.length()).mapNotNull { idx -> filesArr.optString(idx).takeIf(String::isNotBlank) }
+                    }.orEmpty(),
                     workItems = obj.optJSONArray("workItems")?.let { workItems ->
                         (0 until workItems.length()).mapNotNull { index ->
                             runCatching {

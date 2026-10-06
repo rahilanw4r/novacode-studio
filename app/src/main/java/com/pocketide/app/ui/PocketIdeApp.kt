@@ -382,6 +382,11 @@ fun PocketIDEApp(viewModel: MainViewModel = viewModel()) {
             onAddAttachments = viewModel::addChatAttachments,
             onRemoveAttachment = viewModel::removePendingAttachment,
             onBuildAndRunAndroid = viewModel::buildAndRunAndroidApp,
+            onRetry = viewModel::retryLastTask,
+            onContinue = viewModel::continueTask,
+            onClearFailure = viewModel::clearTaskFailure,
+            onSelectModel = viewModel::selectModel,
+            onSelectAgent = viewModel::selectAgent,
         )
         else -> RootScreenHost(state, viewModel, projectsListState)
     }

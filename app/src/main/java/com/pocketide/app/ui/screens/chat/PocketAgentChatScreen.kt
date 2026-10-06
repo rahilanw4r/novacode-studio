@@ -34,6 +34,8 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Code
 import androidx.compose.material.icons.filled.Description
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Psychology
 import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material.icons.filled.Terminal
@@ -69,6 +71,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.pocketide.app.model.ActivityItem
+import com.pocketide.app.model.AgentTaskLifecycle
 import com.pocketide.app.model.ChatAttachment
 import com.pocketide.app.model.ChatMessage
 import com.pocketide.app.model.ToolRequest
@@ -103,10 +106,18 @@ fun PocketAgentChatScreen(
     liveThinkingSummary: String,
     liveThinkingTokens: Int,
     isRunning: Boolean,
+    taskLifecycle: AgentTaskLifecycle = AgentTaskLifecycle.IDLE,
+    taskFailureReason: String? = null,
+    taskFailureDetails: String? = null,
     pendingApproval: ToolRequest?,
     attachments: List<ChatAttachment>,
     onSend: (String) -> Unit,
     onStop: () -> Unit,
+    onRetry: (() -> Unit)? = null,
+    onChangeModel: (() -> Unit)? = null,
+    onChangeProvider: (() -> Unit)? = null,
+    onContinue: (() -> Unit)? = null,
+    onClearFailure: (() -> Unit)? = null,
     onApproval: (Boolean) -> Unit,
     onPickAttachment: () -> Unit,
     onRemoveAttachment: (String) -> Unit,
@@ -129,8 +140,8 @@ fun PocketAgentChatScreen(
         "📱 Build Android APK"
     )
 
-    LaunchedEffect(messages.size, liveProcess.size, liveThinkingSummary) {
-        val total = messages.size + (if (liveProcess.isNotEmpty() || liveThinking) 1 else 0)
+    LaunchedEffect(messages.size, liveProcess.size, liveThinkingSummary, taskLifecycle) {
+        val total = messages.size + (if (liveProcess.isNotEmpty() || liveThinking || (taskLifecycle == AgentTaskLifecycle.FAILED && taskFailureReason != null)) 1 else 0)
         if (total > 0) {
             listState.animateScrollToItem(total - 1)
         }
@@ -151,7 +162,7 @@ fun PocketAgentChatScreen(
                 .padding(horizontal = 12.dp, vertical = 8.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            if (messages.isEmpty() && liveProcess.isEmpty() && !liveThinking) {
+            if (messages.isEmpty() && liveProcess.isEmpty() && !liveThinking && taskLifecycle != AgentTaskLifecycle.FAILED) {
                 item {
                     EmptyChatGreeting(onSelectPrompt = { promptInput = it })
                 }
@@ -163,6 +174,10 @@ fun PocketAgentChatScreen(
                     previewReady = previewReady,
                     onOpenPreview = onOpenPreview,
                     onOpenFiles = onOpenFiles,
+                    onRetry = onRetry,
+                    onChangeModel = onChangeModel,
+                    onChangeProvider = onChangeProvider,
+                    onContinue = onContinue,
                     onEditPrompt = { text ->
                         promptInput = text
                         isEditingPrompt = true
@@ -171,23 +186,39 @@ fun PocketAgentChatScreen(
                 )
             }
 
-            // Live reasoning stream
-            if (liveThinking || liveThinkingSummary.isNotBlank()) {
+            // Live reasoning stream: shown ONLY while actively thinking
+            if (liveThinking && liveThinkingSummary.isNotBlank()) {
                 item {
                     ReasoningChainBlock(
                         reasoningText = liveThinkingSummary,
-                        isStreaming = liveThinking,
+                        isStreaming = true,
                         tokenCount = liveThinkingTokens
                     )
                 }
             }
 
-            // Live tool execution items: sleek compact timeline
-            if (liveProcess.isNotEmpty()) {
+            // Live tool execution items: compact timeline (filter out Think item while liveThinking is streaming)
+            val filteredLiveProcess = if (liveThinking) liveProcess.filterNot { it.title == "Think" } else liveProcess
+            if (filteredLiveProcess.isNotEmpty()) {
                 item {
                     CompactActivityTimeline(
-                        items = liveProcess,
+                        items = filteredLiveProcess,
                         isLive = true
+                    )
+                }
+            }
+
+            // Live task failure recovery card (when task failed)
+            if (taskLifecycle == AgentTaskLifecycle.FAILED && taskFailureReason != null) {
+                item {
+                    TaskFailureCard(
+                        title = taskFailureReason,
+                        details = taskFailureDetails,
+                        onRetry = onRetry,
+                        onChangeModel = onChangeModel,
+                        onChangeProvider = onChangeProvider,
+                        onContinue = onContinue,
+                        onDismiss = onClearFailure,
                     )
                 }
             }
@@ -439,6 +470,10 @@ private fun ChatMessageItem(
     previewReady: Boolean = false,
     onOpenPreview: (() -> Unit)? = null,
     onOpenFiles: (() -> Unit)? = null,
+    onRetry: (() -> Unit)? = null,
+    onChangeModel: (() -> Unit)? = null,
+    onChangeProvider: (() -> Unit)? = null,
+    onContinue: (() -> Unit)? = null,
     onEditPrompt: ((String) -> Unit)? = null
 ) {
     val isUser = message.fromUser
@@ -482,7 +517,7 @@ private fun ChatMessageItem(
                 ) {
                     Text(
                         text = if (isUser) "You" else "Agent",
-                        color = if (isUser) PocketPrimaryBlue else PocketEmerald,
+                        color = if (isUser) PocketPrimaryBlue else if (message.isTaskFailed) PocketRose else PocketEmerald,
                         fontSize = 11.sp,
                         fontWeight = FontWeight.SemiBold,
                         fontFamily = FontFamily.Monospace
@@ -519,43 +554,54 @@ private fun ChatMessageItem(
                             }
                         }
 
-                        Box(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(4.dp))
-                                .clickable {
-                                    clipboard.setText(AnnotatedString(message.text))
-                                    Toast.makeText(context, if (isUser) "Prompt copied" else "Response copied", Toast.LENGTH_SHORT).show()
-                                }
-                                .padding(horizontal = 4.dp, vertical = 2.dp)
-                        ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(3.dp)
+                        if (message.text.isNotBlank()) {
+                            Box(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(4.dp))
+                                    .clickable {
+                                        clipboard.setText(AnnotatedString(message.text))
+                                        Toast.makeText(context, if (isUser) "Prompt copied" else "Response copied", Toast.LENGTH_SHORT).show()
+                                    }
+                                    .padding(horizontal = 4.dp, vertical = 2.dp)
                             ) {
-                                Icon(
-                                    imageVector = Icons.Default.ContentCopy,
-                                    contentDescription = "Copy message",
-                                    tint = PocketTextMuted,
-                                    modifier = Modifier.size(12.dp)
-                                )
-                                Text(
-                                    text = "Copy",
-                                    color = PocketTextMuted,
-                                    fontSize = 10.5.sp,
-                                    fontWeight = FontWeight.Medium
-                                )
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(3.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.ContentCopy,
+                                        contentDescription = "Copy message",
+                                        tint = PocketTextMuted,
+                                        modifier = Modifier.size(12.dp)
+                                    )
+                                    Text(
+                                        text = "Copy",
+                                        color = PocketTextMuted,
+                                        fontSize = 10.5.sp,
+                                        fontWeight = FontWeight.Medium
+                                    )
+                                }
                             }
                         }
                     }
                 }
 
-                // Message Text / Markdown
+                // Message Text / Markdown or Task Failure Card
                 if (isUser) {
                     Text(
                         text = message.text,
                         color = PocketTextPrimary,
                         fontSize = 13.sp,
                         lineHeight = 18.sp
+                    )
+                } else if (message.isTaskFailed) {
+                    TaskFailureCard(
+                        title = message.taskFailureReason ?: "Task failed",
+                        details = message.taskFailureDetails,
+                        onRetry = onRetry,
+                        onChangeModel = onChangeModel,
+                        onChangeProvider = onChangeProvider,
+                        onContinue = onContinue,
                     )
                 } else {
                     if (message.text.isNotBlank()) {
@@ -571,12 +617,79 @@ private fun ChatMessageItem(
                             items = message.workItems,
                             isLive = false
                         )
+                    }
 
-                        // Result summary actions
+                    // Changed files chips
+                    if (message.changedFiles.isNotEmpty()) {
+                        Column(
+                            modifier = Modifier.padding(top = 4.dp),
+                            verticalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            Text(
+                                text = "Changed files (${message.changedFiles.size}):",
+                                color = PocketTextSecondary,
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .horizontalScroll(rememberScrollState()),
+                                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                            ) {
+                                message.changedFiles.take(5).forEach { filePath ->
+                                    Box(
+                                        modifier = Modifier
+                                            .clip(RoundedCornerShape(4.dp))
+                                            .background(PocketSurface)
+                                            .border(1.dp, PocketBorder, RoundedCornerShape(4.dp))
+                                            .padding(horizontal = 6.dp, vertical = 3.dp)
+                                    ) {
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.spacedBy(3.dp)
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Default.Description,
+                                                contentDescription = null,
+                                                tint = PocketPrimaryBlue,
+                                                modifier = Modifier.size(11.dp)
+                                            )
+                                            Text(
+                                                text = filePath.substringAfterLast('/'),
+                                                color = PocketTextPrimary,
+                                                fontSize = 10.5.sp,
+                                                fontFamily = FontFamily.Monospace
+                                            )
+                                        }
+                                    }
+                                }
+                                if (message.changedFiles.size > 5) {
+                                    Text(
+                                        text = "+${message.changedFiles.size - 5} more",
+                                        color = PocketTextMuted,
+                                        fontSize = 10.5.sp,
+                                        modifier = Modifier.padding(top = 2.dp)
+                                    )
+                                }
+                            }
+                        }
+                    } else if (message.noFilesReason != null || (message.workItems.isNotEmpty() && message.changedFiles.isEmpty())) {
+                        Text(
+                            text = message.noFilesReason ?: "No files were modified (read-only inspection or query response).",
+                            color = PocketTextMuted,
+                            fontSize = 11.sp,
+                            fontFamily = FontFamily.Monospace,
+                            modifier = Modifier.padding(top = 2.dp)
+                        )
+                    }
+
+                    // Actions row: [Open Preview] [View Files]
+                    if ((previewReady && onOpenPreview != null) || onOpenFiles != null) {
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(top = 2.dp),
+                                .padding(top = 4.dp),
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(6.dp)
                         ) {
@@ -639,6 +752,191 @@ private fun ChatMessageItem(
                             }
                         }
                     }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun TaskFailureCard(
+    title: String,
+    details: String?,
+    onRetry: (() -> Unit)? = null,
+    onChangeModel: (() -> Unit)? = null,
+    onChangeProvider: (() -> Unit)? = null,
+    onContinue: (() -> Unit)? = null,
+    onDismiss: (() -> Unit)? = null,
+    modifier: Modifier = Modifier
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(8.dp))
+            .background(PocketSurfaceElevated)
+            .border(1.dp, PocketRose.copy(alpha = 0.5f), RoundedCornerShape(8.dp))
+            .padding(10.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Warning,
+                    contentDescription = null,
+                    tint = PocketRose,
+                    modifier = Modifier.size(15.dp)
+                )
+                Text(
+                    text = title,
+                    color = PocketRose,
+                    fontSize = 12.5.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+            if (onDismiss != null) {
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = "Dismiss",
+                    tint = PocketTextMuted,
+                    modifier = Modifier.size(15.dp).clickable { onDismiss() }
+                )
+            }
+        }
+
+        Text(
+            text = "Task could not continue.",
+            color = PocketTextSecondary,
+            fontSize = 11.5.sp
+        )
+
+        if (!details.isNullOrBlank()) {
+            Row(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(4.dp))
+                    .clickable { expanded = !expanded }
+                    .padding(vertical = 2.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                Text(
+                    text = if (expanded) "Hide details" else "View error details",
+                    color = PocketPrimaryBlue,
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.Medium
+                )
+                Icon(
+                    imageVector = if (expanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                    contentDescription = null,
+                    tint = PocketPrimaryBlue,
+                    modifier = Modifier.size(13.dp)
+                )
+            }
+
+            if (expanded) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(4.dp))
+                        .background(PocketObsidian)
+                        .border(1.dp, PocketBorder, RoundedCornerShape(4.dp))
+                        .padding(8.dp)
+                ) {
+                    Text(
+                        text = details,
+                        color = PocketTextSecondary,
+                        fontSize = 10.5.sp,
+                        fontFamily = FontFamily.Monospace,
+                        lineHeight = 14.sp
+                    )
+                }
+            }
+        }
+
+        // Action Recovery Buttons: Retry, Change Model, Change Provider, Continue
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .horizontalScroll(rememberScrollState()),
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            if (onRetry != null) {
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(6.dp))
+                        .background(PocketPrimaryBlue)
+                        .clickable(onClick = onRetry)
+                        .padding(horizontal = 10.dp, vertical = 5.dp)
+                ) {
+                    Text(
+                        text = "Retry",
+                        color = Color.White,
+                        fontSize = 11.5.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+            }
+
+            if (onChangeModel != null) {
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(6.dp))
+                        .background(PocketSurface)
+                        .border(1.dp, PocketBorder, RoundedCornerShape(6.dp))
+                        .clickable(onClick = onChangeModel)
+                        .padding(horizontal = 10.dp, vertical = 5.dp)
+                ) {
+                    Text(
+                        text = "Change Model",
+                        color = PocketTextPrimary,
+                        fontSize = 11.5.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+            }
+
+            if (onChangeProvider != null) {
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(6.dp))
+                        .background(PocketSurface)
+                        .border(1.dp, PocketBorder, RoundedCornerShape(6.dp))
+                        .clickable(onClick = onChangeProvider)
+                        .padding(horizontal = 10.dp, vertical = 5.dp)
+                ) {
+                    Text(
+                        text = "Change Provider",
+                        color = PocketTextPrimary,
+                        fontSize = 11.5.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+            }
+
+            if (onContinue != null) {
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(6.dp))
+                        .background(PocketSurface)
+                        .border(1.dp, PocketBorder, RoundedCornerShape(6.dp))
+                        .clickable(onClick = onContinue)
+                        .padding(horizontal = 10.dp, vertical = 5.dp)
+                ) {
+                    Text(
+                        text = "Continue",
+                        color = PocketTextPrimary,
+                        fontSize = 11.5.sp,
+                        fontWeight = FontWeight.Medium
+                    )
                 }
             }
         }

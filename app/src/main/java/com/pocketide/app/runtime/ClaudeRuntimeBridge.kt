@@ -46,18 +46,40 @@ internal object ProviderRuntimeErrorDetector {
             }
         }.lowercase()
         return when {
+            "insufficient_quota" in combined ||
+                "insufficient credits" in combined ||
+                "insufficient credit" in combined ||
+                "insufficient balance" in combined ||
+                "out of credits" in combined ||
+                "credit balance too low" in combined ||
+                "credit balance is too low" in combined ||
+                "payment required" in combined ||
+                "http 402" in combined ||
+                (json?.optInt("error_status") == 402) ->
+                "Insufficient credits. Add funds to your provider account to continue."
             "user not found" in combined -> "User not found. Check the API key and provider account."
             "authentication_failed" in combined ||
                 "authentication failed" in combined ||
                 "invalid api key" in combined ||
+                "unauthorized" in combined ||
                 "http 401" in combined ||
                 "http 403" in combined ||
-                "http 429" in combined ||
                 "expired" in combined ||
-                "quota" in combined ||
-                "rate limit" in combined ||
-                (json?.optString("subtype") == "api_retry" && json.optInt("error_status") in listOf(401, 403, 429)) ->
+                (json?.optString("subtype") == "api_retry" && json.optInt("error_status") in listOf(401, 403)) ->
                 "The provider rejected the saved API key."
+            "rate limit" in combined ||
+                "rate_limit" in combined ||
+                "too many requests" in combined ||
+                "http 429" in combined ||
+                "quota" in combined ||
+                (json?.optString("subtype") == "api_retry" && json.optInt("error_status") == 429) ->
+                "The provider rejected the saved API key."
+            "econnrefused" in combined ||
+                "network error" in combined ||
+                "connect timed out" in combined ||
+                "connection timed out" in combined ||
+                "failed to connect" in combined ->
+                "Network connection error. Check your internet connection."
             else -> null
         }
     }
@@ -935,9 +957,16 @@ class ClaudeRuntimeBridge(
         val message = error.message.orEmpty()
         return when {
             error is ProviderSessionException -> message
+            message.contains("insufficient", true) &&
+                (message.contains("credit", true) || message.contains("quota", true) || message.contains("balance", true)) ||
+                message.contains("402", true) || message.contains("payment required", true) ->
+                "Insufficient credits. Add funds to your provider account to continue."
             message.contains("user not found", true) -> "User not found. Check the API key and provider account."
             message.contains("checksum", true) -> "Runtime verification failed. Nothing unverified was executed."
             message.contains("HTTP 401", true) || message.contains("authentication", true) -> "The provider rejected the saved API key."
+            message.contains("HTTP 429", true) || message.contains("rate limit", true) -> "Rate limit reached. Please wait a moment."
+            message.contains("econnrefused", true) || message.contains("network error", true) || message.contains("connect timed out", true) ->
+                "Network connection error. Check your internet connection."
             message.isBlank() -> "The real Claude Code runtime could not start."
             else -> message.take(500)
         }

@@ -509,6 +509,10 @@ class DshRuntimeBridge(
         val message = error.message.orEmpty()
         return when {
             error is DshSessionException && message.isMeaningfulDshText() -> message
+            message.contains("insufficient", true) &&
+                (message.contains("credit", true) || message.contains("quota", true) || message.contains("balance", true)) ||
+                message.contains("402", true) || message.contains("payment required", true) ->
+                "Insufficient credits. Add funds to your provider account to continue."
             message.contains("authentication", true) ||
                 message.contains("invalid api key", true) ||
                 message.contains("autherror", true) ||
@@ -519,6 +523,8 @@ class DshRuntimeBridge(
                     message.contains(code) && (message.contains("auth", true) || message.contains("HTTP", true))
                 } ->
                 "The provider rejected the saved API key."
+            message.contains("econnrefused", true) || message.contains("network error", true) || message.contains("connect timed out", true) ->
+                "Network connection error. Check your internet connection."
             message.contains("missing_credential", true) ->
                 "No API key reached DeepSeek Coder. Re-save the provider key in Settings."
             message.contains("not installed", true) -> message.take(300)

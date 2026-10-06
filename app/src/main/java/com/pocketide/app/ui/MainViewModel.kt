@@ -17,6 +17,7 @@ import com.pocketide.app.data.ApiKeyInfo
 import com.pocketide.app.data.AppPreferences
 import com.pocketide.app.model.ActivityItem
 import com.pocketide.app.model.AgentKind
+import com.pocketide.app.model.AgentTaskLifecycle
 import com.pocketide.app.model.ChangeItem
 import com.pocketide.app.model.ChatMessage
 import com.pocketide.app.model.ChatAttachment
@@ -203,6 +204,11 @@ data class AppUiState(
     val activity: List<ActivityItem> = emptyList(),
     val liveProcess: List<ActivityItem> = emptyList(),
     val liveThinking: Boolean = false,
+    val liveThinkingSummary: String = "",
+    val liveThinkingTokens: Int = 0,
+    val taskLifecycle: AgentTaskLifecycle = AgentTaskLifecycle.IDLE,
+    val taskFailureReason: String? = null,
+    val taskFailureDetails: String? = null,
     val activeThinkingBlockId: Long? = null,
     val taskStartedAtMillis: Long? = null,
     val taskFinishedAtMillis: Long? = null,
@@ -263,6 +269,69 @@ data class AppUiState(
     val appUpdateError: String? = null,
 )
 
+data class ClassifiedRuntimeError(
+    val title: String,
+    val message: String,
+    val details: String,
+    val isCreditError: Boolean = false,
+    val isAuthError: Boolean = false,
+)
+
+fun classifyRuntimeFailure(reason: String): ClassifiedRuntimeError {
+    val lower = reason.lowercase()
+    return when {
+        "402" in lower || "insufficient credit" in lower || "insufficient credits" in lower ||
+            "insufficient_quota" in lower || "out of credits" in lower || "credit balance" in lower ||
+            "payment required" in lower || "balance too low" in lower ->
+            ClassifiedRuntimeError(
+                title = "Insufficient credits",
+                message = "Task could not continue.",
+                details = reason,
+                isCreditError = true,
+            )
+        "user not found" in lower ->
+            ClassifiedRuntimeError(
+                title = "Authentication failed",
+                message = "User not found. Check the API key and provider account.",
+                details = reason,
+                isAuthError = true,
+            )
+        "401" in lower || "403" in lower || "authentication" in lower || "invalid api key" in lower ||
+            "unauthorized" in lower || "autherror" in lower ->
+            ClassifiedRuntimeError(
+                title = "Authentication failed",
+                message = "The provider rejected the saved API key.",
+                details = reason,
+                isAuthError = true,
+            )
+        "429" in lower || "rate limit" in lower || "too many requests" in lower ->
+            ClassifiedRuntimeError(
+                title = "Rate limit exceeded",
+                message = "Provider rate limit reached. Please wait a moment.",
+                details = reason,
+            )
+        "econnrefused" in lower || "network error" in lower || "connect timed out" in lower ||
+            "connection timed out" in lower || "failed to connect" in lower ->
+            ClassifiedRuntimeError(
+                title = "Network connection error",
+                message = "Check your internet connection.",
+                details = reason,
+            )
+        "stopped" in lower || "cancelled" in lower || "canceled" in lower ->
+            ClassifiedRuntimeError(
+                title = "Task stopped",
+                message = "Task execution was stopped.",
+                details = reason,
+            )
+        else ->
+            ClassifiedRuntimeError(
+                title = "Task failed",
+                message = "Task could not continue.",
+                details = reason,
+            )
+    }
+}
+
 class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val vault = ApiKeyVault(application)
     private val preferences = AppPreferences(application)
@@ -296,6 +365,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private var githubAuthJob: kotlinx.coroutines.Job? = null
     @Volatile private var lastOpenedAntigravityAuthUrl: String? = null
     private var activeRuntimeRequest: RuntimeRetryRequest? = null
+    @Volatile private var isUserStopping: Boolean = false
     private val failedApiKeyIds = mutableSetOf<String>()
     private val transcriptWrites = Channel<TranscriptWrite>(Channel.UNLIMITED)
     private val staticServer = LocalStaticServer()
@@ -3214,14 +3284,20 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         if ((prompt.isBlank() && attachments.isEmpty()) || state.value.isRunning) return
         val requestText = prompt.trim().ifBlank { "Please review the attached files." }
         updateActiveChatTitle(requestText)
+        isUserStopping = false
         _state.update {
             val startedAt = System.currentTimeMillis()
             it.copy(
                 messages = it.messages + ChatMessage(fromUser = true, text = prompt.trim(), attachments = attachments),
                 pendingAttachments = emptyList(),
                 isRunning = true,
+                taskLifecycle = AgentTaskLifecycle.THINKING,
+                taskFailureReason = null,
+                taskFailureDetails = null,
+                liveThinkingSummary = "",
+                liveThinkingTokens = 0,
                 activity = listOf(ActivityItem("Understanding your request", "Preparing a safe plan", false)) + it.activity,
-                liveProcess = listOf(ActivityItem("Think", requestPlanningSummary(requestText, it.agentKind), false)),
+                liveProcess = emptyList(),
                 liveThinking = true,
                 activeThinkingBlockId = null,
                 taskStartedAtMillis = startedAt,
@@ -3272,7 +3348,53 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun stopTask() {
         if (!_state.value.isRunning) return
+        isUserStopping = true
         viewModelScope.launch { activeRuntime().stopActiveSession() }
+    }
+
+    fun retryLastTask() {
+        if (_state.value.isRunning) return
+        val lastUserMsg = _state.value.messages.lastOrNull { it.fromUser } ?: return
+        _state.update {
+            it.copy(
+                taskLifecycle = AgentTaskLifecycle.IDLE,
+                taskFailureReason = null,
+                taskFailureDetails = null,
+            )
+        }
+        sendPrompt(lastUserMsg.text)
+    }
+
+    fun continueTask() {
+        if (_state.value.isRunning) return
+        _state.update {
+            it.copy(
+                taskLifecycle = AgentTaskLifecycle.IDLE,
+                taskFailureReason = null,
+                taskFailureDetails = null,
+            )
+        }
+        sendPrompt("Continue from where you left off and finish the task.")
+    }
+
+    fun clearTaskFailure() {
+        _state.update {
+            it.copy(
+                taskLifecycle = AgentTaskLifecycle.IDLE,
+                taskFailureReason = null,
+                taskFailureDetails = null,
+            )
+        }
+    }
+
+    fun selectModel(model: String) {
+        if (_state.value.agentKind == AgentKind.ANTIGRAVITY) {
+            setAntigravityModel(model)
+        } else {
+            val updated = _state.value.provider.copy(model = model)
+            preferences.saveProvider(updated, _state.value.agentKind)
+            _state.update { it.copy(provider = updated) }
+        }
     }
 
     fun undoLastChanges() {
@@ -3451,62 +3573,32 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     }
                 }
                 is RuntimeEvent.ReasoningProgress -> {
-                    val existingIndex = current.liveProcess.indexOfLast { it.title == "Think" }
-                    // The request-level Think summary is seeded once in sendPrompt.
-                    // After that segment has been committed to the timeline, later
-                    // agent turns must not repeat the same request summary.
-                    if (existingIndex < 0) return@update current
-                    val reasoning = ActivityItem(
-                        title = "Think",
-                        detail = current.liveProcess.getOrNull(existingIndex)?.detail
-                            ?: requestPlanningSummary(current.currentTaskRequest.orEmpty(), current.agentKind),
-                        isComplete = false,
-                    )
-                    val process = if (existingIndex >= 0) {
-                        current.liveProcess.toMutableList().also { it[existingIndex] = reasoning }
-                    } else {
-                        current.liveProcess + reasoning
-                    }
                     current.copy(
-                        liveProcess = process,
+                        taskLifecycle = AgentTaskLifecycle.THINKING,
                         liveThinking = true,
+                        liveThinkingTokens = event.estimatedTokens,
                         workSegmentStartedAtMillis = current.workSegmentStartedAtMillis ?: System.currentTimeMillis(),
                     )
                 }
                 is RuntimeEvent.ReasoningSummary -> {
                     val summary = event.summary.trim()
-                    val process = current.liveProcess.toMutableList()
-                    val existingIndex = process.indexOfLast { !it.isComplete && it.title == "Think" }
-                    if (event.startsNewBlock) {
-                        process.indices.forEach { index ->
-                            if (!process[index].isComplete) process[index] = process[index].copy(isComplete = true)
-                        }
-                        val initial = summary.ifBlank { "Thinking…" }
-                        val replaceFallback = current.activeThinkingBlockId == null &&
-                            process.size == 1 && process.first().title == "Think"
-                        if (replaceFallback) {
-                            process[0] = ActivityItem("Think", initial, event.isFinal)
-                        } else {
-                            process += ActivityItem("Think", initial, event.isFinal)
-                        }
-                    } else if (current.activeThinkingBlockId == event.blockId && existingIndex >= 0 && summary.isNotBlank()) {
-                        process[existingIndex] = process[existingIndex].copy(
-                            detail = summary,
-                            isComplete = event.isFinal,
-                        )
-                    } else {
-                        return@update current
-                    }
                     current.copy(
-                        liveProcess = process,
+                        taskLifecycle = if (event.isFinal) AgentTaskLifecycle.WORKING else AgentTaskLifecycle.THINKING,
                         liveThinking = !event.isFinal,
+                        liveThinkingSummary = summary.ifBlank { current.liveThinkingSummary },
                         activeThinkingBlockId = if (event.isFinal) null else event.blockId,
                         workSegmentStartedAtMillis = current.workSegmentStartedAtMillis ?: System.currentTimeMillis(),
                     )
                 }
                 is RuntimeEvent.ToolStarted -> {
+                    val processWithThink = if (current.liveThinkingSummary.isNotBlank() && current.liveProcess.none { it.title == "Think" }) {
+                        listOf(ActivityItem("Think", current.liveThinkingSummary, isComplete = true)) + current.liveProcess
+                    } else {
+                        current.liveProcess
+                    }
                     val planned = current.copy(
-                        liveProcess = current.liveProcess.map { item ->
+                        taskLifecycle = AgentTaskLifecycle.WORKING,
+                        liveProcess = processWithThink.map { item ->
                             if (!item.isComplete) item.copy(isComplete = true) else item
                         },
                         liveThinking = false,
@@ -3561,6 +3653,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     val detectedPreviewUrl = detectedInSummary ?: detectedInDetail ?: detectedFromCmd
 
                     current.copy(
+                        taskLifecycle = AgentTaskLifecycle.WORKING,
                         activity = listOf(ActivityItem(event.summary, event.toolName)) + current.activity,
                         liveProcess = process,
                         liveThinking = false,
@@ -3589,8 +3682,35 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 )
                 is RuntimeEvent.SessionCompleted -> {
                     val finishedAt = System.currentTimeMillis()
-                    attachTaskDuration(finishWorkSegment(current, finishedAt), finishedAt).copy(
+                    val changedPaths = current.changes.map { it.path }
+                    val noFiles = if (changedPaths.isEmpty()) {
+                        "No files were modified (read-only inspection or query response)."
+                    } else null
+                    val finished = finishWorkSegment(current, finishedAt)
+                    val attached = attachTaskDuration(finished, finishedAt)
+                    val updatedMessages = attached.messages.toMutableList()
+                    val lastUserIdx = updatedMessages.indexOfLast { it.fromUser }
+                    val lastAssistantIdx = updatedMessages.indices.lastOrNull { idx -> idx > lastUserIdx && !updatedMessages[idx].fromUser }
+                    if (lastAssistantIdx != null) {
+                        val lastMsg = updatedMessages[lastAssistantIdx]
+                        val text = if (lastMsg.text.isBlank() && lastMsg.workItems.isNotEmpty()) {
+                            if (changedPaths.isNotEmpty()) "Task completed successfully. Updated ${changedPaths.size} file(s)."
+                            else "Task completed successfully."
+                        } else lastMsg.text
+                        updatedMessages[lastAssistantIdx] = lastMsg.copy(
+                            text = text,
+                            changedFiles = changedPaths,
+                            noFilesReason = noFiles,
+                        )
+                    }
+                    attached.copy(
+                        messages = updatedMessages,
                         isRunning = false,
+                        taskLifecycle = AgentTaskLifecycle.COMPLETED,
+                        taskFailureReason = null,
+                        taskFailureDetails = null,
+                        liveThinking = false,
+                        liveThinkingSummary = "",
                         activeSessionId = null,
                         activity = listOf(ActivityItem("Task completed", "${current.agentKind.title} finished successfully")) +
                             current.activity.map { if (!it.isComplete) it.copy(isComplete = true) else it },
@@ -3600,22 +3720,43 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 }
                 is RuntimeEvent.SessionFailed -> {
                     val finishedAt = System.currentTimeMillis()
-                    attachTaskDuration(
-                        finishWorkSegment(
-                            appendWorkItem(current, ActivityItem("Task stopped", event.reason)),
-                            finishedAt,
-                        ),
-                        finishedAt,
-                    ).copy(
+                    val isUserStop = isUserStopping || event.reason.contains("Stopped by user", ignoreCase = true)
+                    val classified = classifyRuntimeFailure(event.reason)
+                    val finished = finishWorkSegment(current, finishedAt)
+                    val attached = attachTaskDuration(finished, finishedAt)
+                    val updatedMessages = attached.messages.toMutableList()
+                    val lastUserIdx = updatedMessages.indexOfLast { it.fromUser }
+                    val lastAssistantIdx = updatedMessages.indices.lastOrNull { idx -> idx > lastUserIdx && !updatedMessages[idx].fromUser }
+                    if (lastAssistantIdx != null) {
+                        val lastMsg = updatedMessages[lastAssistantIdx]
+                        updatedMessages[lastAssistantIdx] = lastMsg.copy(
+                            isTaskFailed = !isUserStop,
+                            taskFailureReason = if (isUserStop) "Task stopped" else classified.title,
+                            taskFailureDetails = event.reason,
+                        )
+                    } else {
+                        updatedMessages.add(
+                            ChatMessage(
+                                fromUser = false,
+                                text = "",
+                                isTaskFailed = !isUserStop,
+                                taskFailureReason = if (isUserStop) "Task stopped" else classified.title,
+                                taskFailureDetails = event.reason,
+                            )
+                        )
+                    }
+                    attached.copy(
+                        messages = updatedMessages,
                         isRunning = false,
+                        taskLifecycle = if (isUserStop) AgentTaskLifecycle.STOPPED else AgentTaskLifecycle.FAILED,
+                        taskFailureReason = if (isUserStop) "Task stopped" else classified.title,
+                        taskFailureDetails = event.reason,
+                        liveThinking = false,
+                        liveThinkingSummary = "",
                         activeSessionId = null,
                         pendingApproval = null,
-                        toastMessage = event.reason.takeIf { reason ->
-                            reason.contains("user not found", true) ||
-                                reason.contains("API key", true) ||
-                                reason.contains("authentication", true)
-                        },
-                        activity = listOf(ActivityItem("Task stopped", event.reason)) + current.activity,
+                        toastMessage = if (!isUserStop) "${classified.title}: ${classified.message}" else null,
+                        activity = listOf(ActivityItem(if (isUserStop) "Task stopped" else classified.title, event.reason)) + current.activity,
                         taskFinishedAtMillis = finishedAt,
                         currentTaskRequest = null,
                     )
@@ -3626,7 +3767,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             activeRuntimeRequest = null
             failedApiKeyIds.clear()
         }
-        if (event is RuntimeEvent.FilesChanged || event is RuntimeEvent.SessionCompleted) {
+        if (event is RuntimeEvent.FilesChanged || event is RuntimeEvent.SessionCompleted ||
+            (event is RuntimeEvent.ToolCompleted && event.toolName in setOf("Write", "Edit", "Bash", "NotebookEdit"))) {
             _state.value.activeProject?.id?.let { touchProject(it) }
             refreshProjectFiles()
         }
@@ -3673,7 +3815,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         val value = reason.lowercase()
         return "api key" in value || "authentication" in value || "user not found" in value ||
             "http 401" in value || "http 403" in value || "http 429" in value ||
-            "expired" in value || "quota" in value || "rate limit" in value
+            "expired" in value || "quota" in value || "rate limit" in value ||
+            "insufficient" in value || "402" in value || "payment required" in value
     }
 
     private fun touchProject(projectId: String) {

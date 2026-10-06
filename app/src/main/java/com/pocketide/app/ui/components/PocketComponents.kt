@@ -525,6 +525,16 @@ private fun formatActivityLabel(item: ActivityItem): String {
     val detail = item.detail.trim()
 
     return when {
+        title.contains("Think", ignoreCase = true) -> {
+            if (!item.isComplete) "Thinking…" else "Think"
+        }
+        title.contains("Build", ignoreCase = true) -> {
+            if (!item.isComplete) "Building project…" else "Build complete"
+        }
+        title.contains("Git", ignoreCase = true) -> {
+            val summary = detail.lineSequence().firstOrNull()?.trim()?.take(40) ?: "operation"
+            if (!item.isComplete) "Git $summary" else "Git $summary"
+        }
         title.contains("Preview ready", ignoreCase = true) -> "Started preview: ${detail.ifBlank { "localhost" }}"
         title.contains("Bash", ignoreCase = true) || item.isCommand -> {
             val cmd = detail.lineSequence().firstOrNull()?.trim()?.take(45) ?: "command"

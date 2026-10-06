@@ -325,6 +325,16 @@ sealed interface RuntimeEvent {
     data class SessionFailed(override val sessionId: String, val reason: String) : RuntimeEvent
 }
 
+enum class AgentTaskLifecycle {
+    IDLE,
+    QUEUED,
+    THINKING,
+    WORKING,
+    COMPLETED,
+    FAILED,
+    STOPPED
+}
+
 data class ChatMessage(
     val id: String = UUID.randomUUID().toString(),
     val fromUser: Boolean,
@@ -333,6 +343,11 @@ data class ChatMessage(
     val attachments: List<ChatAttachment> = emptyList(),
     val workItems: List<ActivityItem> = emptyList(),
     val workedMillis: Long = 0L,
+    val isTaskFailed: Boolean = false,
+    val taskFailureReason: String? = null,
+    val taskFailureDetails: String? = null,
+    val changedFiles: List<String> = emptyList(),
+    val noFilesReason: String? = null,
 )
 
 data class ChatAttachment(

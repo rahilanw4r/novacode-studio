@@ -97,6 +97,7 @@ import com.pocketide.app.ui.theme.PocketCyan
 import com.pocketide.app.ui.theme.PocketEmerald
 import com.pocketide.app.ui.theme.PocketIndigo
 import com.pocketide.app.ui.theme.PocketObsidian
+import com.pocketide.app.model.AgentKind
 import com.pocketide.app.ui.theme.PocketRose
 import com.pocketide.app.ui.theme.PocketSurface
 import com.pocketide.app.ui.theme.PocketSurfaceElevated
@@ -137,6 +138,13 @@ fun PocketMasterWorkspace(
     onAddAttachments: (List<Uri>) -> Unit,
     onRemoveAttachment: (String) -> Unit,
     onBuildAndRunAndroid: () -> Unit,
+    onRetry: (() -> Unit)? = null,
+    onChangeModel: (() -> Unit)? = null,
+    onChangeProvider: (() -> Unit)? = null,
+    onSelectModel: ((String) -> Unit)? = null,
+    onSelectAgent: ((AgentKind) -> Unit)? = null,
+    onContinue: (() -> Unit)? = null,
+    onClearFailure: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     BackHandler(onBack = onBack)
@@ -146,6 +154,8 @@ fun PocketMasterWorkspace(
     var showCommandCenter by rememberSaveable { mutableStateOf(false) }
     var showChatSwitcher by rememberSaveable { mutableStateOf(false) }
     var workspaceMenuOpen by rememberSaveable { mutableStateOf(false) }
+    var showModelDialog by rememberSaveable { mutableStateOf(false) }
+    var showProviderDialog by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(state.isRunning) {
         if (state.isRunning) {
@@ -345,6 +355,7 @@ fun PocketMasterWorkspace(
                 PocketWorkspaceTab.FILES -> {
                     PocketIDEStudioScreen(
                         files = state.workspaceFiles,
+                        filesLoading = state.filesLoading,
                         changes = state.changes,
                         openedFilePath = state.openedFilePath,
                         openedFileContent = state.openedFileContent,
@@ -368,20 +379,37 @@ fun PocketMasterWorkspace(
                         messages = state.messages,
                         liveProcess = state.liveProcess,
                         liveThinking = state.liveThinking,
-                        liveThinkingSummary = "Reasoning active",
-                        liveThinkingTokens = 0,
+                        liveThinkingSummary = state.liveThinkingSummary,
+                        liveThinkingTokens = state.liveThinkingTokens,
                         isRunning = state.isRunning,
+                        taskLifecycle = state.taskLifecycle,
+                        taskFailureReason = state.taskFailureReason,
+                        taskFailureDetails = state.taskFailureDetails,
                         pendingApproval = state.pendingApproval,
                         attachments = state.pendingAttachments,
                         previewReady = state.previewReady,
                         previewUrl = state.previewUrl,
                         onSend = onSend,
                         onStop = onStop,
+                        onRetry = onRetry,
+                        onChangeModel = {
+                            if (onChangeModel != null) onChangeModel.invoke()
+                            else showModelDialog = true
+                        },
+                        onChangeProvider = {
+                            if (onChangeProvider != null) onChangeProvider.invoke()
+                            else showProviderDialog = true
+                        },
+                        onContinue = onContinue,
+                        onClearFailure = onClearFailure,
                         onApproval = onApproval,
                         onPickAttachment = { attachmentLauncher.launch(arrayOf("*/*")) },
                         onRemoveAttachment = onRemoveAttachment,
                         onOpenPreview = { currentTab = PocketWorkspaceTab.PREVIEW },
-                        onOpenFiles = { currentTab = PocketWorkspaceTab.FILES },
+                        onOpenFiles = {
+                            currentTab = PocketWorkspaceTab.FILES
+                            onRefreshFiles()
+                        },
                     )
                 }
                 PocketWorkspaceTab.TERMINAL -> {
@@ -470,7 +498,10 @@ fun PocketMasterWorkspace(
                         .weight(1f)
                         .clip(RoundedCornerShape(8.dp))
                         .background(if (filesActive) PocketSurfaceElevated else Color.Transparent)
-                        .clickable { currentTab = PocketWorkspaceTab.FILES }
+                        .clickable {
+                            currentTab = PocketWorkspaceTab.FILES
+                            onRefreshFiles()
+                        }
                         .padding(vertical = 6.dp),
                     contentAlignment = Alignment.Center
                 ) {
@@ -645,6 +676,124 @@ fun PocketMasterWorkspace(
             },
             containerColor = PocketSurface,
             shape = RoundedCornerShape(16.dp)
+        )
+    }
+
+    if (showModelDialog) {
+        val candidateModels = when (state.agentKind) {
+            AgentKind.ANTIGRAVITY -> if (state.antigravityModels.isNotEmpty()) state.antigravityModels else listOf(
+                "gemini-2.5-pro",
+                "gemini-2.5-flash",
+                "gemini-2.0-flash-thinking-exp",
+                "gemini-2.0-flash"
+            )
+            AgentKind.CLAUDE_CODE -> listOf(
+                "claude-3-7-sonnet-20250219",
+                "claude-3-5-sonnet-20241022",
+                "claude-3-5-haiku-20241022"
+            )
+            AgentKind.DEEPSEEK_CODER -> listOf(
+                "deepseek-chat",
+                "deepseek-reasoner"
+            )
+        }
+        AlertDialog(
+            onDismissRequest = { showModelDialog = false },
+            title = { Text("Select Model (${state.agentKind.title})", color = PocketTextPrimary, fontSize = 16.sp, fontWeight = FontWeight.Bold) },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    candidateModels.forEach { modelName ->
+                        val isCurrent = (state.provider.model == modelName) || (state.agentKind == AgentKind.ANTIGRAVITY && state.antigravityModel == modelName)
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(6.dp))
+                                .background(if (isCurrent) PocketPrimaryBlue.copy(alpha = 0.15f) else PocketSurfaceElevated)
+                                .border(1.dp, if (isCurrent) PocketPrimaryBlue else PocketBorder, RoundedCornerShape(6.dp))
+                                .clickable {
+                                    showModelDialog = false
+                                    onSelectModel?.invoke(modelName)
+                                    onClearFailure?.invoke()
+                                }
+                                .padding(horizontal = 12.dp, vertical = 10.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = modelName,
+                                    color = if (isCurrent) PocketPrimaryBlue else PocketTextPrimary,
+                                    fontSize = 13.sp,
+                                    fontFamily = FontFamily.Monospace,
+                                    fontWeight = if (isCurrent) FontWeight.Bold else FontWeight.Normal
+                                )
+                                if (isCurrent) {
+                                    Text("Active", color = PocketPrimaryBlue, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            confirmButton = {},
+            dismissButton = {
+                TextButton(onClick = { showModelDialog = false }) {
+                    Text("Cancel", color = PocketTextSecondary)
+                }
+            },
+            containerColor = PocketSurface,
+            shape = RoundedCornerShape(12.dp)
+        )
+    }
+
+    if (showProviderDialog) {
+        AlertDialog(
+            onDismissRequest = { showProviderDialog = false },
+            title = { Text("Choose Coding Agent", color = PocketTextPrimary, fontSize = 16.sp, fontWeight = FontWeight.Bold) },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    AgentKind.entries.forEach { agent ->
+                        val isSelected = agent == state.agentKind
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(6.dp))
+                                .background(if (isSelected) PocketPrimaryBlue.copy(alpha = 0.15f) else PocketSurfaceElevated)
+                                .border(1.dp, if (isSelected) PocketPrimaryBlue else PocketBorder, RoundedCornerShape(6.dp))
+                                .clickable {
+                                    showProviderDialog = false
+                                    onSelectAgent?.invoke(agent)
+                                    onClearFailure?.invoke()
+                                }
+                                .padding(horizontal = 12.dp, vertical = 10.dp)
+                        ) {
+                            Column {
+                                Text(
+                                    text = agent.title,
+                                    color = if (isSelected) PocketPrimaryBlue else PocketTextPrimary,
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                                Text(
+                                    text = agent.subtitle,
+                                    color = PocketTextMuted,
+                                    fontSize = 11.sp
+                                )
+                            }
+                        }
+                    }
+                }
+            },
+            confirmButton = {},
+            dismissButton = {
+                TextButton(onClick = { showProviderDialog = false }) {
+                    Text("Cancel", color = PocketTextSecondary)
+                }
+            },
+            containerColor = PocketSurface,
+            shape = RoundedCornerShape(12.dp)
         )
     }
 }

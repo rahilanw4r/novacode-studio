@@ -80,6 +80,7 @@ fun PocketIDEStudioScreen(
     openedFilePath: String?,
     openedFileContent: String?,
     isLoadingFile: Boolean,
+    filesLoading: Boolean = false,
     onOpenFile: (WorkspaceEntry) -> Unit,
     onCloseFile: () -> Unit,
     onSaveFile: ((String, String) -> Unit)? = null,
@@ -158,6 +159,7 @@ fun PocketIDEStudioScreen(
             CodeStudioTab.FILES -> {
                 FileBrowserView(
                     files = files,
+                    filesLoading = filesLoading,
                     searchQuery = searchQuery,
                     onSearchChange = { searchQuery = it },
                     onOpenFile = {
@@ -352,6 +354,7 @@ private fun StudioTabButton(
 @Composable
 private fun FileBrowserView(
     files: List<WorkspaceEntry>,
+    filesLoading: Boolean = false,
     searchQuery: String,
     onSearchChange: (String) -> Unit,
     onOpenFile: (WorkspaceEntry) -> Unit
@@ -390,7 +393,23 @@ private fun FileBrowserView(
 
         if (filtered.isEmpty()) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("No files found", color = PocketTextMuted, fontSize = 13.sp)
+                if (filesLoading) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        CircularProgressIndicator(
+                            color = PocketPrimaryBlue,
+                            modifier = Modifier.size(16.dp),
+                            strokeWidth = 2.dp
+                        )
+                        Text("Loading files…", color = PocketTextMuted, fontSize = 13.sp)
+                    }
+                } else if (searchQuery.isNotBlank()) {
+                    Text("No files matching \"$searchQuery\"", color = PocketTextMuted, fontSize = 13.sp)
+                } else {
+                    Text("Workspace is empty", color = PocketTextMuted, fontSize = 13.sp)
+                }
             }
         } else {
             LazyColumn(verticalArrangement = Arrangement.spacedBy(4.dp)) {
