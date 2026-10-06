@@ -18,12 +18,16 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Android
@@ -77,6 +81,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -170,12 +175,14 @@ fun PocketMasterWorkspace(
         onResult = onAddAttachments,
     )
 
+    val density = LocalDensity.current
+    val isKeyboardVisible = WindowInsets.ime.getBottom(density) > 0
+
     Column(
         modifier = modifier
             .fillMaxSize()
             .background(PocketObsidian)
             .statusBarsPadding()
-            .navigationBarsPadding()
     ) {
         // Workspace Top Bar
         Row(
@@ -468,175 +475,58 @@ fun PocketMasterWorkspace(
             }
         }
 
-        HorizontalDivider(color = PocketBorder)
+        // Bottom Navigation Dock (fixed to bottom, always visible when keyboard hidden, hidden when keyboard open)
+        if (!isKeyboardVisible) {
+            HorizontalDivider(color = PocketBorder)
 
-        // Workspace Dock: [ Agent ] [ Files ] [ Terminal ] [ Preview ]
-        Surface(
-            modifier = Modifier
-                .fillMaxWidth()
-                .navigationBarsPadding(),
-            color = PocketSurface,
-            border = BorderStroke(1.dp, PocketBorder)
-        ) {
-            Row(
+            Surface(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 4.dp, horizontal = 8.dp),
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                verticalAlignment = Alignment.CenterVertically
+                    .navigationBarsPadding(),
+                color = PocketSurface,
+                border = BorderStroke(1.dp, PocketBorder)
             ) {
-                // Agent tab
-                val agentActive = currentTab == PocketWorkspaceTab.AGENT
-                Box(
+                Row(
                     modifier = Modifier
-                        .weight(1f)
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(if (agentActive) PocketSurfaceElevated else Color.Transparent)
-                        .clickable { currentTab = PocketWorkspaceTab.AGENT }
-                        .padding(vertical = 6.dp),
-                    contentAlignment = Alignment.Center
+                        .fillMaxWidth()
+                        .padding(vertical = 6.dp, horizontal = 4.dp),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(2.dp)
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                            Icon(
-                                imageVector = Icons.Default.AutoAwesome,
-                                contentDescription = "Agent",
-                                tint = if (agentActive) PocketPrimaryBlue else PocketTextMuted,
-                                modifier = Modifier.size(18.dp)
-                            )
-                            if (state.isRunning) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(6.dp)
-                                        .clip(CircleShape)
-                                        .background(PocketEmerald)
-                                )
-                            }
-                        }
-                        Text(
-                            text = "Agent",
-                            color = if (agentActive) PocketPrimaryBlue else PocketTextMuted,
-                            fontSize = 10.5.sp,
-                            fontWeight = if (agentActive) FontWeight.Bold else FontWeight.Medium
-                        )
-                    }
-                }
-
-                // Files tab
-                val filesActive = currentTab == PocketWorkspaceTab.FILES
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(if (filesActive) PocketSurfaceElevated else Color.Transparent)
-                        .clickable {
+                    WorkspaceDockItem(
+                        label = "Agent",
+                        icon = Icons.Default.AutoAwesome,
+                        isActive = currentTab == PocketWorkspaceTab.AGENT,
+                        statusDot = if (state.isRunning) PocketEmerald else null,
+                        onClick = { currentTab = PocketWorkspaceTab.AGENT },
+                        modifier = Modifier.weight(1f)
+                    )
+                    WorkspaceDockItem(
+                        label = "Files",
+                        icon = Icons.Default.Folder,
+                        isActive = currentTab == PocketWorkspaceTab.FILES,
+                        badge = if (state.changes.isNotEmpty()) "${state.changes.size}" else null,
+                        onClick = {
                             currentTab = PocketWorkspaceTab.FILES
                             onRefreshFiles()
-                        }
-                        .padding(vertical = 6.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(2.dp)
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                            Icon(
-                                imageVector = Icons.Default.Folder,
-                                contentDescription = "Files",
-                                tint = if (filesActive) PocketPrimaryBlue else PocketTextMuted,
-                                modifier = Modifier.size(18.dp)
-                            )
-                            if (state.changes.isNotEmpty()) {
-                                Text(
-                                    text = "${state.changes.size}",
-                                    color = if (filesActive) PocketPrimaryBlue else PocketTextSecondary,
-                                    fontSize = 10.sp,
-                                    fontFamily = FontFamily.Monospace,
-                                    fontWeight = FontWeight.Bold
-                                )
-                            }
-                        }
-                        Text(
-                            text = "Files",
-                            color = if (filesActive) PocketPrimaryBlue else PocketTextMuted,
-                            fontSize = 10.5.sp,
-                            fontWeight = if (filesActive) FontWeight.Bold else FontWeight.Medium
-                        )
-                    }
-                }
-
-                // Terminal tab
-                val termActive = currentTab == PocketWorkspaceTab.TERMINAL
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(if (termActive) PocketSurfaceElevated else Color.Transparent)
-                        .clickable { currentTab = PocketWorkspaceTab.TERMINAL }
-                        .padding(vertical = 6.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(2.dp)
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                            Icon(
-                                imageVector = Icons.Default.Terminal,
-                                contentDescription = "Terminal",
-                                tint = if (termActive) PocketPrimaryBlue else PocketTextMuted,
-                                modifier = Modifier.size(18.dp)
-                            )
-                            if (state.projectTerminalRunning) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(6.dp)
-                                        .clip(CircleShape)
-                                        .background(PocketEmerald)
-                                )
-                            }
-                        }
-                        Text(
-                            text = "Terminal",
-                            color = if (termActive) PocketPrimaryBlue else PocketTextMuted,
-                            fontSize = 10.5.sp,
-                            fontWeight = if (termActive) FontWeight.Bold else FontWeight.Medium
-                        )
-                    }
-                }
-
-                // Preview tab
-                val previewActive = currentTab == PocketWorkspaceTab.PREVIEW
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(if (previewActive) PocketSurfaceElevated else Color.Transparent)
-                        .clickable { currentTab = PocketWorkspaceTab.PREVIEW }
-                        .padding(vertical = 6.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(2.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Language,
-                            contentDescription = "Preview",
-                            tint = if (previewActive) PocketPrimaryBlue else PocketTextMuted,
-                            modifier = Modifier.size(18.dp)
-                        )
-                        Text(
-                            text = "Preview",
-                            color = if (previewActive) PocketPrimaryBlue else PocketTextMuted,
-                            fontSize = 10.5.sp,
-                            fontWeight = if (previewActive) FontWeight.Bold else FontWeight.Medium
-                        )
-                    }
+                        },
+                        modifier = Modifier.weight(1f)
+                    )
+                    WorkspaceDockItem(
+                        label = "Terminal",
+                        icon = Icons.Default.Terminal,
+                        isActive = currentTab == PocketWorkspaceTab.TERMINAL,
+                        statusDot = if (state.projectTerminalRunning) PocketEmerald else null,
+                        onClick = { currentTab = PocketWorkspaceTab.TERMINAL },
+                        modifier = Modifier.weight(1f)
+                    )
+                    WorkspaceDockItem(
+                        label = "Preview",
+                        icon = Icons.Default.Language,
+                        isActive = currentTab == PocketWorkspaceTab.PREVIEW,
+                        onClick = { currentTab = PocketWorkspaceTab.PREVIEW },
+                        modifier = Modifier.weight(1f)
+                    )
                 }
             }
         }
@@ -969,3 +859,68 @@ fun PocketChatSwitcherDialog(
         shape = RoundedCornerShape(12.dp)
     )
 }
+
+@Composable
+private fun WorkspaceDockItem(
+    label: String,
+    icon: ImageVector,
+    isActive: Boolean,
+    statusDot: Color? = null,
+    badge: String? = null,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .clip(RoundedCornerShape(6.dp))
+            .clickable(onClick = onClick)
+            .padding(vertical = 4.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(3.dp)
+        ) {
+            Box(contentAlignment = Alignment.TopEnd) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = label,
+                    tint = if (isActive) PocketPrimaryBlue else PocketTextMuted,
+                    modifier = Modifier.size(20.dp)
+                )
+                if (statusDot != null) {
+                    Box(
+                        modifier = Modifier
+                            .size(6.dp)
+                            .offset(x = 2.dp, y = (-1).dp)
+                            .clip(CircleShape)
+                            .background(statusDot)
+                    )
+                } else if (badge != null) {
+                    Box(
+                        modifier = Modifier
+                            .offset(x = 6.dp, y = (-2).dp)
+                            .clip(RoundedCornerShape(3.dp))
+                            .background(PocketPrimaryBlue.copy(alpha = 0.2f))
+                            .padding(horizontal = 3.dp, vertical = 0.5.dp)
+                    ) {
+                        Text(
+                            text = badge,
+                            color = PocketPrimaryBlue,
+                            fontSize = 9.sp,
+                            fontFamily = FontFamily.Monospace,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+            }
+            Text(
+                text = label,
+                color = if (isActive) PocketPrimaryBlue else PocketTextMuted,
+                fontSize = 11.sp,
+                fontWeight = if (isActive) FontWeight.SemiBold else FontWeight.Normal
+            )
+        }
+    }
+}
+

@@ -80,16 +80,19 @@ jobs:
           EOF
 
           cat << 'EOF' > release_notes.md
-          ### Pocket IDE v1.0.32
-          <!-- versionCode: 33 -->
+          ### Pocket IDE v1.0.33
+          <!-- versionCode: 34 -->
 
-          **UI/UX Refinements, Official Telegram Logo, and Clean Developer Hierarchy.**
+          **Fixed Bottom Navigation, Keyboard Inset Gap, Vertical Attachments, and Agent Failure Handling.**
 
           #### What's New:
-          - **Official Telegram Logo**: Replaced the plane symbol with the authentic vector Telegram logo in the Community card and settings.
-          - **AI Response Hierarchy**: Assistant messages now display the final answer and code first, changed files second, and expandable tool execution timeline third.
-          - **Compact Interactive Model Selector**: Tapping the agent/model title in the workspace header now instantly opens the model switcher dialog.
-          - **Streamlined Settings Structure**: Grouped settings cleanly into General, Development, AI, Privacy, Updates, Support, and About.
+          - **Fixed Bottom Navigation**: Bottom dock is securely anchored above the system navigation bar when keyboard is hidden and hidden when keyboard is open.
+          - **Keyboard IME & Input Bar Insets**: Message input sits directly above the software keyboard with zero gap using proper window insets.
+          - **Compact Vertical Attachments**: Displays thumbnails, filename, and remove button in a clean vertical list above the input; supports adding attachments before or after typing text.
+          - **Refined Composer & Send Button**: Clean `[Attach] [Message Agent...] [Send/Stop]` composer with clear disabled/enabled states and stop support.
+          - **Clear Failure & Stopped Task Reasons**: Transparent error categories (Gradle build failed, user cancelled, insufficient credits, network lost, auth required) with expandable error details and recovery actions.
+          - **Unified Task Turn**: Single assistant response turn without duplicate ghost messages, with final result first, changed files second, preview third, and expandable tool activity fourth.
+          - **Redesigned Bottom Dock**: Minimal, balanced 4-tab bar (Agent, Files, Terminal, Preview) with unified icon size, subtle active tint, and no chunky oversized cards.
           EOF
 
           gh release create "$TAG" "$APK_NAME" pocket-ide-update.json \

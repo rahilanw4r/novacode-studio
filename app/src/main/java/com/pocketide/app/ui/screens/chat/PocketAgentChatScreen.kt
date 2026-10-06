@@ -22,6 +22,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
@@ -34,6 +37,7 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Code
 import androidx.compose.material.icons.filled.Description
+import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Psychology
@@ -44,14 +48,18 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.platform.LocalDensity
+import kotlinx.coroutines.delay
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -128,10 +136,13 @@ fun PocketAgentChatScreen(
     onOpenFiles: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
-    var promptInput by remember { mutableStateOf("") }
-    var isEditingPrompt by remember { mutableStateOf(false) }
+    var promptInput by rememberSaveable { mutableStateOf("") }
+    var isEditingPrompt by rememberSaveable { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
     val listState = rememberLazyListState()
+
+    val density = LocalDensity.current
+    val isKeyboardVisible = WindowInsets.ime.getBottom(density) > 0
 
     val quickPrompts = listOf(
         "⚡ Run tests and fix errors",
@@ -145,6 +156,16 @@ fun PocketAgentChatScreen(
         val total = messages.size + (if (liveProcess.isNotEmpty() || liveThinking || (taskLifecycle == AgentTaskLifecycle.FAILED && taskFailureReason != null)) 1 else 0)
         if (total > 0) {
             listState.animateScrollToItem(total - 1)
+        }
+    }
+
+    LaunchedEffect(isKeyboardVisible) {
+        if (isKeyboardVisible) {
+            val total = messages.size + (if (liveProcess.isNotEmpty() || liveThinking || (taskLifecycle == AgentTaskLifecycle.FAILED && taskFailureReason != null)) 1 else 0)
+            if (total > 0) {
+                delay(120)
+                listState.animateScrollToItem(total - 1)
+            }
         }
     }
 
@@ -272,37 +293,12 @@ fun PocketAgentChatScreen(
             }
         }
 
-        // Attachments preview chips
+        // Attachments vertical area above input (clean, compact, thumbnail + name + remove button)
         if (attachments.isNotEmpty()) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(PocketSurface)
-                    .horizontalScroll(rememberScrollState())
-                    .padding(horizontal = 10.dp, vertical = 4.dp),
-                horizontalArrangement = Arrangement.spacedBy(6.dp)
-            ) {
-                attachments.forEach { att ->
-                    Row(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(6.dp))
-                            .background(PocketSurfaceElevated)
-                            .border(1.dp, PocketBorder, RoundedCornerShape(6.dp))
-                            .padding(horizontal = 8.dp, vertical = 4.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp)
-                    ) {
-                        Icon(Icons.Default.AttachFile, contentDescription = null, tint = PocketPrimaryBlue, modifier = Modifier.size(13.dp))
-                        Text(att.displayName, color = PocketTextPrimary, fontSize = 11.sp, maxLines = 1)
-                        Icon(
-                            imageVector = Icons.Default.Close,
-                            contentDescription = "Remove",
-                            tint = PocketTextMuted,
-                            modifier = Modifier.size(14.dp).clickable { onRemoveAttachment(att.id) }
-                        )
-                    }
-                }
-            }
+            CompactAttachmentsList(
+                attachments = attachments,
+                onRemoveAttachment = onRemoveAttachment
+            )
         }
 
         // Editing prompt indicator bar
@@ -379,76 +375,84 @@ fun PocketAgentChatScreen(
             }
         }
 
-        // ChatGPT style floating capsule input bar
-        Box(
+        val canSend = (promptInput.isNotBlank() || attachments.isNotEmpty()) && !isRunning
+
+        // Compact composer: [ Attach ] [ Message Agent... ] [ Send / Stop ]
+        Surface(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 12.dp, vertical = 6.dp)
+                .padding(horizontal = 12.dp, vertical = 6.dp),
+            shape = RoundedCornerShape(24.dp),
+            color = PocketSurface,
+            border = BorderStroke(1.dp, PocketBorder)
         ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clip(RoundedCornerShape(26.dp))
-                    .background(PocketSurfaceElevated)
-                    .border(1.dp, PocketBorder, RoundedCornerShape(26.dp))
-                    .padding(horizontal = 8.dp, vertical = 6.dp),
+                    .padding(horizontal = 6.dp, vertical = 4.dp),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(6.dp)
             ) {
+                // [ Attach ] button
                 IconButton(
                     onClick = onPickAttachment,
-                    modifier = Modifier
-                        .size(36.dp)
-                        .clip(CircleShape)
+                    modifier = Modifier.size(34.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Default.AttachFile,
                         contentDescription = "Attach",
-                        tint = PocketTextSecondary,
-                        modifier = Modifier.size(19.dp)
+                        tint = if (attachments.isNotEmpty()) PocketPrimaryBlue else PocketTextSecondary,
+                        modifier = Modifier.size(18.dp)
                     )
                 }
 
+                // [ Message Agent... ]
                 BasicTextField(
                     value = promptInput,
                     onValueChange = { promptInput = it },
                     textStyle = TextStyle(
                         color = PocketTextPrimary,
-                        fontSize = 14.sp,
-                        lineHeight = 20.sp
+                        fontSize = 13.5.sp,
+                        lineHeight = 18.sp
                     ),
                     cursorBrush = SolidColor(PocketPrimaryBlue),
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
                     keyboardActions = KeyboardActions(
                         onSend = {
-                            val text = promptInput.trim()
-                            if (text.isNotEmpty() && !isRunning) {
-                                onSend(text)
-                                promptInput = ""
-                                isEditingPrompt = false
+                            if (canSend) {
+                                val text = promptInput.trim().ifBlank {
+                                    if (attachments.isNotEmpty()) "Please review the attached files." else ""
+                                }
+                                if (text.isNotEmpty()) {
+                                    onSend(text)
+                                    promptInput = ""
+                                    isEditingPrompt = false
+                                }
                             }
                         }
                     ),
                     modifier = Modifier
                         .weight(1f)
+                        .padding(horizontal = 4.dp, vertical = 6.dp)
                         .focusRequester(focusRequester),
                     decorationBox = { inner ->
                         if (promptInput.isEmpty()) {
                             Text(
-                                text = if (isRunning) "Agent is thinking…" else "Message Agent…",
+                                text = if (isRunning) "Agent is executing…" else "Message Agent…",
                                 color = PocketTextMuted,
-                                fontSize = 14.sp
+                                fontSize = 13.5.sp
                             )
                         }
                         inner()
                     }
                 )
 
-                if (isRunning) {
+                // [ Send / Stop ]
+                if (isRunning && onStop != null) {
                     IconButton(
                         onClick = onStop,
                         modifier = Modifier
-                            .size(36.dp)
+                            .size(32.dp)
                             .clip(CircleShape)
                             .background(PocketRose)
                     ) {
@@ -456,35 +460,138 @@ fun PocketAgentChatScreen(
                             imageVector = Icons.Default.Stop,
                             contentDescription = "Stop",
                             tint = Color.White,
-                            modifier = Modifier.size(16.dp)
+                            modifier = Modifier.size(15.dp)
                         )
                     }
                 } else {
-                    val hasText = promptInput.isNotBlank()
                     IconButton(
                         onClick = {
-                            val text = promptInput.trim()
-                            if (text.isNotEmpty()) {
-                                onSend(text)
-                                promptInput = ""
-                                isEditingPrompt = false
+                            if (canSend) {
+                                val text = promptInput.trim().ifBlank {
+                                    if (attachments.isNotEmpty()) "Please review the attached files." else ""
+                                }
+                                if (text.isNotEmpty()) {
+                                    onSend(text)
+                                    promptInput = ""
+                                    isEditingPrompt = false
+                                }
                             }
                         },
-                        enabled = hasText,
+                        enabled = canSend,
                         modifier = Modifier
-                            .size(36.dp)
+                            .size(32.dp)
                             .clip(CircleShape)
-                            .background(if (hasText) Color.White else Color(0xFF383838))
+                            .background(if (canSend) PocketPrimaryBlue else PocketSurfaceElevated)
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.Send,
                             contentDescription = "Send",
-                            tint = if (hasText) Color.Black else PocketTextMuted,
-                            modifier = Modifier.size(16.dp)
+                            tint = if (canSend) Color.White else PocketTextMuted,
+                            modifier = Modifier.size(15.dp)
                         )
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun CompactAttachmentsList(
+    attachments: List<ChatAttachment>,
+    onRemoveAttachment: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 12.dp, vertical = 2.dp),
+        shape = RoundedCornerShape(8.dp),
+        color = PocketSurface,
+        border = BorderStroke(1.dp, PocketBorder)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 4.dp),
+            verticalArrangement = Arrangement.spacedBy(2.dp)
+        ) {
+            attachments.forEach { att ->
+                AttachmentRowItem(
+                    attachment = att,
+                    onRemove = { onRemoveAttachment(att.id) }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun AttachmentRowItem(
+    attachment: ChatAttachment,
+    onRemove: () -> Unit
+) {
+    val isImage = attachment.mimeType.startsWith("image/")
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 8.dp, vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.weight(1f)
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(28.dp)
+                    .clip(RoundedCornerShape(4.dp))
+                    .background(PocketSurfaceElevated),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = if (isImage) Icons.Default.Image else Icons.Default.Description,
+                    contentDescription = null,
+                    tint = PocketPrimaryBlue,
+                    modifier = Modifier.size(16.dp)
+                )
+            }
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = attachment.displayName,
+                    color = PocketTextPrimary,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Medium,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                if (attachment.sizeBytes > 0) {
+                    val sizeStr = if (attachment.sizeBytes < 1024 * 1024) {
+                        "${attachment.sizeBytes / 1024} KB"
+                    } else {
+                        String.format("%.1f MB", attachment.sizeBytes.toFloat() / (1024 * 1024))
+                    }
+                    Text(
+                        text = sizeStr,
+                        color = PocketTextMuted,
+                        fontSize = 10.sp,
+                        fontFamily = FontFamily.Monospace
+                    )
+                }
+            }
+        }
+        IconButton(
+            onClick = onRemove,
+            modifier = Modifier.size(24.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.Close,
+                contentDescription = "Remove",
+                tint = PocketTextMuted,
+                modifier = Modifier.size(14.dp)
+            )
         }
     }
 }
@@ -711,15 +818,7 @@ private fun ChatMessageItem(
                 )
             }
 
-            // 3. Completed Work items (tools, bash, build, git): compact timeline THIRD
-            if (message.workItems.isNotEmpty()) {
-                CompactActivityTimeline(
-                    items = message.workItems,
-                    isLive = false
-                )
-            }
-
-            // Preview button (only if web preview is ready)
+            // 3. Preview/build result THIRD (only if web preview is ready)
             if (previewReady && onOpenPreview != null) {
                 Box(
                     modifier = Modifier
@@ -747,6 +846,14 @@ private fun ChatMessageItem(
                         )
                     }
                 }
+            }
+
+            // 4. Completed Work items (tools, bash, build, git): compact expandable timeline FOURTH
+            if (message.workItems.isNotEmpty()) {
+                CompactActivityTimeline(
+                    items = message.workItems,
+                    isLive = false
+                )
             }
         }
     }
@@ -794,12 +901,9 @@ private fun TaskFailureCard(
                     color = PocketRose,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Bold,
-                    fontFamily = FontFamily.Monospace
-                )
-                Text(
-                    text = "· Task stopped",
-                    color = PocketTextMuted,
-                    fontSize = 11.sp
+                    fontFamily = FontFamily.Monospace,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
                 )
             }
             if (onDismiss != null) {

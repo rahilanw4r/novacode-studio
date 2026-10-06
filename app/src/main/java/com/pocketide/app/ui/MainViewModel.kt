@@ -284,14 +284,14 @@ fun classifyRuntimeFailure(reason: String): ClassifiedRuntimeError {
             "insufficient_quota" in lower || "out of credits" in lower || "credit balance" in lower ||
             "payment required" in lower || "balance too low" in lower ->
             ClassifiedRuntimeError(
-                title = "Insufficient credits",
-                message = "Task could not continue.",
+                title = "Task failed — insufficient API credits",
+                message = "Task could not continue due to credit limits.",
                 details = reason,
                 isCreditError = true,
             )
         "user not found" in lower ->
             ClassifiedRuntimeError(
-                title = "Authentication failed",
+                title = "Task failed — provider authentication required",
                 message = "User not found. Check the API key and provider account.",
                 details = reason,
                 isAuthError = true,
@@ -299,36 +299,51 @@ fun classifyRuntimeFailure(reason: String): ClassifiedRuntimeError {
         "401" in lower || "403" in lower || "authentication" in lower || "invalid api key" in lower ||
             "unauthorized" in lower || "autherror" in lower ->
             ClassifiedRuntimeError(
-                title = "Authentication failed",
+                title = "Task failed — provider authentication required",
                 message = "The provider rejected the saved API key.",
                 details = reason,
                 isAuthError = true,
             )
+        "gradle" in lower || "assembledebug" in lower || "build failed" in lower ||
+            "compilation error" in lower || "compilation failed" in lower || "compile error" in lower ->
+            ClassifiedRuntimeError(
+                title = "Task failed — Gradle build failed",
+                message = "Build or compilation failed during execution.",
+                details = reason,
+            )
         "429" in lower || "rate limit" in lower || "too many requests" in lower ->
             ClassifiedRuntimeError(
-                title = "Rate limit exceeded",
+                title = "Task failed — provider rate limit reached",
                 message = "Provider rate limit reached. Please wait a moment.",
                 details = reason,
             )
         "econnrefused" in lower || "network error" in lower || "connect timed out" in lower ||
-            "connection timed out" in lower || "failed to connect" in lower ->
+            "connection timed out" in lower || "failed to connect" in lower || "no address associated with hostname" in lower ||
+            "unable to resolve host" in lower ->
             ClassifiedRuntimeError(
-                title = "Network connection error",
+                title = "Task failed — network connection lost",
                 message = "Check your internet connection.",
                 details = reason,
             )
         "stopped" in lower || "cancelled" in lower || "canceled" in lower ->
             ClassifiedRuntimeError(
-                title = "Task stopped",
-                message = "Task execution was stopped.",
+                title = "Task stopped — user cancelled the task",
+                message = "Task execution was cancelled by the user.",
                 details = reason,
             )
-        else ->
+        else -> {
+            val firstLine = reason.trim().lineSequence().firstOrNull()?.take(50)?.trimEnd('.')
+            val cleanTitle = if (!firstLine.isNullOrBlank() && firstLine.length in 5..45 && !firstLine.startsWith("{")) {
+                "Task failed — $firstLine"
+            } else {
+                "Task failed — execution error"
+            }
             ClassifiedRuntimeError(
-                title = "Task failed",
+                title = cleanTitle,
                 message = "Task could not continue.",
                 details = reason,
             )
+        }
     }
 }
 
@@ -3574,9 +3589,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     } else {
                         current
                     }
-                    val lastMessage = timeline.messages.lastOrNull()
-                    if (lastMessage != null && !lastMessage.fromUser && lastMessage.workItems.isEmpty() && lastMessage.workedMillis == 0L) {
-                        timeline.copy(messages = timeline.messages.dropLast(1) + lastMessage.copy(text = lastMessage.text + event.text))
+                    val lastUserIdx = timeline.messages.indexOfLast { it.fromUser }
+                    val lastAssistantIdx = timeline.messages.indices.lastOrNull { idx -> idx > lastUserIdx && !timeline.messages[idx].fromUser }
+                    if (lastAssistantIdx != null) {
+                        val msgs = timeline.messages.toMutableList()
+                        val existing = msgs[lastAssistantIdx]
+                        msgs[lastAssistantIdx] = existing.copy(text = existing.text + event.text)
+                        timeline.copy(messages = msgs)
                     } else {
                         timeline.copy(messages = timeline.messages + ChatMessage(fromUser = false, text = event.text))
                     }
@@ -3731,6 +3750,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     val finishedAt = System.currentTimeMillis()
                     val isUserStop = isUserStopping || event.reason.contains("Stopped by user", ignoreCase = true)
                     val classified = classifyRuntimeFailure(event.reason)
+                    val failureTitle = if (isUserStop) "Task stopped — user cancelled the task" else classified.title
                     val finished = finishWorkSegment(current, finishedAt)
                     val attached = attachTaskDuration(finished, finishedAt)
                     val updatedMessages = attached.messages.toMutableList()
@@ -3740,7 +3760,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                         val lastMsg = updatedMessages[lastAssistantIdx]
                         updatedMessages[lastAssistantIdx] = lastMsg.copy(
                             isTaskFailed = !isUserStop,
-                            taskFailureReason = if (isUserStop) "Task stopped" else classified.title,
+                            taskFailureReason = failureTitle,
                             taskFailureDetails = event.reason,
                         )
                     } else {
@@ -3749,7 +3769,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                                 fromUser = false,
                                 text = "",
                                 isTaskFailed = !isUserStop,
-                                taskFailureReason = if (isUserStop) "Task stopped" else classified.title,
+                                taskFailureReason = failureTitle,
                                 taskFailureDetails = event.reason,
                             )
                         )
@@ -3758,14 +3778,14 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                         messages = updatedMessages,
                         isRunning = false,
                         taskLifecycle = if (isUserStop) AgentTaskLifecycle.STOPPED else AgentTaskLifecycle.FAILED,
-                        taskFailureReason = if (isUserStop) "Task stopped" else classified.title,
+                        taskFailureReason = failureTitle,
                         taskFailureDetails = event.reason,
                         liveThinking = false,
                         liveThinkingSummary = "",
                         activeSessionId = null,
                         pendingApproval = null,
                         toastMessage = if (!isUserStop) "${classified.title}: ${classified.message}" else null,
-                        activity = listOf(ActivityItem(if (isUserStop) "Task stopped" else classified.title, event.reason)) + current.activity,
+                        activity = listOf(ActivityItem(failureTitle, event.reason)) + current.activity,
                         taskFinishedAtMillis = finishedAt,
                         currentTaskRequest = null,
                     )

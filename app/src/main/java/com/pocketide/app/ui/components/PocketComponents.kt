@@ -385,7 +385,7 @@ fun CompactActivityTimeline(
             .padding(horizontal = 8.dp, vertical = 6.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        if (!isLive && items.size > 2) {
+        if (!isLive) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -405,7 +405,7 @@ fun CompactActivityTimeline(
                         modifier = Modifier.size(12.dp)
                     )
                     Text(
-                        text = "${items.size} activities completed",
+                        text = if (items.size == 1) "1 activity completed" else "${items.size} activities completed",
                         color = PocketTextSecondary,
                         fontSize = 11.sp,
                         fontWeight = FontWeight.Medium
@@ -420,7 +420,7 @@ fun CompactActivityTimeline(
             }
         }
 
-        if (isLive || items.size <= 2 || expandedGroup) {
+        if (isLive || expandedGroup) {
             items.forEach { item ->
                 CompactTimelineRow(item = item)
             }
