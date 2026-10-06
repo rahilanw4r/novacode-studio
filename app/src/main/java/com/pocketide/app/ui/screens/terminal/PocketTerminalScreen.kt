@@ -130,11 +130,11 @@ fun PocketTerminalScreen(
                     val isSelected = session.id == activeSessionId
                     Row(
                         modifier = Modifier
-                            .clip(RoundedCornerShape(8.dp))
+                            .clip(RoundedCornerShape(4.dp))
                             .background(if (isSelected) PocketSurfaceElevated else Color.Transparent)
-                            .border(1.dp, if (isSelected) PocketCyan else Color.Transparent, RoundedCornerShape(8.dp))
+                            .border(1.dp, if (isSelected) PocketPrimaryBlue else PocketBorder, RoundedCornerShape(4.dp))
                             .clickable { activeSessionId = session.id }
-                            .padding(horizontal = 10.dp, vertical = 5.dp),
+                            .padding(horizontal = 8.dp, vertical = 4.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
@@ -199,7 +199,7 @@ fun PocketTerminalScreen(
                     ) {
                         Text(
                             text = "ubuntu@phone:~$",
-                            color = PocketIndigo,
+                            color = PocketEmerald,
                             fontSize = 11.5.sp,
                             fontWeight = FontWeight.Bold,
                             fontFamily = FontFamily.Monospace
@@ -241,7 +241,7 @@ fun PocketTerminalScreen(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                PocketStatusPill("RUNNING", isRunning = true, color = PocketCyan)
+                PocketStatusPill("RUNNING", isRunning = true, color = PocketEmerald)
                 Text(
                     text = activeCommand,
                     color = PocketTextSecondary,
@@ -265,7 +265,7 @@ fun PocketTerminalScreen(
         ) {
             Text(
                 text = "$",
-                color = PocketCyan,
+                color = PocketEmerald,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,
                 fontFamily = FontFamily.Monospace
@@ -278,7 +278,7 @@ fun PocketTerminalScreen(
                     fontSize = 13.sp,
                     fontFamily = FontFamily.Monospace
                 ),
-                cursorBrush = SolidColor(PocketCyan),
+                cursorBrush = SolidColor(PocketPrimaryBlue),
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
                 keyboardActions = KeyboardActions(

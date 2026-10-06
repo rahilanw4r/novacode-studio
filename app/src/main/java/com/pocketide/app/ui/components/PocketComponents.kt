@@ -185,7 +185,7 @@ fun DeveloperKeyToolbar(
             .border(
                 width = 1.dp,
                 color = PocketBorder,
-                shape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp)
+                shape = RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp)
             )
             .padding(vertical = 4.dp)
     ) {
@@ -195,24 +195,24 @@ fun DeveloperKeyToolbar(
                 .fillMaxWidth()
                 .horizontalScroll(rememberScrollState())
                 .padding(horizontal = 6.dp, vertical = 2.dp),
-            horizontalArrangement = Arrangement.spacedBy(5.dp),
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             devKeys.forEach { (label, value) ->
                 Box(
                     modifier = Modifier
-                        .clip(RoundedCornerShape(6.dp))
+                        .clip(RoundedCornerShape(4.dp))
                         .background(PocketSurfaceElevated)
-                        .border(1.dp, PocketBorder, RoundedCornerShape(6.dp))
+                        .border(1.dp, PocketBorder, RoundedCornerShape(4.dp))
                         .clickable { onKeyPress(value) }
-                        .padding(horizontal = 9.dp, vertical = 6.dp),
+                        .padding(horizontal = 8.dp, vertical = 5.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
                         text = label,
-                        color = PocketCyan,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Bold,
+                        color = PocketTextPrimary,
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.SemiBold,
                         fontFamily = FontFamily.Monospace
                     )
                 }
@@ -225,15 +225,15 @@ fun DeveloperKeyToolbar(
                 .fillMaxWidth()
                 .horizontalScroll(rememberScrollState())
                 .padding(horizontal = 6.dp, vertical = 2.dp),
-            horizontalArrangement = Arrangement.spacedBy(5.dp),
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             quickSnippets.forEach { (label, command) ->
                 Box(
                     modifier = Modifier
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(PocketIndigo.copy(alpha = 0.15f))
-                        .border(1.dp, PocketIndigo.copy(alpha = 0.3f), RoundedCornerShape(12.dp))
+                        .clip(RoundedCornerShape(4.dp))
+                        .background(PocketSurfaceElevated)
+                        .border(1.dp, PocketBorder, RoundedCornerShape(4.dp))
                         .clickable { onSnippetRun(command) }
                         .padding(horizontal = 8.dp, vertical = 4.dp),
                     contentAlignment = Alignment.Center
@@ -245,12 +245,12 @@ fun DeveloperKeyToolbar(
                         Icon(
                             imageVector = Icons.Default.PlayArrow,
                             contentDescription = null,
-                            tint = PocketIndigo,
+                            tint = PocketTextSecondary,
                             modifier = Modifier.size(11.dp)
                         )
                         Text(
                             text = label,
-                            color = PocketTextPrimary,
+                            color = PocketTextSecondary,
                             fontSize = 11.sp,
                             fontFamily = FontFamily.Monospace
                         )
@@ -278,9 +278,9 @@ fun ReasoningChainBlock(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(8.dp))
-            .background(PocketPurple.copy(alpha = 0.07f))
-            .border(1.dp, PocketPurple.copy(alpha = 0.2f), RoundedCornerShape(8.dp))
+            .clip(RoundedCornerShape(6.dp))
+            .background(PocketSurfaceElevated)
+            .border(1.dp, PocketBorder, RoundedCornerShape(6.dp))
             .padding(horizontal = 10.dp, vertical = 6.dp)
     ) {
         Row(
@@ -296,27 +296,27 @@ fun ReasoningChainBlock(
             ) {
                 if (isStreaming) {
                     CircularProgressIndicator(
-                        modifier = Modifier.size(12.dp),
+                        modifier = Modifier.size(11.dp),
                         strokeWidth = 1.5.dp,
-                        color = PocketPurple
+                        color = PocketPrimaryBlue
                     )
                     Text(
                         text = "Thinking…",
-                        color = PocketPurple,
-                        fontSize = 11.5.sp,
+                        color = PocketTextSecondary,
+                        fontSize = 11.sp,
                         fontWeight = FontWeight.Medium
                     )
                 } else {
                     Icon(
                         imageVector = Icons.Default.Check,
                         contentDescription = null,
-                        tint = PocketPurple,
-                        modifier = Modifier.size(12.dp)
+                        tint = PocketEmerald,
+                        modifier = Modifier.size(11.dp)
                     )
                     Text(
                         text = "Planned approach",
-                        color = PocketPurple,
-                        fontSize = 11.5.sp,
+                        color = PocketTextSecondary,
+                        fontSize = 11.sp,
                         fontWeight = FontWeight.Medium
                     )
                 }
@@ -334,8 +334,8 @@ fun ReasoningChainBlock(
             Icon(
                 imageVector = if (expanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
                 contentDescription = null,
-                tint = PocketPurple.copy(alpha = 0.7f),
-                modifier = Modifier.size(14.dp)
+                tint = PocketTextMuted,
+                modifier = Modifier.size(13.dp)
             )
         }
 
@@ -344,8 +344,9 @@ fun ReasoningChainBlock(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(RoundedCornerShape(6.dp))
+                        .clip(RoundedCornerShape(4.dp))
                         .background(PocketObsidian)
+                        .border(1.dp, PocketBorder, RoundedCornerShape(4.dp))
                         .padding(8.dp)
                 ) {
                     Text(
@@ -459,7 +460,7 @@ fun CompactTimelineRow(
                     CircularProgressIndicator(
                         modifier = Modifier.size(11.dp),
                         strokeWidth = 1.5.dp,
-                        color = PocketCyan
+                        color = PocketEmerald
                     )
                 } else if (isError) {
                     Icon(
@@ -479,7 +480,7 @@ fun CompactTimelineRow(
 
                 Text(
                     text = cleanLabel,
-                    color = if (isRunning) PocketCyan else PocketTextPrimary,
+                    color = if (isRunning) PocketEmerald else PocketTextPrimary,
                     fontSize = 11.sp,
                     fontFamily = FontFamily.Monospace,
                     maxLines = 1,

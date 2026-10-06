@@ -221,7 +221,7 @@ fun PocketMasterWorkspace(
                     }
                     Text(
                         text = state.agentKind.title,
-                        color = PocketCyan,
+                        color = PocketTextSecondary,
                         fontSize = 10.5.sp,
                         fontFamily = FontFamily.Monospace,
                         maxLines = 1
@@ -268,7 +268,7 @@ fun PocketMasterWorkspace(
                 PocketStatusPill(
                     statusText = if (state.isRunning) "RUNNING" else "READY",
                     isRunning = state.isRunning,
-                    color = if (state.isRunning) PocketCyan else PocketEmerald
+                    color = if (state.isRunning) PocketEmerald else PocketTextMuted
                 )
 
                 // Menu ⋮
@@ -457,7 +457,7 @@ fun PocketMasterWorkspace(
                                 modifier = Modifier
                                     .size(6.dp)
                                     .clip(CircleShape)
-                                    .background(PocketCyan)
+                                    .background(PocketEmerald)
                             )
                         }
                     }
@@ -490,7 +490,7 @@ fun PocketMasterWorkspace(
                         if (state.changes.isNotEmpty()) {
                             Text(
                                 text = "(${state.changes.size})",
-                                color = PocketEmerald,
+                                color = PocketPrimaryBlue,
                                 fontSize = 10.sp,
                                 fontFamily = FontFamily.Monospace,
                                 fontWeight = FontWeight.Bold
@@ -528,7 +528,7 @@ fun PocketMasterWorkspace(
                                 modifier = Modifier
                                     .size(6.dp)
                                     .clip(CircleShape)
-                                    .background(PocketAmber)
+                                    .background(PocketEmerald)
                             )
                         }
                     }

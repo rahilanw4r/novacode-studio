@@ -209,7 +209,7 @@ fun PocketWebPreviewScreen(
                 Icon(
                     Icons.Default.Refresh,
                     contentDescription = "Reload",
-                    tint = PocketCyan,
+                    tint = PocketPrimaryBlue,
                     modifier = Modifier.size(16.dp)
                 )
             }
@@ -218,9 +218,9 @@ fun PocketWebPreviewScreen(
             Row(
                 modifier = Modifier
                     .weight(1f)
-                    .clip(RoundedCornerShape(8.dp))
+                    .clip(RoundedCornerShape(6.dp))
                     .background(PocketSurfaceElevated)
-                    .border(1.dp, PocketBorder, RoundedCornerShape(8.dp))
+                    .border(1.dp, PocketBorder, RoundedCornerShape(6.dp))
                     .padding(horizontal = 8.dp, vertical = 6.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -232,7 +232,7 @@ fun PocketWebPreviewScreen(
                         fontSize = 12.sp,
                         fontFamily = FontFamily.Monospace
                     ),
-                    cursorBrush = SolidColor(PocketCyan),
+                    cursorBrush = SolidColor(PocketPrimaryBlue),
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Go),
                     keyboardActions = KeyboardActions(
@@ -259,7 +259,7 @@ fun PocketWebPreviewScreen(
                 Icon(
                     Icons.Default.OpenInBrowser,
                     contentDescription = "Open in Browser",
-                    tint = PocketIndigo,
+                    tint = PocketTextSecondary,
                     modifier = Modifier.size(18.dp)
                 )
             }
@@ -272,7 +272,7 @@ fun PocketWebPreviewScreen(
                 Icon(
                     Icons.Default.Terminal,
                     contentDescription = "Console",
-                    tint = if (showConsole) PocketEmerald else PocketTextSecondary,
+                    tint = if (showConsole) PocketPrimaryBlue else PocketTextSecondary,
                     modifier = Modifier.size(16.dp)
                 )
             }
@@ -293,15 +293,15 @@ fun PocketWebPreviewScreen(
                 val active = selectedPreset == preset
                 Box(
                     modifier = Modifier
-                        .clip(RoundedCornerShape(6.dp))
-                        .background(if (active) PocketCyan.copy(alpha = 0.2f) else Color.Transparent)
-                        .border(1.dp, if (active) PocketCyan else Color.Transparent, RoundedCornerShape(6.dp))
+                        .clip(RoundedCornerShape(4.dp))
+                        .background(if (active) PocketPrimaryBlue.copy(alpha = 0.15f) else Color.Transparent)
+                        .border(1.dp, if (active) PocketPrimaryBlue else Color.Transparent, RoundedCornerShape(4.dp))
                         .clickable { selectedPreset = preset }
                         .padding(horizontal = 8.dp, vertical = 3.dp)
                 ) {
                     Text(
                         text = preset.label,
-                        color = if (active) PocketCyan else PocketTextMuted,
+                        color = if (active) PocketPrimaryBlue else PocketTextMuted,
                         fontSize = 11.sp,
                         fontWeight = FontWeight.SemiBold
                     )
@@ -322,10 +322,10 @@ fun PocketWebPreviewScreen(
                 val isAlive = activePorts.contains(port)
                 Box(
                     modifier = Modifier
-                        .clip(RoundedCornerShape(6.dp))
+                        .clip(RoundedCornerShape(4.dp))
                         .background(
                             when {
-                                isSelected -> PocketIndigo.copy(alpha = 0.28f)
+                                isSelected -> PocketPrimaryBlue.copy(alpha = 0.2f)
                                 isAlive -> PocketEmerald.copy(alpha = 0.15f)
                                 else -> PocketSurfaceElevated
                             }
@@ -333,11 +333,11 @@ fun PocketWebPreviewScreen(
                         .border(
                             1.dp,
                             when {
-                                isSelected -> PocketIndigo
+                                isSelected -> PocketPrimaryBlue
                                 isAlive -> PocketEmerald.copy(alpha = 0.4f)
-                                else -> Color.Transparent
+                                else -> PocketBorder
                             },
-                            RoundedCornerShape(6.dp)
+                            RoundedCornerShape(4.dp)
                         )
                         .clickable {
                             urlInput = target
@@ -477,44 +477,45 @@ fun PocketWebPreviewScreen(
                     ) {
                         Box(
                             modifier = Modifier
-                                .size(52.dp)
-                                .clip(RoundedCornerShape(12.dp))
-                                .background(PocketAmber.copy(alpha = 0.12f))
-                                .border(1.dp, PocketAmber.copy(alpha = 0.35f), RoundedCornerShape(12.dp)),
+                                .size(44.dp)
+                                .clip(RoundedCornerShape(6.dp))
+                                .background(PocketSurfaceElevated)
+                                .border(1.dp, PocketBorder, RoundedCornerShape(6.dp)),
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
                                 imageVector = Icons.Default.CloudOff,
                                 contentDescription = null,
-                                tint = PocketAmber,
-                                modifier = Modifier.size(28.dp)
+                                tint = PocketTextSecondary,
+                                modifier = Modifier.size(22.dp)
                             )
                         }
 
                         Text(
                             text = "Server Not Responding",
                             color = PocketTextPrimary,
-                            fontSize = 17.sp,
+                            fontSize = 15.sp,
                             fontWeight = FontWeight.Bold
                         )
 
                         Text(
                             text = currentUrl,
-                            color = PocketCyan,
+                            color = PocketTextSecondary,
                             fontSize = 12.sp,
                             fontFamily = FontFamily.Monospace,
                             modifier = Modifier
-                                .clip(RoundedCornerShape(6.dp))
+                                .clip(RoundedCornerShape(4.dp))
                                 .background(PocketSurfaceElevated)
+                                .border(1.dp, PocketBorder, RoundedCornerShape(4.dp))
                                 .padding(horizontal = 8.dp, vertical = 4.dp)
                         )
 
                         Text(
                             text = "Cannot connect to the local development server. It may still be compiling or has not been started yet.",
                             color = PocketTextSecondary,
-                            fontSize = 12.5.sp,
+                            fontSize = 12.sp,
                             textAlign = TextAlign.Center,
-                            lineHeight = 17.sp
+                            lineHeight = 16.sp
                         )
 
                         if (!projectWebKind.isNullOrBlank()) {
@@ -532,9 +533,9 @@ fun PocketWebPreviewScreen(
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .clip(RoundedCornerShape(8.dp))
-                                    .background(PocketEmerald.copy(alpha = 0.15f))
-                                    .border(1.dp, PocketEmerald.copy(alpha = 0.5f), RoundedCornerShape(8.dp))
+                                    .clip(RoundedCornerShape(6.dp))
+                                    .background(PocketEmerald.copy(alpha = 0.12f))
+                                    .border(1.dp, PocketEmerald.copy(alpha = 0.35f), RoundedCornerShape(6.dp))
                                     .clickable {
                                         val target = "http://127.0.0.1:$aliveAlternative/"
                                         urlInput = target
@@ -549,12 +550,12 @@ fun PocketWebPreviewScreen(
                                     verticalAlignment = Alignment.CenterVertically,
                                     horizontalArrangement = Arrangement.spacedBy(6.dp)
                                 ) {
-                                    Icon(Icons.Default.Refresh, contentDescription = null, tint = PocketEmerald, modifier = Modifier.size(15.dp))
+                                    Icon(Icons.Default.Refresh, contentDescription = null, tint = PocketEmerald, modifier = Modifier.size(14.dp))
                                     Text(
-                                        text = "⚡ Active server detected on :$aliveAlternative! Tap to switch",
+                                        text = "Active server on :$aliveAlternative — Tap to switch",
                                         color = PocketEmerald,
                                         fontSize = 11.5.sp,
-                                        fontWeight = FontWeight.Bold
+                                        fontWeight = FontWeight.SemiBold
                                     )
                                 }
                             }
@@ -562,9 +563,9 @@ fun PocketWebPreviewScreen(
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .clip(RoundedCornerShape(8.dp))
-                                    .background(PocketIndigo.copy(alpha = 0.15f))
-                                    .border(1.dp, PocketIndigo.copy(alpha = 0.4f), RoundedCornerShape(8.dp))
+                                    .clip(RoundedCornerShape(6.dp))
+                                    .background(PocketSurfaceElevated)
+                                    .border(1.dp, PocketBorder, RoundedCornerShape(6.dp))
                                     .clickable {
                                         val target = "http://127.0.0.1:$stackPort/"
                                         urlInput = target
@@ -576,19 +577,19 @@ fun PocketWebPreviewScreen(
                                 contentAlignment = Alignment.Center
                             ) {
                                 Text(
-                                    text = "💡 Stack default is :$stackPort ($projectWebKind). Tap to switch",
-                                    color = PocketIndigo,
+                                    text = "Stack default :$stackPort ($projectWebKind) — Tap to switch",
+                                    color = PocketPrimaryBlue,
                                     fontSize = 11.5.sp,
-                                    fontWeight = FontWeight.SemiBold
+                                    fontWeight = FontWeight.Medium
                                 )
                             }
                         } else if (staticPort > 0 && currentPort != staticPort) {
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .clip(RoundedCornerShape(8.dp))
-                                    .background(PocketCyan.copy(alpha = 0.15f))
-                                    .border(1.dp, PocketCyan.copy(alpha = 0.4f), RoundedCornerShape(8.dp))
+                                    .clip(RoundedCornerShape(6.dp))
+                                    .background(PocketSurfaceElevated)
+                                    .border(1.dp, PocketBorder, RoundedCornerShape(6.dp))
                                     .clickable {
                                         val target = "http://127.0.0.1:$staticPort/"
                                         urlInput = target
@@ -600,10 +601,10 @@ fun PocketWebPreviewScreen(
                                 contentAlignment = Alignment.Center
                             ) {
                                 Text(
-                                    text = "📄 Static HTML preview available on :$staticPort. Tap to view",
-                                    color = PocketCyan,
+                                    text = "Static HTML server :$staticPort — Tap to switch",
+                                    color = PocketPrimaryBlue,
                                     fontSize = 11.5.sp,
-                                    fontWeight = FontWeight.SemiBold
+                                    fontWeight = FontWeight.Medium
                                 )
                             }
                         }

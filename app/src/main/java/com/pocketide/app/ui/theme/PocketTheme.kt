@@ -37,49 +37,49 @@ data class PocketColorPalette(
     val isDark: Boolean,
 )
 
-// Restrained Professional Dark Developer-Tool Palette
+// Minimal Developer Dark Palette (Slate / Neutral Charcoal)
 val PocketDarkPalette = PocketColorPalette(
-    background = Color(0xFF111315),       // Background: #111315
-    surface = Color(0xFF191C20),          // Surface: #191C20
-    surfaceVariant = Color(0xFF20242A),   // Elevated: #20242A
-    surfaceElevated = Color(0xFF20242A),  // Elevated: #20242A
-    border = Color(0xFF2B3037),           // Border: #2B3037
-    borderGlow = Color(0xFF353D4C),
-    textPrimary = Color(0xFFF1F3F5),      // Primary text: #F1F3F5
-    textSecondary = Color(0xFFA4A9B1),    // Secondary text: #A4A9B1
-    textMuted = Color(0xFF747A83),        // Tertiary text: #747A83
-    primaryBlue = Color(0xFF4F8CFF),      // Primary blue: #4F8CFF
-    bluePressed = Color(0xFF2E5FAF),      // Blue pressed: #2E5FAF
-    blueSurface = Color(0xFF1D2A40),      // Blue surface: #1D2A40
-    emerald = Color(0xFF3FA66B),          // Success: #3FA66B
-    indigo = Color(0xFF4F8CFF),           // Interaction blue: #4F8CFF
-    cyan = Color(0xFF4F8CFF),             // Primary action blue: #4F8CFF
-    amber = Color(0xFFD69A3A),            // Warning: #D69A3A
-    rose = Color(0xFFD85C5C),             // Error: #D85C5C
-    purple = Color(0xFF8B5CF6),           // Secondary accent
+    background = Color(0xFF0D1117),       // Deep neutral background
+    surface = Color(0xFF161B22),          // Primary neutral surface
+    surfaceVariant = Color(0xFF21262D),   // Elevated card surface
+    surfaceElevated = Color(0xFF21262D),  // Raised neutral surface
+    border = Color(0xFF30363D),           // Subtle crisp neutral border
+    borderGlow = Color(0xFF30363D),       // Neutral border (no decorative glow)
+    textPrimary = Color(0xFFF0F6FC),      // Crisp high-contrast readable text
+    textSecondary = Color(0xFF8B949E),    // Muted secondary metadata
+    textMuted = Color(0xFF6E7681),        // Tertiary text
+    primaryBlue = Color(0xFF2F81F7),      // Blue ONLY for primary actions / active selection
+    bluePressed = Color(0xFF1F6FEB),      // Deep action blue
+    blueSurface = Color(0xFF121D2F),      // Subtle neutral blue container
+    emerald = Color(0xFF2EA043),          // Green ONLY for success / running states
+    indigo = Color(0xFF2F81F7),           // Mapped strictly to primary blue
+    cyan = Color(0xFF2F81F7),             // Mapped strictly to primary blue
+    amber = Color(0xFF8B949E),            // Muted neutral secondary (no bright orange)
+    rose = Color(0xFFF85149),             // Red ONLY for errors / destructive actions
+    purple = Color(0xFF8B949E),           // Neutralized to secondary text
     isDark = true,
 )
 
-// Clean Light Developer-Tool Palette
+// Minimal Developer Light Palette
 val PocketLightPalette = PocketColorPalette(
     background = Color(0xFFF6F8FA),
     surface = Color(0xFFFFFFFF),
-    surfaceVariant = Color(0xFFEEF2F6),
-    surfaceElevated = Color(0xFFE2E7ED),
+    surfaceVariant = Color(0xFFF0F2F5),
+    surfaceElevated = Color(0xFFE6EBF1),
     border = Color(0xFFD0D7DE),
-    borderGlow = Color(0xFFB8C2CC),
+    borderGlow = Color(0xFFD0D7DE),
     textPrimary = Color(0xFF1F2328),
     textSecondary = Color(0xFF59636E),
     textMuted = Color(0xFF8C959F),
     primaryBlue = Color(0xFF0969DA),
     bluePressed = Color(0xFF064EAA),
-    blueSurface = Color(0xFFDDF4FF),
-    emerald = Color(0xFF0F9960),
+    blueSurface = Color(0xFFEBF5FF),
+    emerald = Color(0xFF1A7F37),
     indigo = Color(0xFF0969DA),
     cyan = Color(0xFF0969DA),
-    amber = Color(0xFF9A6700),
+    amber = Color(0xFF59636E),
     rose = Color(0xFFCF222E),
-    purple = Color(0xFF8250DF),
+    purple = Color(0xFF59636E),
     isDark = false,
 )
 
@@ -191,51 +191,51 @@ val PocketGlassGradient: Brush
     get() = Brush.linearGradient(listOf(LocalPocketColors.current.surfaceVariant, LocalPocketColors.current.surfaceVariant))
 
 private val PocketDarkColors = darkColorScheme(
-    primary = Color(0xFF4F8CFF),
+    primary = Color(0xFF2F81F7),
     onPrimary = Color(0xFFFFFFFF),
-    primaryContainer = Color(0xFF1D2A40),
+    primaryContainer = Color(0xFF121D2F),
     onPrimaryContainer = Color(0xFFD1E4FF),
-    secondary = Color(0xFF3FA66B),
+    secondary = Color(0xFF2EA043),
     onSecondary = Color(0xFFFFFFFF),
-    secondaryContainer = Color(0xFF1D2A40),
-    onSecondaryContainer = Color(0xFFD1E4FF),
-    tertiary = Color(0xFF8B5CF6),
+    secondaryContainer = Color(0xFF161B22),
+    onSecondaryContainer = Color(0xFFF0F6FC),
+    tertiary = Color(0xFF8B949E),
     onTertiary = Color(0xFFFFFFFF),
-    background = Color(0xFF111315),
-    onBackground = Color(0xFFF1F3F5),
-    surface = Color(0xFF191C20),
-    onSurface = Color(0xFFF1F3F5),
-    surfaceVariant = Color(0xFF20242A),
-    onSurfaceVariant = Color(0xFFA4A9B1),
-    surfaceContainer = Color(0xFF20242A),
-    surfaceContainerHigh = Color(0xFF2B3037),
-    outline = Color(0xFF2B3037),
-    outlineVariant = Color(0xFF353D4C),
-    error = Color(0xFFD85C5C),
+    background = Color(0xFF0D1117),
+    onBackground = Color(0xFFF0F6FC),
+    surface = Color(0xFF161B22),
+    onSurface = Color(0xFFF0F6FC),
+    surfaceVariant = Color(0xFF21262D),
+    onSurfaceVariant = Color(0xFF8B949E),
+    surfaceContainer = Color(0xFF21262D),
+    surfaceContainerHigh = Color(0xFF30363D),
+    outline = Color(0xFF30363D),
+    outlineVariant = Color(0xFF30363D),
+    error = Color(0xFFF85149),
     onError = Color(0xFFFFFFFF),
 )
 
 private val PocketLightColors = lightColorScheme(
-    primary = Color(0xFF0F9960),
+    primary = Color(0xFF0969DA),
     onPrimary = Color(0xFFFFFFFF),
-    primaryContainer = Color(0xFFE6F9F0),
-    onPrimaryContainer = Color(0xFF064E3B),
-    secondary = Color(0xFF0969DA),
+    primaryContainer = Color(0xFFEBF5FF),
+    onPrimaryContainer = Color(0xFF054DA7),
+    secondary = Color(0xFF1A7F37),
     onSecondary = Color(0xFFFFFFFF),
-    secondaryContainer = Color(0xFFDDF4FF),
+    secondaryContainer = Color(0xFFEBF5FF),
     onSecondaryContainer = Color(0xFF054DA7),
-    tertiary = Color(0xFF8250DF),
+    tertiary = Color(0xFF59636E),
     onTertiary = Color(0xFFFFFFFF),
     background = Color(0xFFF6F8FA),
     onBackground = Color(0xFF1F2328),
     surface = Color(0xFFFFFFFF),
     onSurface = Color(0xFF1F2328),
-    surfaceVariant = Color(0xFFEEF2F6),
+    surfaceVariant = Color(0xFFF0F2F5),
     onSurfaceVariant = Color(0xFF59636E),
-    surfaceContainer = Color(0xFFEEF2F6),
-    surfaceContainerHigh = Color(0xFFE2E7ED),
+    surfaceContainer = Color(0xFFF0F2F5),
+    surfaceContainerHigh = Color(0xFFE6EBF1),
     outline = Color(0xFFD0D7DE),
-    outlineVariant = Color(0xFFB8C2CC),
+    outlineVariant = Color(0xFFD0D7DE),
     error = Color(0xFFCF222E),
     onError = Color(0xFFFFFFFF),
 )

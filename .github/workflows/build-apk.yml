@@ -57,16 +57,16 @@ jobs:
           cp "$APK_FILE" "$APK_NAME"
 
           cat << 'EOF' > release_notes.md
-          ### Pocket IDE v1.0.21
+          ### Pocket IDE v1.0.22
 
           **Your on-device AI-powered development workspace.**
 
           #### What's New:
-          - **Intelligent Port Conflict Resolution**: Live multi-port health checks discover active local servers across all standard ports (`:3000`, `:5000`, `:5173`, `:5500`, `:8000`, `:8080`) with real-time active status badges.
-          - **Seamless Static & Backend Coexistence**: Integrated private loopback HTTP server serves static HTML/CSS/JS alongside Node and backend scripts without port collisions or stale URL locks.
-          - **Accurate Dev Server Command Execution**: Context-aware command detection (`node server.js`, `node app.js`, `npm start`, etc.) ensuring "Start Dev Server" launches correctly without failing on missing dev scripts.
-          - **Smart Offline Recovery Card**: Clear alerts for active server ports and stack defaults with 1-tap switching and inline quick-port pills directly in the error card.
-          - **Refined Ports Toolbar**: Clean visual separation between device viewport presets and quick port buttons.
+          - **Developer-Focused Minimal UI Redesign**: Transitioned to a clean, dark neutral developer palette (slate/charcoal) with crisp typography and subtle borders.
+          - **Restrained Semantic Colors**: Strictly restricted colors by role — Blue exclusively for primary actions/selection, Green exclusively for running/success states, and Red for errors/destructive actions.
+          - **Streamlined AI Workspace**: Conversation is front and center; completed reasoning/thinking auto-collapses into a compact status row; tool executions are formatted as compact, expandable single-line items.
+          - **Clean Project Workspace Dock**: Fast, unobtrusive switching between Agent, Files, Terminal, and Preview with understated active indicators.
+          - **Minimalist Terminal & Preview**: Clean monospace terminal session tabs and developer preview toolbar without decorative gradients or colorful distractions.
           EOF
 
           gh release create "$TAG" "$APK_NAME" \

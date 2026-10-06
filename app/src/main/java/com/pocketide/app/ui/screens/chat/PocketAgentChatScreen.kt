@@ -216,15 +216,15 @@ fun PocketAgentChatScreen(
                 quickPrompts.forEach { prompt ->
                     Box(
                         modifier = Modifier
-                            .clip(RoundedCornerShape(16.dp))
+                            .clip(RoundedCornerShape(6.dp))
                             .background(PocketSurfaceElevated)
-                            .border(1.dp, PocketBorder, RoundedCornerShape(16.dp))
+                            .border(1.dp, PocketBorder, RoundedCornerShape(6.dp))
                             .clickable { promptInput = prompt.substringAfter(' ') }
                             .padding(horizontal = 10.dp, vertical = 6.dp)
                     ) {
                         Text(
                             text = prompt,
-                            color = PocketCyan,
+                            color = PocketTextSecondary,
                             fontSize = 11.5.sp,
                             fontWeight = FontWeight.Medium
                         )
@@ -246,14 +246,14 @@ fun PocketAgentChatScreen(
                 attachments.forEach { att ->
                     Row(
                         modifier = Modifier
-                            .clip(RoundedCornerShape(8.dp))
+                            .clip(RoundedCornerShape(6.dp))
                             .background(PocketSurfaceElevated)
-                            .border(1.dp, PocketBorder, RoundedCornerShape(8.dp))
+                            .border(1.dp, PocketBorder, RoundedCornerShape(6.dp))
                             .padding(horizontal = 8.dp, vertical = 4.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
-                        Icon(Icons.Default.AttachFile, contentDescription = null, tint = PocketCyan, modifier = Modifier.size(13.dp))
+                        Icon(Icons.Default.AttachFile, contentDescription = null, tint = PocketPrimaryBlue, modifier = Modifier.size(13.dp))
                         Text(att.displayName, color = PocketTextPrimary, fontSize = 11.sp, maxLines = 1)
                         Icon(
                             imageVector = Icons.Default.Close,
@@ -333,7 +333,7 @@ fun PocketAgentChatScreen(
                     fontSize = 13.sp,
                     lineHeight = 18.sp
                 ),
-                cursorBrush = SolidColor(PocketCyan),
+                cursorBrush = SolidColor(PocketPrimaryBlue),
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
                 keyboardActions = KeyboardActions(
                     onSend = {
@@ -364,11 +364,11 @@ fun PocketAgentChatScreen(
                 IconButton(
                     onClick = onStop,
                     modifier = Modifier
-                        .size(36.dp)
-                        .clip(CircleShape)
+                        .size(34.dp)
+                        .clip(RoundedCornerShape(6.dp))
                         .background(PocketRose)
                 ) {
-                    Icon(Icons.Default.Stop, contentDescription = "Stop", tint = Color.White, modifier = Modifier.size(18.dp))
+                    Icon(Icons.Default.Stop, contentDescription = "Stop", tint = Color.White, modifier = Modifier.size(16.dp))
                 }
             } else {
                 IconButton(
@@ -382,15 +382,15 @@ fun PocketAgentChatScreen(
                     },
                     enabled = promptInput.isNotBlank(),
                     modifier = Modifier
-                        .size(36.dp)
-                        .clip(CircleShape)
-                        .background(if (promptInput.isNotBlank()) PocketIndigo else PocketSurfaceElevated)
+                        .size(34.dp)
+                        .clip(RoundedCornerShape(6.dp))
+                        .background(if (promptInput.isNotBlank()) PocketPrimaryBlue else PocketSurfaceElevated)
                 ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.Send,
                         contentDescription = "Send",
                         tint = if (promptInput.isNotBlank()) Color.White else PocketTextMuted,
-                        modifier = Modifier.size(18.dp)
+                        modifier = Modifier.size(16.dp)
                     )
                 }
             }
@@ -584,8 +584,8 @@ private fun ChatMessageItem(
                                 Box(
                                     modifier = Modifier
                                         .clip(RoundedCornerShape(6.dp))
-                                        .background(PocketCyan.copy(alpha = 0.15f))
-                                        .border(1.dp, PocketCyan.copy(alpha = 0.4f), RoundedCornerShape(6.dp))
+                                        .background(PocketPrimaryBlue.copy(alpha = 0.12f))
+                                        .border(1.dp, PocketPrimaryBlue.copy(alpha = 0.35f), RoundedCornerShape(6.dp))
                                         .clickable { onOpenPreview() }
                                         .padding(horizontal = 8.dp, vertical = 4.dp)
                                 ) {
@@ -596,12 +596,12 @@ private fun ChatMessageItem(
                                         Icon(
                                             imageVector = Icons.Default.Language,
                                             contentDescription = null,
-                                            tint = PocketCyan,
+                                            tint = PocketPrimaryBlue,
                                             modifier = Modifier.size(12.dp)
                                         )
                                         Text(
                                             text = "Open Preview",
-                                            color = PocketCyan,
+                                            color = PocketPrimaryBlue,
                                             fontSize = 10.5.sp,
                                             fontWeight = FontWeight.SemiBold
                                         )
@@ -653,38 +653,39 @@ private fun ToolApprovalCard(
 ) {
     PocketGlassCard(
         modifier = Modifier.fillMaxWidth(),
-        borderColor = PocketAmber,
-        glowEffect = true
+        borderColor = PocketBorder,
+        glowEffect = false
     ) {
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(6.dp)
             ) {
-                Icon(Icons.Default.Warning, contentDescription = null, tint = PocketAmber, modifier = Modifier.size(18.dp))
+                Icon(Icons.Default.Warning, contentDescription = null, tint = PocketTextSecondary, modifier = Modifier.size(16.dp))
                 Text(
                     text = "Permission Request: ${request.toolName}",
-                    color = PocketAmber,
+                    color = PocketTextPrimary,
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Bold
                 )
             }
             Text(
                 text = request.explanation,
-                color = PocketTextPrimary,
+                color = PocketTextSecondary,
                 fontSize = 12.sp
             )
             request.commandPreview?.let { cmd ->
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(RoundedCornerShape(6.dp))
+                        .clip(RoundedCornerShape(4.dp))
                         .background(PocketObsidian)
+                        .border(1.dp, PocketBorder, RoundedCornerShape(4.dp))
                         .padding(8.dp)
                 ) {
                     Text(
                         text = cmd,
-                        color = PocketCyan,
+                        color = PocketTextPrimary,
                         fontSize = 11.5.sp,
                         fontFamily = FontFamily.Monospace
                     )
@@ -698,22 +699,22 @@ private fun ToolApprovalCard(
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     Box(
                         modifier = Modifier
-                            .clip(RoundedCornerShape(8.dp))
-                            .background(PocketRose.copy(alpha = 0.2f))
-                            .border(1.dp, PocketRose, RoundedCornerShape(8.dp))
+                            .clip(RoundedCornerShape(6.dp))
+                            .background(PocketSurfaceElevated)
+                            .border(1.dp, PocketBorder, RoundedCornerShape(6.dp))
                             .clickable(onClick = onReject)
                             .padding(horizontal = 12.dp, vertical = 6.dp)
                     ) {
-                        Text("Deny", color = PocketRose, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                        Text("Deny", color = PocketRose, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
                     }
                     Box(
                         modifier = Modifier
-                            .clip(RoundedCornerShape(8.dp))
-                            .background(PocketEmerald)
+                            .clip(RoundedCornerShape(6.dp))
+                            .background(PocketPrimaryBlue)
                             .clickable(onClick = onApprove)
                             .padding(horizontal = 14.dp, vertical = 6.dp)
                     ) {
-                        Text("Allow", color = Color.Black, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                        Text("Allow", color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
                     }
                 }
             }

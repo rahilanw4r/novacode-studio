@@ -59,6 +59,7 @@ import com.pocketide.app.ui.theme.PocketBorder
 import com.pocketide.app.ui.theme.PocketCyan
 import com.pocketide.app.ui.theme.PocketEmerald
 import com.pocketide.app.ui.theme.PocketIndigo
+import com.pocketide.app.ui.theme.PocketPrimaryBlue
 import com.pocketide.app.ui.theme.PocketPurple
 import com.pocketide.app.ui.theme.PocketSurface
 import com.pocketide.app.ui.theme.PocketSurfaceElevated
@@ -209,7 +210,7 @@ fun CommandCenterDialog(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 16.dp),
-            shape = RoundedCornerShape(16.dp),
+            shape = RoundedCornerShape(8.dp),
             color = PocketSurface,
             border = androidx.compose.foundation.BorderStroke(1.dp, PocketBorder)
         ) {
@@ -225,12 +226,12 @@ fun CommandCenterDialog(
                     Box(
                         modifier = Modifier
                             .size(24.dp)
-                            .clip(RoundedCornerShape(6.dp))
+                            .clip(RoundedCornerShape(4.dp))
                             .background(PocketSurfaceElevated)
-                            .border(1.dp, PocketBorder, RoundedCornerShape(6.dp)),
+                            .border(1.dp, PocketBorder, RoundedCornerShape(4.dp)),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text("⌘", color = PocketEmerald, fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                        Text("⌘", color = PocketPrimaryBlue, fontSize = 13.sp, fontWeight = FontWeight.Bold)
                     }
 
                     BasicTextField(
@@ -241,10 +242,10 @@ fun CommandCenterDialog(
                             .focusRequester(focusRequester),
                         textStyle = TextStyle(
                             color = PocketTextPrimary,
-                            fontSize = 14.sp,
+                            fontSize = 13.sp,
                             fontWeight = FontWeight.Medium
                         ),
-                        cursorBrush = SolidColor(PocketEmerald),
+                        cursorBrush = SolidColor(PocketPrimaryBlue),
                         singleLine = true,
                         decorationBox = { innerTextField ->
                             if (query.isEmpty()) {
@@ -309,8 +310,8 @@ fun CommandCenterDialog(
                                 ) {
                                     Box(
                                         modifier = Modifier
-                                            .size(30.dp)
-                                            .clip(RoundedCornerShape(8.dp))
+                                            .size(28.dp)
+                                            .clip(RoundedCornerShape(4.dp))
                                             .background(PocketSurfaceElevated),
                                         contentAlignment = Alignment.Center
                                     ) {
@@ -346,7 +347,7 @@ fun CommandCenterDialog(
                                     ) {
                                         Text(
                                             text = action.tag,
-                                            color = PocketEmerald,
+                                            color = PocketPrimaryBlue,
                                             fontSize = 10.sp,
                                             fontFamily = FontFamily.Monospace,
                                             fontWeight = FontWeight.Bold
