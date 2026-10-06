@@ -80,15 +80,16 @@ jobs:
           EOF
 
           cat << 'EOF' > release_notes.md
-          ### Pocket IDE v1.0.25
-          <!-- versionCode: 26 -->
+          ### Pocket IDE v1.0.26
+          <!-- versionCode: 27 -->
 
-          **Your on-device AI-powered development workspace.**
+          **Minimal, fast, and ChatGPT-styled mobile IDE workspace.**
 
           #### What's New:
-          - **Streamlined Agent Configuration**: Consolidated the redundant DeepSeek agent tab into the universal Coding Agent (which already natively supports DeepSeek, OpenRouter, Claude, Gemini, and OpenAI).
-          - **Unified Agent Naming**: Renamed agent interface to "AI Agent" / "Coding Agent" across the top bar, navigation, and workspace for total consistency.
-          - **Seamless Updates**: Fully automated in-app update delivery with verified manifest and GitHub Releases fallback.
+          - **Clean Minimal Home Screen**: Removed clutter, cards, and duplicate actions. Kept only New Project, Open Project, and Recent Projects.
+          - **ChatGPT Aesthetic**: Applied authentic ChatGPT dark theme (`#212121`, `#171717`, `#2F2F2F`, `#383838`) with OpenAI green accents across the whole app.
+          - **ChatGPT Style Chatbot**: Floating capsule input bar with circular action buttons, right-aligned sleek rounded user message bubbles, and full-width markdown responses.
+          - **Fast & Smooth Performance**: Optimized layouts and eliminated redundant shadow and draw overhead.
           EOF
 
           gh release create "$TAG" "$APK_NAME" pocket-ide-update.json \

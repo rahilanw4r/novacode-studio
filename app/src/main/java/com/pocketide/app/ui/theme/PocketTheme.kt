@@ -37,26 +37,26 @@ data class PocketColorPalette(
     val isDark: Boolean,
 )
 
-// Minimal Developer Dark Palette (Slate / Neutral Charcoal)
+// Authentic ChatGPT Dark Palette (Clean, Neutral, Fast)
 val PocketDarkPalette = PocketColorPalette(
-    background = Color(0xFF0D1117),       // Deep neutral background
-    surface = Color(0xFF161B22),          // Primary neutral surface
-    surfaceVariant = Color(0xFF21262D),   // Elevated card surface
-    surfaceElevated = Color(0xFF21262D),  // Raised neutral surface
-    border = Color(0xFF30363D),           // Subtle crisp neutral border
-    borderGlow = Color(0xFF30363D),       // Neutral border (no decorative glow)
-    textPrimary = Color(0xFFF0F6FC),      // Crisp high-contrast readable text
-    textSecondary = Color(0xFF8B949E),    // Muted secondary metadata
-    textMuted = Color(0xFF6E7681),        // Tertiary text
-    primaryBlue = Color(0xFF2F81F7),      // Blue ONLY for primary actions / active selection
-    bluePressed = Color(0xFF1F6FEB),      // Deep action blue
-    blueSurface = Color(0xFF121D2F),      // Subtle neutral blue container
-    emerald = Color(0xFF2EA043),          // Green ONLY for success / running states
-    indigo = Color(0xFF2F81F7),           // Mapped strictly to primary blue
-    cyan = Color(0xFF2F81F7),             // Mapped strictly to primary blue
-    amber = Color(0xFF8B949E),            // Muted neutral secondary (no bright orange)
-    rose = Color(0xFFF85149),             // Red ONLY for errors / destructive actions
-    purple = Color(0xFF8B949E),           // Neutralized to secondary text
+    background = Color(0xFF212121),       // ChatGPT main background
+    surface = Color(0xFF171717),          // ChatGPT deep surface / top bar
+    surfaceVariant = Color(0xFF2F2F2F),   // ChatGPT card / bubble surface
+    surfaceElevated = Color(0xFF2F2F2F),  // ChatGPT raised surface
+    border = Color(0xFF383838),           // Subtle crisp neutral border
+    borderGlow = Color(0xFF383838),       // Neutral border (no decorative glow)
+    textPrimary = Color(0xFFECECEC),      // ChatGPT crisp high-contrast readable text
+    textSecondary = Color(0xFFB4B4B4),    // ChatGPT secondary metadata
+    textMuted = Color(0xFF8E8E8E),        // ChatGPT muted tertiary text
+    primaryBlue = Color(0xFF10A37F),      // OpenAI Green / accent
+    bluePressed = Color(0xFF0E8A6B),      // Deep action green
+    blueSurface = Color(0xFF2F2F2F),      // Subtle container
+    emerald = Color(0xFF10A37F),          // Green for success / running states
+    indigo = Color(0xFF10A37F),           // Mapped strictly to primary accent
+    cyan = Color(0xFF10A37F),             // Mapped strictly to primary accent
+    amber = Color(0xFFB4B4B4),            // Neutral secondary
+    rose = Color(0xFFEF4444),             // Red ONLY for errors / destructive actions
+    purple = Color(0xFFB4B4B4),           // Neutralized to secondary text
     isDark = true,
 )
 
@@ -191,27 +191,27 @@ val PocketGlassGradient: Brush
     get() = Brush.linearGradient(listOf(LocalPocketColors.current.surfaceVariant, LocalPocketColors.current.surfaceVariant))
 
 private val PocketDarkColors = darkColorScheme(
-    primary = Color(0xFF2F81F7),
+    primary = Color(0xFF10A37F),
     onPrimary = Color(0xFFFFFFFF),
-    primaryContainer = Color(0xFF121D2F),
-    onPrimaryContainer = Color(0xFFD1E4FF),
-    secondary = Color(0xFF2EA043),
+    primaryContainer = Color(0xFF2F2F2F),
+    onPrimaryContainer = Color(0xFFECECEC),
+    secondary = Color(0xFF10A37F),
     onSecondary = Color(0xFFFFFFFF),
-    secondaryContainer = Color(0xFF161B22),
-    onSecondaryContainer = Color(0xFFF0F6FC),
-    tertiary = Color(0xFF8B949E),
+    secondaryContainer = Color(0xFF171717),
+    onSecondaryContainer = Color(0xFFECECEC),
+    tertiary = Color(0xFFB4B4B4),
     onTertiary = Color(0xFFFFFFFF),
-    background = Color(0xFF0D1117),
-    onBackground = Color(0xFFF0F6FC),
-    surface = Color(0xFF161B22),
-    onSurface = Color(0xFFF0F6FC),
-    surfaceVariant = Color(0xFF21262D),
-    onSurfaceVariant = Color(0xFF8B949E),
-    surfaceContainer = Color(0xFF21262D),
-    surfaceContainerHigh = Color(0xFF30363D),
-    outline = Color(0xFF30363D),
-    outlineVariant = Color(0xFF30363D),
-    error = Color(0xFFF85149),
+    background = Color(0xFF212121),
+    onBackground = Color(0xFFECECEC),
+    surface = Color(0xFF171717),
+    onSurface = Color(0xFFECECEC),
+    surfaceVariant = Color(0xFF2F2F2F),
+    onSurfaceVariant = Color(0xFFB4B4B4),
+    surfaceContainer = Color(0xFF2F2F2F),
+    surfaceContainerHigh = Color(0xFF383838),
+    outline = Color(0xFF383838),
+    outlineVariant = Color(0xFF383838),
+    error = Color(0xFFEF4444),
     onError = Color(0xFFFFFFFF),
 )
 

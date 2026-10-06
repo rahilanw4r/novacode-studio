@@ -346,90 +346,110 @@ fun PocketAgentChatScreen(
             }
         }
 
-        // Input bar
-        Row(
+        // ChatGPT style floating capsule input bar
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(PocketSurface)
-                .border(1.dp, PocketBorder)
-                .padding(horizontal = 10.dp, vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                .padding(horizontal = 12.dp, vertical = 8.dp)
         ) {
-            IconButton(
-                onClick = onPickAttachment,
-                modifier = Modifier.size(32.dp)
-            ) {
-                Icon(Icons.Default.AttachFile, contentDescription = "Attach", tint = PocketTextSecondary, modifier = Modifier.size(18.dp))
-            }
-
-            BasicTextField(
-                value = promptInput,
-                onValueChange = { promptInput = it },
-                textStyle = TextStyle(
-                    color = PocketTextPrimary,
-                    fontSize = 13.sp,
-                    lineHeight = 18.sp
-                ),
-                cursorBrush = SolidColor(PocketPrimaryBlue),
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
-                keyboardActions = KeyboardActions(
-                    onSend = {
-                        val text = promptInput.trim()
-                        if (text.isNotEmpty() && !isRunning) {
-                            onSend(text)
-                            promptInput = ""
-                            isEditingPrompt = false
-                        }
-                    }
-                ),
+            Row(
                 modifier = Modifier
-                    .weight(1f)
-                    .focusRequester(focusRequester),
-                decorationBox = { inner ->
-                    if (promptInput.isEmpty()) {
-                        Text(
-                            text = if (isRunning) "Agent is executing tasks…" else "Ask agent to write, refactor, or build…",
-                            color = PocketTextMuted,
-                            fontSize = 13.sp
-                        )
-                    }
-                    inner()
-                }
-            )
-
-            if (isRunning) {
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(26.dp))
+                    .background(PocketSurfaceElevated)
+                    .border(1.dp, PocketBorder, RoundedCornerShape(26.dp))
+                    .padding(horizontal = 8.dp, vertical = 6.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
                 IconButton(
-                    onClick = onStop,
+                    onClick = onPickAttachment,
                     modifier = Modifier
-                        .size(34.dp)
-                        .clip(RoundedCornerShape(6.dp))
-                        .background(PocketRose)
-                ) {
-                    Icon(Icons.Default.Stop, contentDescription = "Stop", tint = Color.White, modifier = Modifier.size(16.dp))
-                }
-            } else {
-                IconButton(
-                    onClick = {
-                        val text = promptInput.trim()
-                        if (text.isNotEmpty()) {
-                            onSend(text)
-                            promptInput = ""
-                            isEditingPrompt = false
-                        }
-                    },
-                    enabled = promptInput.isNotBlank(),
-                    modifier = Modifier
-                        .size(34.dp)
-                        .clip(RoundedCornerShape(6.dp))
-                        .background(if (promptInput.isNotBlank()) PocketPrimaryBlue else PocketSurfaceElevated)
+                        .size(36.dp)
+                        .clip(CircleShape)
                 ) {
                     Icon(
-                        imageVector = Icons.AutoMirrored.Filled.Send,
-                        contentDescription = "Send",
-                        tint = if (promptInput.isNotBlank()) Color.White else PocketTextMuted,
-                        modifier = Modifier.size(16.dp)
+                        imageVector = Icons.Default.AttachFile,
+                        contentDescription = "Attach",
+                        tint = PocketTextSecondary,
+                        modifier = Modifier.size(19.dp)
                     )
+                }
+
+                BasicTextField(
+                    value = promptInput,
+                    onValueChange = { promptInput = it },
+                    textStyle = TextStyle(
+                        color = PocketTextPrimary,
+                        fontSize = 14.sp,
+                        lineHeight = 20.sp
+                    ),
+                    cursorBrush = SolidColor(PocketPrimaryBlue),
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
+                    keyboardActions = KeyboardActions(
+                        onSend = {
+                            val text = promptInput.trim()
+                            if (text.isNotEmpty() && !isRunning) {
+                                onSend(text)
+                                promptInput = ""
+                                isEditingPrompt = false
+                            }
+                        }
+                    ),
+                    modifier = Modifier
+                        .weight(1f)
+                        .focusRequester(focusRequester),
+                    decorationBox = { inner ->
+                        if (promptInput.isEmpty()) {
+                            Text(
+                                text = if (isRunning) "Agent is thinking…" else "Message Agent…",
+                                color = PocketTextMuted,
+                                fontSize = 14.sp
+                            )
+                        }
+                        inner()
+                    }
+                )
+
+                if (isRunning) {
+                    IconButton(
+                        onClick = onStop,
+                        modifier = Modifier
+                            .size(36.dp)
+                            .clip(CircleShape)
+                            .background(PocketRose)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Stop,
+                            contentDescription = "Stop",
+                            tint = Color.White,
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
+                } else {
+                    val hasText = promptInput.isNotBlank()
+                    IconButton(
+                        onClick = {
+                            val text = promptInput.trim()
+                            if (text.isNotEmpty()) {
+                                onSend(text)
+                                promptInput = ""
+                                isEditingPrompt = false
+                            }
+                        },
+                        enabled = hasText,
+                        modifier = Modifier
+                            .size(36.dp)
+                            .clip(CircleShape)
+                            .background(if (hasText) Color.White else Color(0xFF383838))
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.Send,
+                            contentDescription = "Send",
+                            tint = if (hasText) Color.Black else PocketTextMuted,
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
                 }
             }
         }
@@ -506,7 +526,7 @@ private fun ChatMessageItem(
     }
 
     if (isUser) {
-        // User message: Clean, subtle bubble, right-aligned, dark neutral theme
+        // User message: Authentic ChatGPT style - sleek rounded pill bubble, right-aligned, #2F2F2F background, no redundant "You" label
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.End
@@ -514,26 +534,24 @@ private fun ChatMessageItem(
             Box(
                 modifier = Modifier
                     .fillMaxWidth(0.85f)
-                    .clip(RoundedCornerShape(8.dp))
+                    .clip(RoundedCornerShape(20.dp))
                     .background(PocketSurfaceElevated)
-                    .border(1.dp, PocketBorder, RoundedCornerShape(8.dp))
-                    .padding(horizontal = 12.dp, vertical = 9.dp)
+                    .padding(horizontal = 16.dp, vertical = 12.dp)
             ) {
-                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    Text(
+                        text = message.text,
+                        color = PocketTextPrimary,
+                        fontSize = 14.sp,
+                        lineHeight = 20.sp
+                    )
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
+                        horizontalArrangement = Arrangement.End,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(
-                            text = "You",
-                            color = PocketTextSecondary,
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            fontFamily = FontFamily.Monospace
-                        )
                         Row(
-                            horizontalArrangement = Arrangement.spacedBy(6.dp),
+                            horizontalArrangement = Arrangement.spacedBy(10.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             if (onEditPrompt != null) {
@@ -559,22 +577,16 @@ private fun ChatMessageItem(
                             )
                         }
                     }
-                    Text(
-                        text = message.text,
-                        color = PocketTextPrimary,
-                        fontSize = 13.5.sp,
-                        lineHeight = 19.sp
-                    )
                 }
             }
         }
     } else {
-        // Agent message: Clean, full width, minimal borderless layout
+        // Agent message: Authentic ChatGPT style - full-width, clean borderless layout, rich typography
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 2.dp),
-            verticalArrangement = Arrangement.spacedBy(6.dp)
+                .padding(vertical = 4.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             // Completed Work items (tools, bash, build, git): compact timeline
             if (message.workItems.isNotEmpty()) {
@@ -586,34 +598,30 @@ private fun ChatMessageItem(
 
             // Message text/markdown
             if (message.text.isNotBlank()) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(6.dp))
-                        .background(PocketSurface)
-                        .padding(horizontal = 10.dp, vertical = 8.dp)
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
-                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                        MarkdownText(
-                            markdown = message.text,
-                            color = PocketTextPrimary
+                    MarkdownText(
+                        markdown = message.text,
+                        color = PocketTextPrimary
+                    )
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Start
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ContentCopy,
+                            contentDescription = "Copy response",
+                            tint = PocketTextMuted,
+                            modifier = Modifier
+                                .size(14.dp)
+                                .clickable {
+                                    clipboard.setText(AnnotatedString(message.text))
+                                    Toast.makeText(context, "Response copied", Toast.LENGTH_SHORT).show()
+                                }
                         )
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.End
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.ContentCopy,
-                                contentDescription = "Copy response",
-                                tint = PocketTextMuted,
-                                modifier = Modifier
-                                    .size(13.dp)
-                                    .clickable {
-                                        clipboard.setText(AnnotatedString(message.text))
-                                        Toast.makeText(context, "Response copied", Toast.LENGTH_SHORT).show()
-                                    }
-                            )
-                        }
                     }
                 }
             }
