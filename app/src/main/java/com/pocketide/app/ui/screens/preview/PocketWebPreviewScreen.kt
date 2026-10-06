@@ -384,7 +384,7 @@ fun PocketWebPreviewScreen(
 
         HorizontalDivider(color = PocketBorder)
 
-        // Web Preview Container with True Device Viewport Emulation
+        // Web Preview Container with Native Viewport Emulation
         BoxWithConstraints(
             modifier = Modifier
                 .weight(1f)
@@ -393,151 +393,111 @@ fun PocketWebPreviewScreen(
             contentAlignment = Alignment.TopCenter
         ) {
             val containerWidth = maxWidth
-            val containerHeight = maxHeight
-
-            val targetWidthDp = selectedPreset.widthDp
-            val isScaled = targetWidthDp != null && targetWidthDp.dp > containerWidth
-
-            val scale = if (isScaled) {
-                (containerWidth.value / targetWidthDp!!.toFloat())
-            } else {
-                1f
-            }
-
-            val webViewWidth = when {
-                targetWidthDp == null -> containerWidth
-                isScaled -> targetWidthDp.dp
-                else -> targetWidthDp.dp
-            }
-
-            val webViewHeight = if (isScaled) {
-                containerHeight / scale
-            } else {
-                containerHeight
-            }
+            val screenWidthDp = containerWidth.value.toInt()
 
             Box(
-                modifier = when {
-                    targetWidthDp == null -> Modifier.fillMaxSize()
-                    isScaled -> {
-                        Modifier
-                            .fillMaxSize()
-                            .clipToBounds()
-                    }
-                    else -> {
-                        Modifier
-                            .width(targetWidthDp.dp.coerceAtMost(containerWidth))
-                            .fillMaxHeight()
-                            .padding(horizontal = 4.dp, vertical = 4.dp)
-                            .border(1.dp, PocketBorder, RoundedCornerShape(12.dp))
-                            .clip(RoundedCornerShape(12.dp))
-                    }
+                modifier = if (selectedPreset == DevicePreset.MOBILE && containerWidth > 385.dp) {
+                    Modifier
+                        .width(375.dp)
+                        .fillMaxHeight()
+                        .padding(horizontal = 4.dp, vertical = 6.dp)
+                        .border(1.dp, PocketBorder, RoundedCornerShape(12.dp))
+                        .clip(RoundedCornerShape(12.dp))
+                } else {
+                    Modifier.fillMaxSize()
                 },
-                contentAlignment = if (isScaled) Alignment.TopStart else Alignment.TopCenter
+                contentAlignment = Alignment.TopCenter
             ) {
-                Box(
-                    modifier = if (isScaled) {
-                        Modifier
-                            .requiredSize(width = webViewWidth, height = webViewHeight)
-                            .graphicsLayer {
-                                scaleX = scale
-                                scaleY = scale
-                                transformOrigin = TransformOrigin(0f, 0f)
+                AndroidView(
+                    modifier = Modifier.fillMaxSize(),
+                    factory = { ctx ->
+                        WebView(ctx).apply {
+                            settings.javaScriptEnabled = true
+                            settings.domStorageEnabled = true
+                            settings.allowFileAccess = true
+                            settings.allowContentAccess = true
+                            settings.useWideViewPort = true
+                            settings.loadWithOverviewMode = true
+                            settings.setSupportZoom(true)
+                            settings.builtInZoomControls = true
+                            settings.displayZoomControls = false
+
+                            if (selectedPreset.isDesktop) {
+                                settings.userAgentString = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
                             }
-                    } else {
-                        Modifier.fillMaxSize()
-                    }
-                ) {
-                    AndroidView(
-                        modifier = Modifier.fillMaxSize(),
-                        factory = { ctx ->
-                            WebView(ctx).apply {
-                                settings.javaScriptEnabled = true
-                                settings.domStorageEnabled = true
-                                settings.allowFileAccess = true
-                                settings.allowContentAccess = true
-                                settings.useWideViewPort = true
-                                settings.loadWithOverviewMode = true
-                                settings.setSupportZoom(true)
-                                settings.builtInZoomControls = true
-                                settings.displayZoomControls = false
 
-                                if (selectedPreset.isDesktop) {
-                                    settings.userAgentString = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-                                }
-
-                                webViewClient = object : WebViewClient() {
-                                    override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
-                                        val reqUrl = request?.url?.toString() ?: return false
-                                        return if (reqUrl.startsWith("http://localhost") || reqUrl.startsWith("http://127.0.0.1")) {
-                                            urlInput = reqUrl
-                                            currentUrl = reqUrl
-                                            false
-                                        } else {
-                                            true
-                                        }
-                                    }
-
-                                    override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
-                                        isCheckingPort = false
-                                    }
-
-                                    override fun onPageFinished(view: WebView?, url: String?) {
-                                        isCheckingPort = false
-                                        view?.evaluateJavascript("window.dispatchEvent(new Event('resize'));", null)
-                                    }
-
-                                    override fun onReceivedError(
-                                        view: WebView?,
-                                        request: WebResourceRequest?,
-                                        error: WebResourceError?
-                                    ) {
-                                        if (request?.isForMainFrame == true) {
-                                            isConnectionError = true
-                                            errorMessage = error?.description?.toString() ?: "Connection refused"
-                                            isCheckingPort = false
-                                        }
+                            webViewClient = object : WebViewClient() {
+                                override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
+                                    val reqUrl = request?.url?.toString() ?: return false
+                                    return if (reqUrl.startsWith("http://localhost") || reqUrl.startsWith("http://127.0.0.1")) {
+                                        urlInput = reqUrl
+                                        currentUrl = reqUrl
+                                        false
+                                    } else {
+                                        true
                                     }
                                 }
-                                webChromeClient = object : WebChromeClient() {
-                                    override fun onConsoleMessage(consoleMessage: ConsoleMessage?): Boolean {
-                                        consoleMessage?.let {
-                                            consoleLogs.add(
-                                                ConsoleLogItem(
-                                                    level = it.messageLevel(),
-                                                    message = it.message() ?: "",
-                                                    sourceId = it.sourceId() ?: "",
-                                                    lineNumber = it.lineNumber()
-                                                )
+
+                                override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
+                                    isCheckingPort = false
+                                }
+
+                                override fun onPageFinished(view: WebView?, url: String?) {
+                                    isCheckingPort = false
+                                    view?.let {
+                                        injectEmulationScript(it, selectedPreset, screenWidthDp)
+                                    }
+                                }
+
+                                override fun onReceivedError(
+                                    view: WebView?,
+                                    request: WebResourceRequest?,
+                                    error: WebResourceError?
+                                ) {
+                                    if (request?.isForMainFrame == true) {
+                                        isConnectionError = true
+                                        errorMessage = error?.description?.toString() ?: "Connection refused"
+                                        isCheckingPort = false
+                                    }
+                                }
+                            }
+                            webChromeClient = object : WebChromeClient() {
+                                override fun onConsoleMessage(consoleMessage: ConsoleMessage?): Boolean {
+                                    consoleMessage?.let {
+                                        consoleLogs.add(
+                                            ConsoleLogItem(
+                                                level = it.messageLevel(),
+                                                message = it.message() ?: "",
+                                                sourceId = it.sourceId() ?: "",
+                                                lineNumber = it.lineNumber()
                                             )
-                                            if (consoleLogs.size > 100) consoleLogs.removeAt(0)
-                                        }
-                                        return super.onConsoleMessage(consoleMessage)
+                                        )
+                                        if (consoleLogs.size > 100) consoleLogs.removeAt(0)
                                     }
+                                    return super.onConsoleMessage(consoleMessage)
                                 }
-                                loadUrl(currentUrl)
-                                webViewRef = this
                             }
-                        },
-                        update = { view ->
-                            val desktopUa = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-                            val needsUaChange = if (selectedPreset.isDesktop) {
-                                view.settings.userAgentString != desktopUa
-                            } else {
-                                view.settings.userAgentString == desktopUa
-                            }
-                            if (needsUaChange) {
-                                view.settings.userAgentString = if (selectedPreset.isDesktop) desktopUa else null
-                                view.reload()
-                            }
-                            if (view.url != currentUrl) {
-                                view.loadUrl(currentUrl)
-                            } else {
-                                view.evaluateJavascript("window.dispatchEvent(new Event('resize'));", null)
-                            }
+                            loadUrl(currentUrl)
+                            webViewRef = this
                         }
-                    )
-                }
+                    },
+                    update = { view ->
+                        val desktopUa = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+                        val targetUa = if (selectedPreset.isDesktop) desktopUa else null
+                        val needsUaChange = view.settings.userAgentString != targetUa
+
+                        if (needsUaChange) {
+                            view.settings.userAgentString = targetUa
+                            view.reload()
+                        } else {
+                            injectEmulationScript(view, selectedPreset, screenWidthDp)
+                        }
+
+                        if (view.url != currentUrl) {
+                            view.loadUrl(currentUrl)
+                        }
+                    }
+                )
             }
 
             // Friendly Dev Server Offline State (replaces ugly ERR_CONNECTION_REFUSED browser page)
@@ -882,4 +842,46 @@ fun PocketWebPreviewScreen(
             }
         }
     }
+}
+
+private fun injectEmulationScript(webView: WebView, preset: DevicePreset, screenWidthDp: Int) {
+    val targetWidth = preset.widthDp
+    val js = """
+        (function() {
+            try {
+                var targetW = ${if (targetWidth != null) targetWidth else "null"};
+                var screenW = $screenWidthDp || window.screen.width || 390;
+                var meta = document.querySelector('meta[name="viewport"]');
+                if (!meta) {
+                    meta = document.createElement('meta');
+                    meta.name = 'viewport';
+                    document.head.appendChild(meta);
+                }
+                if (!targetW) {
+                    meta.setAttribute('content', 'width=device-width, initial-scale=1.0, user-scalable=yes');
+                    document.documentElement.style.zoom = '';
+                    document.documentElement.style.width = '';
+                    document.documentElement.style.minWidth = '';
+                    document.body.style.width = '';
+                    document.body.style.minWidth = '';
+                } else {
+                    meta.setAttribute('content', 'width=' + targetW + ', initial-scale=1.0, minimum-scale=0.1, maximum-scale=5.0, user-scalable=yes');
+                    document.documentElement.style.width = targetW + 'px';
+                    document.documentElement.style.minWidth = targetW + 'px';
+                    document.body.style.width = targetW + 'px';
+                    document.body.style.minWidth = targetW + 'px';
+                    if (screenW < targetW) {
+                        var scale = (screenW / targetW);
+                        document.documentElement.style.zoom = scale.toFixed(4);
+                    } else {
+                        document.documentElement.style.zoom = '';
+                    }
+                }
+                window.dispatchEvent(new Event('resize'));
+            } catch (e) {
+                console.error('PocketIDE Emulation Error:', e);
+            }
+        })();
+    """.trimIndent()
+    webView.evaluateJavascript(js, null)
 }
