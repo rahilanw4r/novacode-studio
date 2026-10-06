@@ -103,4 +103,46 @@ class LocalStaticServerTest {
             assertFalse(server.isServerRunning)
         }
     }
+
+    @Test
+    fun `detects node project from server js file without package json`() {
+        val root = tempFolder.newFolder("node_script_site")
+        File(root, "server.js").writeText("const express = require('express'); app.listen(3000);")
+        File(root, "index.html").writeText("<html><body>App</body></html>")
+
+        val kind = ProjectWebDetector.detect(root)
+        assertEquals(ProjectWebKind.NODE, kind)
+        assertTrue(ProjectWebDetector.hasStaticHtml(root))
+        assertEquals(3000, ProjectWebDetector.detectCustomPort(root))
+        assertEquals("node server.js", ProjectWebDetector.resolveDevCommand(root))
+    }
+
+    @Test
+    fun `detects custom port in python and node files`() {
+        val root = tempFolder.newFolder("custom_port_site")
+        File(root, "app.js").writeText("const PORT = 5000; server.listen(PORT);")
+
+        assertEquals(5000, ProjectWebDetector.detectCustomPort(root))
+        assertEquals("node app.js", ProjectWebDetector.resolveDevCommand(root))
+    }
+
+    @Test
+    fun `checks reachable ports with PreviewHealthChecker`() {
+        val root = tempFolder.newFolder("static_root")
+        File(root, "index.html").writeText("<h1>Static</h1>")
+        val server = LocalStaticServer(preferredPort = 0)
+        val port = server.startServing(root)
+
+        try {
+            val ports = listOf(port, 9998, 9999)
+            val reachable = runBlocking { PreviewHealthChecker.checkPorts(ports = ports) }
+            assertTrue(reachable.contains(port))
+            assertFalse(reachable.contains(9999))
+
+            val first = runBlocking { PreviewHealthChecker.findFirstReachablePort(ports = ports) }
+            assertEquals(port, first)
+        } finally {
+            server.stop()
+        }
+    }
 }

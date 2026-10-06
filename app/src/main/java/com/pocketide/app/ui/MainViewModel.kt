@@ -211,6 +211,8 @@ data class AppUiState(
     val previewReady: Boolean = false,
     val previewUrl: String? = null,
     val projectWebKind: String? = null,
+    val projectDevCommand: String? = null,
+    val staticPreviewPort: Int = 0,
     val isRunning: Boolean = false,
     val activeSessionId: String? = null,
     val toastMessage: String? = null,
@@ -797,21 +799,32 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private fun detectServerUrl(command: String): String? {
         val lower = command.lowercase(java.util.Locale.ROOT)
+        val portFlagMatch = Regex("""(?:--port|-p)\s+(\d{2,5})""").find(lower)
+            ?: Regex("""port=(\d{2,5})""").find(lower)
+        if (portFlagMatch != null) {
+            val port = portFlagMatch.groupValues[1].toIntOrNull()
+            if (port != null && port in 1..65535) return "http://127.0.0.1:$port/"
+        }
+
         val pythonMatch = Regex("""python(?:3)?\s+-m\s+http\.server(?:\s+(\d{2,5}))?""").find(lower)
         if (pythonMatch != null) {
             val port = pythonMatch.groupValues.getOrNull(1)?.toIntOrNull() ?: 8000
             return port.takeIf { it in 1..65535 }?.let { "http://127.0.0.1:$it/" }
         }
+        if (lower.contains("live-server") || lower.contains("live server")) {
+            return "http://127.0.0.1:5500/"
+        }
         if (lower.contains("vite") || lower.contains("npm run dev") || lower.contains("yarn dev") || lower.contains("pnpm dev") || lower.contains("bun dev")) {
             return "http://127.0.0.1:5173/"
         }
-        if (lower.contains("next dev") || lower.contains("npm start") || lower.contains("yarn start")) {
+        if (lower.contains("next dev") || lower.contains("npm start") || lower.contains("yarn start") ||
+            lower.contains("node server.js") || lower.contains("node index.js") || lower.contains("node app.js") ||
+            lower.contains("nodemon")
+        ) {
             return "http://127.0.0.1:3000/"
         }
         if (lower.contains("uvicorn") || lower.contains("flask run")) {
-            val portMatch = Regex("""--port\s+(\d{2,5})""").find(lower)
-            val port = portMatch?.groupValues?.getOrNull(1)?.toIntOrNull() ?: 8000
-            return "http://127.0.0.1:$port/"
+            return "http://127.0.0.1:8000/"
         }
         return null
     }
@@ -2905,8 +2918,14 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         val suggestedRoot: String?,
         val isAndroid: Boolean,
         val webKind: ProjectWebKind,
-        val staticPort: Int
+        val staticPort: Int,
+        val effectivePort: Int,
+        val devCommand: String
     )
+
+    private fun scanPortForKind(kind: ProjectWebKind, staticPort: Int): Int {
+        return if (kind == ProjectWebKind.STATIC_HTML && staticPort > 0) staticPort else kind.defaultPort
+    }
 
     fun refreshProjectFiles() {
         val project = _state.value.activeProject ?: return
@@ -2918,14 +2937,25 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 val suggested = if (project.rootPath.isBlank()) detectNestedProjectRoot(project) else null
                 val isAndroid = findAndroidGradleProjectRoot(root) != null
                 val kind = ProjectWebDetector.detect(root)
-                val staticPort = if (kind == ProjectWebKind.STATIC_HTML) {
+                val customPort = ProjectWebDetector.detectCustomPort(root)
+                val devCommand = ProjectWebDetector.resolveDevCommand(root)
+                val hasStaticHtml = ProjectWebDetector.hasStaticHtml(root)
+                val staticPort = if (hasStaticHtml) {
                     staticServer.startServing(root)
                 } else 0
-                WorkspaceScanResult(files, suggested, isAndroid, kind, staticPort)
+                val effectivePort = customPort ?: scanPortForKind(kind, staticPort)
+                WorkspaceScanResult(files, suggested, isAndroid, kind, staticPort, effectivePort, devCommand)
             }
             if (_state.value.activeProject?.id == project.id) {
                 _state.update { current ->
-                    val url = if (scan.staticPort > 0) "http://127.0.0.1:${scan.staticPort}/" else current.previewUrl ?: "http://127.0.0.1:${scan.webKind.defaultPort}/"
+                    val currentPort = current.previewUrl?.let { Regex(""":(\d{2,5})""").find(it)?.groupValues?.get(1)?.toIntOrNull() }
+                    val url = when {
+                        current.previewUrl == null -> "http://127.0.0.1:${scan.effectivePort}/"
+                        scan.webKind != ProjectWebKind.STATIC_HTML && currentPort == 8080 && scan.effectivePort != 8080 -> {
+                            "http://127.0.0.1:${scan.effectivePort}/"
+                        }
+                        else -> current.previewUrl
+                    }
                     val ready = current.previewReady || scan.staticPort > 0
                     current.copy(
                         workspaceFiles = scan.files,
@@ -2933,6 +2963,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                         suggestedProjectRoot = scan.suggestedRoot,
                         androidProjectDetected = scan.isAndroid,
                         projectWebKind = scan.webKind.label,
+                        projectDevCommand = scan.devCommand,
+                        staticPreviewPort = scan.staticPort,
                         previewUrl = url,
                         previewReady = ready,
                     )

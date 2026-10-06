@@ -106,6 +106,8 @@ fun PocketWebPreviewScreen(
     initialUrl: String? = null,
     project: Project? = null,
     projectWebKind: String? = null,
+    devCommand: String? = null,
+    staticPort: Int = 0,
     onStartDevServer: ((String) -> Unit)? = null,
     onSwitchToTerminal: (() -> Unit)? = null,
     modifier: Modifier = Modifier
@@ -121,13 +123,33 @@ fun PocketWebPreviewScreen(
     var errorMessage by remember { mutableStateOf<String?>(null) }
     var isCheckingPort by remember { mutableStateOf(false) }
     val consoleLogs = remember { mutableStateListOf<ConsoleLogItem>() }
+    var activePorts by remember { mutableStateOf(setOf<Int>()) }
 
-    val quickPorts = listOf(
-        "5173" to "Vite",
-        "3000" to "Next",
-        "8000" to "Python",
-        "8080" to "Static/Java"
+    val standardPorts = listOf(
+        3000 to "Node/Next",
+        5000 to "Flask",
+        5173 to "Vite",
+        5500 to "Live Server",
+        8000 to "Python",
+        8080 to "Static/Java"
     )
+
+    LaunchedEffect(currentUrl, isConnectionError) {
+        val checked = PreviewHealthChecker.checkPorts(ports = listOf(3000, 5000, 5173, 5500, 8000, 8080))
+        activePorts = checked
+    }
+
+    val currentPort = Regex(""":(\d{2,5})""").find(currentUrl)?.groupValues?.get(1)?.toIntOrNull()
+
+    val stackPort = when {
+        projectWebKind?.contains("Vite", ignoreCase = true) == true -> 5173
+        projectWebKind?.contains("Next", ignoreCase = true) == true -> 3000
+        projectWebKind?.contains("Node", ignoreCase = true) == true -> 3000
+        projectWebKind?.contains("Python", ignoreCase = true) == true -> 8000
+        projectWebKind?.contains("Java", ignoreCase = true) == true -> 8080
+        projectWebKind?.contains("Static", ignoreCase = true) == true -> if (staticPort > 0) staticPort else 8080
+        else -> null
+    }
 
     LaunchedEffect(initialUrl) {
         if (!initialUrl.isNullOrBlank() && initialUrl != currentUrl) {
@@ -145,10 +167,12 @@ fun PocketWebPreviewScreen(
         webViewRef?.reload()
     }
 
-    val defaultDevCommand = when {
+    val defaultDevCommand = devCommand?.takeIf { it.isNotBlank() } ?: when {
         projectWebKind?.contains("Vite", ignoreCase = true) == true -> "npm run dev -- --host 0.0.0.0"
         projectWebKind?.contains("Next", ignoreCase = true) == true -> "npm run dev -- -H 0.0.0.0"
+        projectWebKind?.contains("Node", ignoreCase = true) == true -> "npm start"
         projectWebKind?.contains("Python", ignoreCase = true) == true -> "python3 -m http.server 8000 --bind 127.0.0.1"
+        projectWebKind?.contains("Java", ignoreCase = true) == true -> "./gradlew bootRun"
         else -> "npm run dev -- --host 0.0.0.0"
     }
 
@@ -284,16 +308,37 @@ fun PocketWebPreviewScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.width(8.dp))
+            Box(
+                modifier = Modifier
+                    .width(1.dp)
+                    .height(14.dp)
+                    .background(PocketBorder)
+            )
 
             // Quick Ports
-            quickPorts.forEach { (port, name) ->
+            standardPorts.forEach { (port, name) ->
                 val target = "http://127.0.0.1:$port/"
-                val active = currentUrl.contains(":$port")
+                val isSelected = currentPort == port
+                val isAlive = activePorts.contains(port)
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(6.dp))
-                        .background(if (active) PocketIndigo.copy(alpha = 0.25f) else PocketSurfaceElevated)
+                        .background(
+                            when {
+                                isSelected -> PocketIndigo.copy(alpha = 0.28f)
+                                isAlive -> PocketEmerald.copy(alpha = 0.15f)
+                                else -> PocketSurfaceElevated
+                            }
+                        )
+                        .border(
+                            1.dp,
+                            when {
+                                isSelected -> PocketIndigo
+                                isAlive -> PocketEmerald.copy(alpha = 0.4f)
+                                else -> Color.Transparent
+                            },
+                            RoundedCornerShape(6.dp)
+                        )
                         .clickable {
                             urlInput = target
                             currentUrl = target
@@ -302,12 +347,30 @@ fun PocketWebPreviewScreen(
                         }
                         .padding(horizontal = 8.dp, vertical = 3.dp)
                 ) {
-                    Text(
-                        text = ":$port ($name)",
-                        color = if (active) PocketIndigo else PocketTextSecondary,
-                        fontSize = 10.5.sp,
-                        fontFamily = FontFamily.Monospace
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        if (isAlive) {
+                            Box(
+                                modifier = Modifier
+                                    .size(5.dp)
+                                    .clip(RoundedCornerShape(2.5.dp))
+                                    .background(PocketEmerald)
+                            )
+                        }
+                        Text(
+                            text = ":$port ($name)",
+                            color = when {
+                                isSelected -> PocketIndigo
+                                isAlive -> PocketEmerald
+                                else -> PocketTextSecondary
+                            },
+                            fontSize = 10.5.sp,
+                            fontFamily = FontFamily.Monospace,
+                            fontWeight = if (isSelected || isAlive) FontWeight.Bold else FontWeight.Normal
+                        )
+                    }
                 }
             }
         }
@@ -463,7 +526,133 @@ fun PocketWebPreviewScreen(
                             )
                         }
 
-                        Spacer(modifier = Modifier.height(4.dp))
+                        // Smart conflict resolution & active port detection
+                        val aliveAlternative = activePorts.firstOrNull { it != currentPort }
+                        if (aliveAlternative != null) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clip(RoundedCornerShape(8.dp))
+                                    .background(PocketEmerald.copy(alpha = 0.15f))
+                                    .border(1.dp, PocketEmerald.copy(alpha = 0.5f), RoundedCornerShape(8.dp))
+                                    .clickable {
+                                        val target = "http://127.0.0.1:$aliveAlternative/"
+                                        urlInput = target
+                                        currentUrl = target
+                                        isConnectionError = false
+                                        webViewRef?.loadUrl(target)
+                                    }
+                                    .padding(horizontal = 10.dp, vertical = 8.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                                ) {
+                                    Icon(Icons.Default.Refresh, contentDescription = null, tint = PocketEmerald, modifier = Modifier.size(15.dp))
+                                    Text(
+                                        text = "⚡ Active server detected on :$aliveAlternative! Tap to switch",
+                                        color = PocketEmerald,
+                                        fontSize = 11.5.sp,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
+                            }
+                        } else if (stackPort != null && stackPort != currentPort) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clip(RoundedCornerShape(8.dp))
+                                    .background(PocketIndigo.copy(alpha = 0.15f))
+                                    .border(1.dp, PocketIndigo.copy(alpha = 0.4f), RoundedCornerShape(8.dp))
+                                    .clickable {
+                                        val target = "http://127.0.0.1:$stackPort/"
+                                        urlInput = target
+                                        currentUrl = target
+                                        isConnectionError = false
+                                        webViewRef?.loadUrl(target)
+                                    }
+                                    .padding(horizontal = 10.dp, vertical = 8.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = "💡 Stack default is :$stackPort ($projectWebKind). Tap to switch",
+                                    color = PocketIndigo,
+                                    fontSize = 11.5.sp,
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                            }
+                        } else if (staticPort > 0 && currentPort != staticPort) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clip(RoundedCornerShape(8.dp))
+                                    .background(PocketCyan.copy(alpha = 0.15f))
+                                    .border(1.dp, PocketCyan.copy(alpha = 0.4f), RoundedCornerShape(8.dp))
+                                    .clickable {
+                                        val target = "http://127.0.0.1:$staticPort/"
+                                        urlInput = target
+                                        currentUrl = target
+                                        isConnectionError = false
+                                        webViewRef?.loadUrl(target)
+                                    }
+                                    .padding(horizontal = 10.dp, vertical = 8.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = "📄 Static HTML preview available on :$staticPort. Tap to view",
+                                    color = PocketCyan,
+                                    fontSize = 11.5.sp,
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                            }
+                        }
+
+                        // Quick switch port pills in error card
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(5.dp)
+                        ) {
+                            Text(
+                                text = "Try another port:",
+                                color = PocketTextMuted,
+                                fontSize = 10.5.sp
+                            )
+                            Row(
+                                modifier = Modifier.horizontalScroll(rememberScrollState()),
+                                horizontalArrangement = Arrangement.spacedBy(6.dp)
+                            ) {
+                                standardPorts.forEach { (port, name) ->
+                                    val target = "http://127.0.0.1:$port/"
+                                    val isSelected = currentPort == port
+                                    val isAlive = activePorts.contains(port)
+                                    Box(
+                                        modifier = Modifier
+                                            .clip(RoundedCornerShape(6.dp))
+                                            .background(if (isSelected) PocketIndigo.copy(alpha = 0.3f) else PocketSurfaceElevated)
+                                            .border(1.dp, if (isAlive) PocketEmerald else PocketBorder, RoundedCornerShape(6.dp))
+                                            .clickable {
+                                                urlInput = target
+                                                currentUrl = target
+                                                isConnectionError = false
+                                                webViewRef?.loadUrl(target)
+                                            }
+                                            .padding(horizontal = 8.dp, vertical = 4.dp)
+                                    ) {
+                                        Text(
+                                            text = ":$port",
+                                            color = if (isAlive) PocketEmerald else PocketTextPrimary,
+                                            fontSize = 11.sp,
+                                            fontFamily = FontFamily.Monospace,
+                                            fontWeight = if (isAlive || isSelected) FontWeight.Bold else FontWeight.Normal
+                                        )
+                                    }
+                                }
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(2.dp))
 
                         // Action Buttons
                         Column(
@@ -489,9 +678,9 @@ fun PocketWebPreviewScreen(
                                     ) {
                                         Icon(Icons.Default.PlayArrow, contentDescription = null, tint = Color.White, modifier = Modifier.size(16.dp))
                                         Text(
-                                            text = "Start Dev Server",
+                                            text = "Start Dev Server ($defaultDevCommand)",
                                             color = Color.White,
-                                            fontSize = 12.5.sp,
+                                            fontSize = 12.sp,
                                             fontWeight = FontWeight.Bold
                                         )
                                     }

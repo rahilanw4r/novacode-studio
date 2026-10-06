@@ -25,6 +25,52 @@ enum class ProjectWebKind(val label: String, val defaultPort: Int, val defaultDe
 }
 
 object ProjectWebDetector {
+    fun hasStaticHtml(rootDir: File): Boolean {
+        if (!rootDir.isDirectory) return false
+        return File(rootDir, "index.html").isFile ||
+            File(rootDir, "public/index.html").isFile ||
+            File(rootDir, "dist/index.html").isFile ||
+            File(rootDir, "src/index.html").isFile
+    }
+
+    fun detectCustomPort(rootDir: File): Int? {
+        if (!rootDir.isDirectory) return null
+        val candidateFiles = listOf("server.js", "app.js", "index.js", "main.py", "app.py")
+        for (name in candidateFiles) {
+            val f = File(rootDir, name)
+            if (f.isFile) {
+                val text = runCatching { f.readText() }.getOrNull() ?: continue
+                val match = Regex("""(?:listen\s*\(\s*|PORT\s*=\s*|PORT\s*\|\|\s*|port\s*=\s*)(\d{2,5})""").find(text)
+                if (match != null) {
+                    val p = match.groupValues[1].toIntOrNull()
+                    if (p != null && p in 1..65535) return p
+                }
+            }
+        }
+        return null
+    }
+
+    fun resolveDevCommand(rootDir: File): String {
+        if (!rootDir.isDirectory) return "npm run dev -- --host 0.0.0.0"
+        val packageJson = File(rootDir, "package.json")
+        if (packageJson.isFile) {
+            val content = runCatching { packageJson.readText() }.getOrDefault("")
+            if (content.contains("\"vite\"")) return "npm run dev -- --host 0.0.0.0"
+            if (content.contains("\"next\"")) return "npm run dev -- -H 0.0.0.0"
+            if (content.contains("\"dev\"")) return "npm run dev -- --host 0.0.0.0"
+            if (content.contains("\"start\"")) return "npm start"
+        }
+        if (File(rootDir, "server.js").isFile) return "node server.js"
+        if (File(rootDir, "app.js").isFile) return "node app.js"
+        if (File(rootDir, "index.js").isFile) return "node index.js"
+        if (File(rootDir, "main.py").isFile) return "python3 main.py"
+        if (File(rootDir, "app.py").isFile) return "python3 app.py"
+        if (File(rootDir, "requirements.txt").isFile) return "python3 -m http.server 8000 --bind 127.0.0.1"
+        if (File(rootDir, "pom.xml").isFile) return "./mvnw spring-boot:run"
+        if (File(rootDir, "build.gradle").isFile || File(rootDir, "build.gradle.kts").isFile) return "./gradlew bootRun"
+        return "npm run dev -- --host 0.0.0.0"
+    }
+
     fun detect(rootDir: File): ProjectWebKind {
         if (!rootDir.isDirectory) return ProjectWebKind.UNKNOWN
 
@@ -36,12 +82,16 @@ object ProjectWebDetector {
             return ProjectWebKind.NODE
         }
 
-        // Static HTML: has index.html at root, public/, dist/, or src/
-        if (File(rootDir, "index.html").isFile ||
-            File(rootDir, "public/index.html").isFile ||
-            File(rootDir, "dist/index.html").isFile ||
-            File(rootDir, "src/index.html").isFile
+        // Detect node entrypoint files even without package.json
+        if (File(rootDir, "server.js").isFile ||
+            File(rootDir, "app.js").isFile ||
+            File(rootDir, "index.js").isFile
         ) {
+            return ProjectWebKind.NODE
+        }
+
+        // Static HTML: has index.html at root, public/, dist/, or src/
+        if (hasStaticHtml(rootDir)) {
             return ProjectWebKind.STATIC_HTML
         }
 
@@ -257,5 +307,15 @@ object PreviewHealthChecker {
             } catch (_: Exception) {
                 false
             }
+        }
+
+    suspend fun checkPorts(host: String = "127.0.0.1", ports: List<Int>, timeoutMs: Int = 300): Set<Int> =
+        withContext(Dispatchers.IO) {
+            ports.filter { port -> isReachable(host, port, timeoutMs) }.toSet()
+        }
+
+    suspend fun findFirstReachablePort(host: String = "127.0.0.1", ports: List<Int>, timeoutMs: Int = 300): Int? =
+        withContext(Dispatchers.IO) {
+            ports.firstOrNull { port -> isReachable(host, port, timeoutMs) }
         }
 }

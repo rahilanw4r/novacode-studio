@@ -57,18 +57,16 @@ jobs:
           cp "$APK_FILE" "$APK_NAME"
 
           cat << 'EOF' > release_notes.md
-          ### Pocket IDE v1.0.20
+          ### Pocket IDE v1.0.21
 
           **Your on-device AI-powered development workspace.**
 
           #### What's New:
-          - **Compact Collapsible Execution Timeline**: Replaced heavy card-per-tool execution blocks with a sleek, space-efficient timeline (`✓ Read 4 files`, `✓ Created 3 files`, `✓ Started server`) expandable on tap to inspect raw outputs in monospace.
-          - **Minimal Live Thinking**: Replaced massive reasoning blocks with a compact `✦ Thinking…` indicator that automatically collapses to `✓ Planned approach` upon completion.
-          - **Subtle Status Indicators**: Removed giant repeated green "DONE" buttons across tool rows in favor of refined monospace status markers.
-          - **Auto-Serving Static HTML Projects**: Embedded private loopback HTTP server automatically serves HTML/CSS/JS projects with zero setup, eliminating `ERR_CONNECTION_REFUSED`.
-          - **Dev Server Port Auto-Detection**: Dynamic port resolution for Vite, Next.js, Python, and Node web apps from live terminal and agent execution streams.
-          - **Developer-First Preview Error Screen**: Informative offline recovery UI with stack detection badge, 1-tap `[Start Dev Server]`, `[View Logs]`, and quick port switchers instead of raw browser errors.
-          - **Direct Workspace Navigation**: 1-tap `[Open Preview]` and `[View Files]` action buttons right from the Agent completion summary.
+          - **Intelligent Port Conflict Resolution**: Live multi-port health checks discover active local servers across all standard ports (`:3000`, `:5000`, `:5173`, `:5500`, `:8000`, `:8080`) with real-time active status badges.
+          - **Seamless Static & Backend Coexistence**: Integrated private loopback HTTP server serves static HTML/CSS/JS alongside Node and backend scripts without port collisions or stale URL locks.
+          - **Accurate Dev Server Command Execution**: Context-aware command detection (`node server.js`, `node app.js`, `npm start`, etc.) ensuring "Start Dev Server" launches correctly without failing on missing dev scripts.
+          - **Smart Offline Recovery Card**: Clear alerts for active server ports and stack defaults with 1-tap switching and inline quick-port pills directly in the error card.
+          - **Refined Ports Toolbar**: Clean visual separation between device viewport presets and quick port buttons.
           EOF
 
           gh release create "$TAG" "$APK_NAME" \

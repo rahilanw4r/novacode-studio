@@ -400,6 +400,8 @@ fun PocketMasterWorkspace(
                         initialUrl = state.previewUrl ?: "http://127.0.0.1:5173",
                         project = state.activeProject,
                         projectWebKind = state.projectWebKind,
+                        devCommand = state.projectDevCommand,
+                        staticPort = state.staticPreviewPort,
                         onStartDevServer = { cmd -> onTerminalRun(cmd) },
                         onSwitchToTerminal = { currentTab = PocketWorkspaceTab.TERMINAL }
                     )
