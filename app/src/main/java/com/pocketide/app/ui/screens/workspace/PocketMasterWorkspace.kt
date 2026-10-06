@@ -98,6 +98,7 @@ import com.pocketide.app.ui.theme.PocketEmerald
 import com.pocketide.app.ui.theme.PocketIndigo
 import com.pocketide.app.ui.theme.PocketObsidian
 import com.pocketide.app.model.AgentKind
+import com.pocketide.app.model.ProviderKind
 import com.pocketide.app.ui.theme.PocketRose
 import com.pocketide.app.ui.theme.PocketSurface
 import com.pocketide.app.ui.theme.PocketSurfaceElevated
@@ -696,15 +697,33 @@ fun PocketMasterWorkspace(
                 "gemini-2.0-flash-thinking-exp",
                 "gemini-2.0-flash"
             )
-            AgentKind.CLAUDE_CODE -> listOf(
-                "claude-3-7-sonnet-20250219",
-                "claude-3-5-sonnet-20241022",
-                "claude-3-5-haiku-20241022"
-            )
-            AgentKind.DEEPSEEK_CODER -> listOf(
-                "deepseek-chat",
-                "deepseek-reasoner"
-            )
+            AgentKind.CLAUDE_CODE, AgentKind.DEEPSEEK_CODER -> when (state.provider.kind) {
+                ProviderKind.DEEPSEEK -> listOf(
+                    "deepseek-chat",
+                    "deepseek-reasoner",
+                    "deepseek-v4-flash"
+                )
+                ProviderKind.LLM_ROUTER -> listOf(
+                    "~anthropic/claude-sonnet-latest",
+                    "anthropic/claude-3.7-sonnet",
+                    "deepseek/deepseek-r1",
+                    "google/gemini-2.5-pro"
+                )
+                ProviderKind.GEMINI -> listOf(
+                    "gemini-2.5-pro",
+                    "gemini-2.5-flash"
+                )
+                ProviderKind.OPENAI -> listOf(
+                    "gpt-4o",
+                    "o3-mini",
+                    "gpt-4o-mini"
+                )
+                else -> listOf(
+                    "claude-3-7-sonnet-20250219",
+                    "claude-3-5-sonnet-20241022",
+                    "claude-3-5-haiku-20241022"
+                )
+            }
         }
         AlertDialog(
             onDismissRequest = { showModelDialog = false },
@@ -719,7 +738,7 @@ fun PocketMasterWorkspace(
                                 .clip(RoundedCornerShape(6.dp))
                                 .background(if (isCurrent) PocketPrimaryBlue.copy(alpha = 0.15f) else PocketSurfaceElevated)
                                 .border(1.dp, if (isCurrent) PocketPrimaryBlue else PocketBorder, RoundedCornerShape(6.dp))
-                                .clickable {
+                            .clickable {
                                     showModelDialog = false
                                     onSelectModel?.invoke(modelName)
                                     onClearFailure?.invoke()
@@ -763,7 +782,7 @@ fun PocketMasterWorkspace(
             title = { Text("Choose Coding Agent", color = PocketTextPrimary, fontSize = 16.sp, fontWeight = FontWeight.Bold) },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    AgentKind.entries.forEach { agent ->
+                    AgentKind.visibleEntries.forEach { agent ->
                         val isSelected = agent == state.agentKind
                         Box(
                             modifier = Modifier

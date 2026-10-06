@@ -336,7 +336,7 @@ fun SettingsScreen(
                     if (state.installedAgentVersions.isEmpty()) {
                         RuntimeInfoRow("Status", "No verified agent installation")
                     } else {
-                        AgentKind.entries.forEach { agent ->
+                        AgentKind.visibleEntries.forEach { agent ->
                             state.installedAgentVersions[agent]?.let { version ->
                                 RuntimeInfoRow(agent.title, "v$version")
                             }

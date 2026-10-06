@@ -80,15 +80,15 @@ jobs:
           EOF
 
           cat << 'EOF' > release_notes.md
-          ### Pocket IDE v1.0.24
-          <!-- versionCode: 25 -->
+          ### Pocket IDE v1.0.25
+          <!-- versionCode: 26 -->
 
           **Your on-device AI-powered development workspace.**
 
           #### What's New:
-          - **Minimal Dark Developer UI**: Streamlined dark neutral theme with reduced visual noise, clean status indicators, and fixed layout.
-          - **Clean AI Chat & Lifecycle**: Eliminated duplicate error cards and empty assistant messages; tool activities and reasoning are compact and collapsible.
-          - **Automated In-App Updates**: Built-in update manifest and GitHub Releases fallback so updates download and install automatically.
+          - **Streamlined Agent Configuration**: Consolidated the redundant DeepSeek agent tab into the universal Coding Agent (which already natively supports DeepSeek, OpenRouter, Claude, Gemini, and OpenAI).
+          - **Unified Agent Naming**: Renamed agent interface to "AI Agent" / "Coding Agent" across the top bar, navigation, and workspace for total consistency.
+          - **Seamless Updates**: Fully automated in-app update delivery with verified manifest and GitHub Releases fallback.
           EOF
 
           gh release create "$TAG" "$APK_NAME" pocket-ide-update.json \

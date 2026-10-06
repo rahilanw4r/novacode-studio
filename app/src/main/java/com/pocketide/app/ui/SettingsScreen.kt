@@ -671,7 +671,7 @@ private fun LegacySettingsScreen(
                         InfoRow(
                             icon = Icons.Default.SmartToy,
                             label = "Installed agents",
-                            value = AgentKind.entries.mapNotNull { agent ->
+                            value = AgentKind.visibleEntries.mapNotNull { agent ->
                                 state.installedAgentVersions[agent]?.let { version -> "${agent.title} v$version" }
                             }.joinToString(" · ").ifBlank { "No verified agent installation" },
                         )

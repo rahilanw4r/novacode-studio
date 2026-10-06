@@ -224,12 +224,15 @@ fun AgentScreen(
     var showAntigravityModelSheet by rememberSaveable { mutableStateOf(false) }
     var antigravitySearch by rememberSaveable { mutableStateOf("") }
     var antigravityCode by rememberSaveable { mutableStateOf("") }
-    var viewedAgent by rememberSaveable { mutableStateOf(state.agentKind) }
+    var viewedAgent by rememberSaveable {
+        mutableStateOf(if (state.agentKind == AgentKind.DEEPSEEK_CODER) AgentKind.CLAUDE_CODE else state.agentKind)
+    }
     var aiWorkspacePrompt by rememberSaveable { mutableStateOf("") }
     var configExpanded by rememberSaveable { mutableStateOf(false) }
 
     val orderedAgents = remember(state.primaryAgentKind) {
-        listOf(state.primaryAgentKind) + AgentKind.entries.filterNot { it == state.primaryAgentKind }
+        val primary = if (state.primaryAgentKind == AgentKind.DEEPSEEK_CODER) AgentKind.CLAUDE_CODE else state.primaryAgentKind
+        listOf(primary) + AgentKind.visibleEntries.filterNot { it == primary }
     }
     val viewedAgentInstalled = viewedAgent == state.agentKind ||
         state.installedAgentVersions.containsKey(viewedAgent)
@@ -774,7 +777,7 @@ fun AgentScreen(
                         }
                         Spacer(Modifier.width(10.dp))
                         Column {
-                            Text("AI Copilot", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = PocketTextPrimary)
+                            Text("AI Agent", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = PocketTextPrimary)
                             Text(
                                 if (isAntigravity) {
                                     "Antigravity · ${formatAntigravityModelName(state.antigravityModel)}"
@@ -1037,8 +1040,7 @@ fun AgentScreen(
                                 val updateAvailable = state.agentUpdates.containsKey(agent)
                                 val shortTitle = when (agent) {
                                     AgentKind.ANTIGRAVITY -> "Antigravity"
-                                    AgentKind.DEEPSEEK_CODER -> "DeepSeek"
-                                    AgentKind.CLAUDE_CODE -> "Claude Code"
+                                    AgentKind.CLAUDE_CODE, AgentKind.DEEPSEEK_CODER -> "Coding Agent"
                                 }
                                 Surface(
                                     shape = RoundedCornerShape(9.dp),

@@ -260,7 +260,7 @@ import androidx.compose.material3.ExtendedFloatingActionButton
 private enum class RootScreen(val label: String, val icon: ImageVector) {
     HOME("Home", Icons.Default.Home),
     PROJECTS("Projects", Icons.Default.Folder),
-    AGENT("Copilot", Icons.Default.AutoAwesome),
+    AGENT("Agent", Icons.Default.SmartToy),
     TERMINAL("Terminal", Icons.Default.Terminal),
     MORE("More", Icons.Default.MoreHoriz),
 }
@@ -1098,13 +1098,13 @@ private fun RuntimeSetupPromptScreen(
                     border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
                 ) {
                     Column {
-                        AgentKind.entries.forEachIndexed { index, agent ->
+                        AgentKind.visibleEntries.forEachIndexed { index, agent ->
                             AgentChoiceRow(
                                 agent = agent,
                                 selected = selectedAgent == agent,
                                 onClick = { onSelectAgent(agent) },
                             )
-                            if (index != AgentKind.entries.lastIndex) {
+                            if (index != AgentKind.visibleEntries.lastIndex) {
                                 HorizontalDivider(
                                     modifier = Modifier.padding(start = 62.dp),
                                     color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),
@@ -1404,13 +1404,13 @@ private fun AgentSwitchSheet(
                 border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
             ) {
                 Column {
-                    AgentKind.entries.forEachIndexed { index, agent ->
+                    AgentKind.visibleEntries.forEachIndexed { index, agent ->
                         AgentChoiceRow(
                             agent = agent,
                             selected = agent == selected,
                             onClick = { onSelect(agent) },
                         )
-                        if (index != AgentKind.entries.lastIndex) {
+                        if (index != AgentKind.visibleEntries.lastIndex) {
                             HorizontalDivider(
                                 modifier = Modifier.padding(start = 62.dp),
                                 color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),

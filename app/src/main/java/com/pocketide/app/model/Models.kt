@@ -59,8 +59,8 @@ enum class AgentKind(
 ) {
     CLAUDE_CODE(
         "claude-code",
-        "Claude Code",
-        "Anthropic's coding agent · broad provider support",
+        "Coding Agent",
+        "Universal coding agent · Claude, DeepSeek, OpenRouter & custom models",
         "71.8 MB",
     ),
     DEEPSEEK_CODER(
@@ -78,6 +78,8 @@ enum class AgentKind(
     ;
 
     companion object {
+        val visibleEntries: List<AgentKind> = listOf(ANTIGRAVITY, CLAUDE_CODE)
+
         fun fromStored(value: String?): AgentKind = entries.firstOrNull {
             it.stableId == value || it.name == value
         } ?: CLAUDE_CODE

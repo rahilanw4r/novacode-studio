@@ -369,10 +369,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val failedApiKeyIds = mutableSetOf<String>()
     private val transcriptWrites = Channel<TranscriptWrite>(Channel.UNLIMITED)
     private val staticServer = LocalStaticServer()
-    private val initialAgentKind = AgentKind.fromStored(preferences.agentKind)
+    private val initialAgentKind = AgentKind.fromStored(preferences.agentKind).let {
+        if (it == AgentKind.DEEPSEEK_CODER) AgentKind.CLAUDE_CODE else it
+    }
     private val initialPrimaryAgentKind = preferences.primaryAgentKind
         .takeIf(String::isNotBlank)
         ?.let(AgentKind::fromStored)
+        ?.let { if (it == AgentKind.DEEPSEEK_CODER) AgentKind.CLAUDE_CODE else it }
         ?: initialAgentKind
     private val antigravityAuthController = AntigravityAuthController(
         application,
