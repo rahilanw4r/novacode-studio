@@ -468,6 +468,7 @@ fun PocketMasterWorkspace(
                     modifier = Modifier
                         .weight(1f)
                         .clip(RoundedCornerShape(8.dp))
+                        .background(if (agentActive) PocketSurfaceElevated else Color.Transparent)
                         .clickable { currentTab = PocketWorkspaceTab.AGENT }
                         .padding(vertical = 6.dp),
                     contentAlignment = Alignment.Center
@@ -480,7 +481,7 @@ fun PocketMasterWorkspace(
                             Icon(
                                 imageVector = Icons.Default.AutoAwesome,
                                 contentDescription = "Agent",
-                                tint = if (agentActive) PocketPrimaryBlue else PocketTextMuted,
+                                tint = if (agentActive) PocketTextPrimary else PocketTextMuted,
                                 modifier = Modifier.size(18.dp)
                             )
                             if (state.isRunning) {
@@ -494,7 +495,7 @@ fun PocketMasterWorkspace(
                         }
                         Text(
                             text = "Agent",
-                            color = if (agentActive) PocketPrimaryBlue else PocketTextMuted,
+                            color = if (agentActive) PocketTextPrimary else PocketTextMuted,
                             fontSize = 10.5.sp,
                             fontWeight = if (agentActive) FontWeight.Bold else FontWeight.Medium
                         )
@@ -507,6 +508,7 @@ fun PocketMasterWorkspace(
                     modifier = Modifier
                         .weight(1f)
                         .clip(RoundedCornerShape(8.dp))
+                        .background(if (filesActive) PocketSurfaceElevated else Color.Transparent)
                         .clickable {
                             currentTab = PocketWorkspaceTab.FILES
                             onRefreshFiles()
@@ -522,13 +524,13 @@ fun PocketMasterWorkspace(
                             Icon(
                                 imageVector = Icons.Default.Folder,
                                 contentDescription = "Files",
-                                tint = if (filesActive) PocketPrimaryBlue else PocketTextMuted,
+                                tint = if (filesActive) PocketTextPrimary else PocketTextMuted,
                                 modifier = Modifier.size(18.dp)
                             )
                             if (state.changes.isNotEmpty()) {
                                 Text(
                                     text = "${state.changes.size}",
-                                    color = PocketPrimaryBlue,
+                                    color = if (filesActive) PocketTextPrimary else PocketTextSecondary,
                                     fontSize = 10.sp,
                                     fontFamily = FontFamily.Monospace,
                                     fontWeight = FontWeight.Bold
@@ -537,7 +539,7 @@ fun PocketMasterWorkspace(
                         }
                         Text(
                             text = "Files",
-                            color = if (filesActive) PocketPrimaryBlue else PocketTextMuted,
+                            color = if (filesActive) PocketTextPrimary else PocketTextMuted,
                             fontSize = 10.5.sp,
                             fontWeight = if (filesActive) FontWeight.Bold else FontWeight.Medium
                         )
@@ -550,6 +552,7 @@ fun PocketMasterWorkspace(
                     modifier = Modifier
                         .weight(1f)
                         .clip(RoundedCornerShape(8.dp))
+                        .background(if (termActive) PocketSurfaceElevated else Color.Transparent)
                         .clickable { currentTab = PocketWorkspaceTab.TERMINAL }
                         .padding(vertical = 6.dp),
                     contentAlignment = Alignment.Center
@@ -562,7 +565,7 @@ fun PocketMasterWorkspace(
                             Icon(
                                 imageVector = Icons.Default.Terminal,
                                 contentDescription = "Terminal",
-                                tint = if (termActive) PocketPrimaryBlue else PocketTextMuted,
+                                tint = if (termActive) PocketTextPrimary else PocketTextMuted,
                                 modifier = Modifier.size(18.dp)
                             )
                             if (state.projectTerminalRunning) {
@@ -576,7 +579,7 @@ fun PocketMasterWorkspace(
                         }
                         Text(
                             text = "Terminal",
-                            color = if (termActive) PocketPrimaryBlue else PocketTextMuted,
+                            color = if (termActive) PocketTextPrimary else PocketTextMuted,
                             fontSize = 10.5.sp,
                             fontWeight = if (termActive) FontWeight.Bold else FontWeight.Medium
                         )
@@ -589,6 +592,7 @@ fun PocketMasterWorkspace(
                     modifier = Modifier
                         .weight(1f)
                         .clip(RoundedCornerShape(8.dp))
+                        .background(if (previewActive) PocketSurfaceElevated else Color.Transparent)
                         .clickable { currentTab = PocketWorkspaceTab.PREVIEW }
                         .padding(vertical = 6.dp),
                     contentAlignment = Alignment.Center
@@ -600,12 +604,12 @@ fun PocketMasterWorkspace(
                         Icon(
                             imageVector = Icons.Default.Language,
                             contentDescription = "Preview",
-                            tint = if (previewActive) PocketPrimaryBlue else PocketTextMuted,
+                            tint = if (previewActive) PocketTextPrimary else PocketTextMuted,
                             modifier = Modifier.size(18.dp)
                         )
                         Text(
                             text = "Preview",
-                            color = if (previewActive) PocketPrimaryBlue else PocketTextMuted,
+                            color = if (previewActive) PocketTextPrimary else PocketTextMuted,
                             fontSize = 10.5.sp,
                             fontWeight = if (previewActive) FontWeight.Bold else FontWeight.Medium
                         )

@@ -80,17 +80,15 @@ jobs:
           EOF
 
           cat << 'EOF' > release_notes.md
-          ### Pocket IDE v1.0.28
-          <!-- versionCode: 29 -->
+          ### Pocket IDE v1.0.29
+          <!-- versionCode: 30 -->
 
-          **Live agent status, preview desktop viewport, keyboard gap fix, and Telegram community.**
+          **True responsive viewport emulation (Mobile, Tablet, Desktop) and ChatGPT monochrome palette.**
 
           #### What's New:
-          - **Live Agent Progress Indicator**: Real-time status row showing what the agent is currently thinking, reading, writing, or executing right above the input bar.
-          - **Preview Viewport & Desktop Mode**: Fixed preview responsiveness; added Desktop (1280px) mode with desktop user-agent, overview zoom, and wide viewport.
-          - **Keyboard & Input Bar Spacing**: Removed excessive double padding when keyboard opens so the input field sits flush with the virtual keyboard.
-          - **Clean Bottom Dock**: Redesigned bottom workspace dock to be compact, centered, and minimal.
-          - **Community & Support**: Added official Telegram Channel (`@PocketIDE`) and Discussion Community (`@PocketIDECommunity`) on the Home page (dismissible/hideable) and in Settings.
+          - **True Viewport Emulation**: Selecting Mobile (375px), Tablet (768px), or Desktop (1280px) now properly measures and scales the viewport down to fit phone screens, triggering authentic CSS `@media` responsive breakpoints for all devices.
+          - **Monochrome ChatGPT UI**: Polished all presets, quick ports, action buttons, and bottom workspace dock tabs to clean high-contrast ChatGPT monochrome styling without garish green borders.
+          - **Auto-resize and Desktop UA**: Desktop mode applies Chrome desktop user-agent and dispatches resize events immediately to reactive web apps (Next.js, Vite, Tailwind).
           EOF
 
           gh release create "$TAG" "$APK_NAME" pocket-ide-update.json \

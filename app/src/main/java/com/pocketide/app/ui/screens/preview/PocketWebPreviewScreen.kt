@@ -17,6 +17,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -25,6 +26,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -57,8 +59,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.TransformOrigin
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -91,7 +96,7 @@ enum class DevicePreset(val label: String, val widthDp: Int?, val isDesktop: Boo
     RESPONSIVE("Fluid", null, false),
     MOBILE("Mobile (375px)", 375, false),
     TABLET("Tablet (768px)", 768, false),
-    DESKTOP("Desktop (1280px)", null, true),
+    DESKTOP("Desktop (1280px)", 1280, true),
 }
 
 data class ConsoleLogItem(
@@ -229,7 +234,7 @@ fun PocketWebPreviewScreen(
                 Icon(
                     Icons.Default.Refresh,
                     contentDescription = "Reload",
-                    tint = PocketPrimaryBlue,
+                    tint = PocketTextSecondary,
                     modifier = Modifier.size(16.dp)
                 )
             }
@@ -252,7 +257,7 @@ fun PocketWebPreviewScreen(
                         fontSize = 12.sp,
                         fontFamily = FontFamily.Monospace
                     ),
-                    cursorBrush = SolidColor(PocketPrimaryBlue),
+                    cursorBrush = SolidColor(PocketTextPrimary),
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Go),
                     keyboardActions = KeyboardActions(
@@ -292,7 +297,7 @@ fun PocketWebPreviewScreen(
                 Icon(
                     Icons.Default.Terminal,
                     contentDescription = "Console",
-                    tint = if (showConsole) PocketPrimaryBlue else PocketTextSecondary,
+                    tint = if (showConsole) PocketTextPrimary else PocketTextSecondary,
                     modifier = Modifier.size(16.dp)
                 )
             }
@@ -302,28 +307,28 @@ fun PocketWebPreviewScreen(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(PocketSurfaceVariant)
+                .background(PocketSurface)
                 .horizontalScroll(rememberScrollState())
-                .padding(horizontal = 8.dp, vertical = 4.dp),
+                .padding(horizontal = 8.dp, vertical = 5.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(6.dp)
         ) {
-            // Viewport Presets
+            // Viewport Presets (ChatGPT monochrome style)
             DevicePreset.entries.forEach { preset ->
                 val active = selectedPreset == preset
                 Box(
                     modifier = Modifier
-                        .clip(RoundedCornerShape(4.dp))
-                        .background(if (active) PocketPrimaryBlue.copy(alpha = 0.15f) else Color.Transparent)
-                        .border(1.dp, if (active) PocketPrimaryBlue else Color.Transparent, RoundedCornerShape(4.dp))
+                        .clip(RoundedCornerShape(6.dp))
+                        .background(if (active) PocketTextPrimary else PocketSurfaceElevated)
+                        .border(1.dp, if (active) PocketTextPrimary else PocketBorder, RoundedCornerShape(6.dp))
                         .clickable { selectedPreset = preset }
-                        .padding(horizontal = 8.dp, vertical = 3.dp)
+                        .padding(horizontal = 10.dp, vertical = 4.dp)
                 ) {
                     Text(
                         text = preset.label,
-                        color = if (active) PocketPrimaryBlue else PocketTextMuted,
+                        color = if (active) PocketObsidian else PocketTextSecondary,
                         fontSize = 11.sp,
-                        fontWeight = FontWeight.SemiBold
+                        fontWeight = if (active) FontWeight.Bold else FontWeight.Medium
                     )
                 }
             }
@@ -331,7 +336,7 @@ fun PocketWebPreviewScreen(
             Box(
                 modifier = Modifier
                     .width(1.dp)
-                    .height(14.dp)
+                    .height(16.dp)
                     .background(PocketBorder)
             )
 
@@ -342,30 +347,16 @@ fun PocketWebPreviewScreen(
                 val isAlive = activePorts.contains(port)
                 Box(
                     modifier = Modifier
-                        .clip(RoundedCornerShape(4.dp))
-                        .background(
-                            when {
-                                isSelected -> PocketPrimaryBlue.copy(alpha = 0.2f)
-                                isAlive -> PocketEmerald.copy(alpha = 0.15f)
-                                else -> PocketSurfaceElevated
-                            }
-                        )
-                        .border(
-                            1.dp,
-                            when {
-                                isSelected -> PocketPrimaryBlue
-                                isAlive -> PocketEmerald.copy(alpha = 0.4f)
-                                else -> PocketBorder
-                            },
-                            RoundedCornerShape(4.dp)
-                        )
+                        .clip(RoundedCornerShape(6.dp))
+                        .background(if (isSelected) PocketTextPrimary else PocketSurfaceElevated)
+                        .border(1.dp, if (isSelected) PocketTextPrimary else PocketBorder, RoundedCornerShape(6.dp))
                         .clickable {
                             urlInput = target
                             currentUrl = target
                             isConnectionError = false
                             webViewRef?.loadUrl(target)
                         }
-                        .padding(horizontal = 8.dp, vertical = 3.dp)
+                        .padding(horizontal = 8.dp, vertical = 4.dp)
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -376,16 +367,12 @@ fun PocketWebPreviewScreen(
                                 modifier = Modifier
                                     .size(5.dp)
                                     .clip(RoundedCornerShape(2.5.dp))
-                                    .background(PocketEmerald)
+                                    .background(if (isSelected) PocketObsidian else PocketEmerald)
                             )
                         }
                         Text(
                             text = ":$port ($name)",
-                            color = when {
-                                isSelected -> PocketIndigo
-                                isAlive -> PocketEmerald
-                                else -> PocketTextSecondary
-                            },
+                            color = if (isSelected) PocketObsidian else PocketTextSecondary,
                             fontSize = 10.5.sp,
                             fontFamily = FontFamily.Monospace,
                             fontWeight = if (isSelected || isAlive) FontWeight.Bold else FontWeight.Normal
@@ -397,107 +384,161 @@ fun PocketWebPreviewScreen(
 
         HorizontalDivider(color = PocketBorder)
 
-        // Web Preview Container
-        Box(
+        // Web Preview Container with True Device Viewport Emulation
+        BoxWithConstraints(
             modifier = Modifier
                 .weight(1f)
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .background(PocketObsidian),
             contentAlignment = Alignment.TopCenter
         ) {
-            val frameModifier = if (selectedPreset.widthDp != null) {
-                Modifier
-                    .width(selectedPreset.widthDp!!.dp)
-                    .fillMaxHeight()
-                    .border(1.dp, PocketBorder, RoundedCornerShape(8.dp))
-                    .clip(RoundedCornerShape(8.dp))
+            val containerWidth = maxWidth
+            val containerHeight = maxHeight
+
+            val targetWidthDp = selectedPreset.widthDp
+            val isScaled = targetWidthDp != null && targetWidthDp.dp > containerWidth
+
+            val scale = if (isScaled) {
+                (containerWidth.value / targetWidthDp!!.toFloat())
             } else {
-                Modifier.fillMaxSize()
+                1f
             }
 
-            AndroidView(
-                modifier = frameModifier,
-                factory = { ctx ->
-                    WebView(ctx).apply {
-                        settings.javaScriptEnabled = true
-                        settings.domStorageEnabled = true
-                        settings.allowFileAccess = true
-                        settings.allowContentAccess = true
-                        settings.useWideViewPort = true
-                        settings.loadWithOverviewMode = true
-                        settings.setSupportZoom(true)
-                        settings.builtInZoomControls = true
-                        settings.displayZoomControls = false
+            val webViewWidth = when {
+                targetWidthDp == null -> containerWidth
+                isScaled -> targetWidthDp.dp
+                else -> targetWidthDp.dp
+            }
 
-                        if (selectedPreset.isDesktop) {
-                            settings.userAgentString = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-                        }
+            val webViewHeight = if (isScaled) {
+                containerHeight / scale
+            } else {
+                containerHeight
+            }
 
-                        webViewClient = object : WebViewClient() {
-                            override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
-                                val reqUrl = request?.url?.toString() ?: return false
-                                return if (reqUrl.startsWith("http://localhost") || reqUrl.startsWith("http://127.0.0.1")) {
-                                    urlInput = reqUrl
-                                    currentUrl = reqUrl
-                                    false
-                                } else {
-                                    true
-                                }
-                            }
-
-                            override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
-                                isCheckingPort = false
-                            }
-
-                            override fun onPageFinished(view: WebView?, url: String?) {
-                                isCheckingPort = false
-                            }
-
-                            override fun onReceivedError(
-                                view: WebView?,
-                                request: WebResourceRequest?,
-                                error: WebResourceError?
-                            ) {
-                                if (request?.isForMainFrame == true) {
-                                    isConnectionError = true
-                                    errorMessage = error?.description?.toString() ?: "Connection refused"
-                                    isCheckingPort = false
-                                }
-                            }
-                        }
-                        webChromeClient = object : WebChromeClient() {
-                            override fun onConsoleMessage(consoleMessage: ConsoleMessage?): Boolean {
-                                consoleMessage?.let {
-                                    consoleLogs.add(
-                                        ConsoleLogItem(
-                                            level = it.messageLevel(),
-                                            message = it.message() ?: "",
-                                            sourceId = it.sourceId() ?: "",
-                                            lineNumber = it.lineNumber()
-                                        )
-                                    )
-                                    if (consoleLogs.size > 100) consoleLogs.removeAt(0)
-                                }
-                                return super.onConsoleMessage(consoleMessage)
-                            }
-                        }
-                        loadUrl(currentUrl)
-                        webViewRef = this
+            Box(
+                modifier = when {
+                    targetWidthDp == null -> Modifier.fillMaxSize()
+                    isScaled -> {
+                        Modifier
+                            .fillMaxSize()
+                            .clipToBounds()
+                    }
+                    else -> {
+                        Modifier
+                            .width(targetWidthDp.dp.coerceAtMost(containerWidth))
+                            .fillMaxHeight()
+                            .padding(horizontal = 4.dp, vertical = 4.dp)
+                            .border(1.dp, PocketBorder, RoundedCornerShape(12.dp))
+                            .clip(RoundedCornerShape(12.dp))
                     }
                 },
-                update = { view ->
-                    val desktopUa = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-                    if (selectedPreset.isDesktop && view.settings.userAgentString != desktopUa) {
-                        view.settings.userAgentString = desktopUa
-                        view.reload()
-                    } else if (!selectedPreset.isDesktop && view.settings.userAgentString == desktopUa) {
-                        view.settings.userAgentString = null
-                        view.reload()
+                contentAlignment = if (isScaled) Alignment.TopStart else Alignment.TopCenter
+            ) {
+                Box(
+                    modifier = if (isScaled) {
+                        Modifier
+                            .requiredSize(width = webViewWidth, height = webViewHeight)
+                            .graphicsLayer {
+                                scaleX = scale
+                                scaleY = scale
+                                transformOrigin = TransformOrigin(0f, 0f)
+                            }
+                    } else {
+                        Modifier.fillMaxSize()
                     }
-                    if (view.url != currentUrl) {
-                        view.loadUrl(currentUrl)
-                    }
+                ) {
+                    AndroidView(
+                        modifier = Modifier.fillMaxSize(),
+                        factory = { ctx ->
+                            WebView(ctx).apply {
+                                settings.javaScriptEnabled = true
+                                settings.domStorageEnabled = true
+                                settings.allowFileAccess = true
+                                settings.allowContentAccess = true
+                                settings.useWideViewPort = true
+                                settings.loadWithOverviewMode = true
+                                settings.setSupportZoom(true)
+                                settings.builtInZoomControls = true
+                                settings.displayZoomControls = false
+
+                                if (selectedPreset.isDesktop) {
+                                    settings.userAgentString = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+                                }
+
+                                webViewClient = object : WebViewClient() {
+                                    override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
+                                        val reqUrl = request?.url?.toString() ?: return false
+                                        return if (reqUrl.startsWith("http://localhost") || reqUrl.startsWith("http://127.0.0.1")) {
+                                            urlInput = reqUrl
+                                            currentUrl = reqUrl
+                                            false
+                                        } else {
+                                            true
+                                        }
+                                    }
+
+                                    override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
+                                        isCheckingPort = false
+                                    }
+
+                                    override fun onPageFinished(view: WebView?, url: String?) {
+                                        isCheckingPort = false
+                                        view?.evaluateJavascript("window.dispatchEvent(new Event('resize'));", null)
+                                    }
+
+                                    override fun onReceivedError(
+                                        view: WebView?,
+                                        request: WebResourceRequest?,
+                                        error: WebResourceError?
+                                    ) {
+                                        if (request?.isForMainFrame == true) {
+                                            isConnectionError = true
+                                            errorMessage = error?.description?.toString() ?: "Connection refused"
+                                            isCheckingPort = false
+                                        }
+                                    }
+                                }
+                                webChromeClient = object : WebChromeClient() {
+                                    override fun onConsoleMessage(consoleMessage: ConsoleMessage?): Boolean {
+                                        consoleMessage?.let {
+                                            consoleLogs.add(
+                                                ConsoleLogItem(
+                                                    level = it.messageLevel(),
+                                                    message = it.message() ?: "",
+                                                    sourceId = it.sourceId() ?: "",
+                                                    lineNumber = it.lineNumber()
+                                                )
+                                            )
+                                            if (consoleLogs.size > 100) consoleLogs.removeAt(0)
+                                        }
+                                        return super.onConsoleMessage(consoleMessage)
+                                    }
+                                }
+                                loadUrl(currentUrl)
+                                webViewRef = this
+                            }
+                        },
+                        update = { view ->
+                            val desktopUa = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+                            val needsUaChange = if (selectedPreset.isDesktop) {
+                                view.settings.userAgentString != desktopUa
+                            } else {
+                                view.settings.userAgentString == desktopUa
+                            }
+                            if (needsUaChange) {
+                                view.settings.userAgentString = if (selectedPreset.isDesktop) desktopUa else null
+                                view.reload()
+                            }
+                            if (view.url != currentUrl) {
+                                view.loadUrl(currentUrl)
+                            } else {
+                                view.evaluateJavascript("window.dispatchEvent(new Event('resize'));", null)
+                            }
+                        }
+                    )
                 }
-            )
+            }
 
             // Friendly Dev Server Offline State (replaces ugly ERR_CONNECTION_REFUSED browser page)
             if (isConnectionError) {
@@ -616,7 +657,7 @@ fun PocketWebPreviewScreen(
                             ) {
                                 Text(
                                     text = "Stack default :$stackPort ($projectWebKind) — Tap to switch",
-                                    color = PocketPrimaryBlue,
+                                    color = PocketTextPrimary,
                                     fontSize = 11.5.sp,
                                     fontWeight = FontWeight.Medium
                                 )
@@ -640,7 +681,7 @@ fun PocketWebPreviewScreen(
                             ) {
                                 Text(
                                     text = "Static HTML server :$staticPort — Tap to switch",
-                                    color = PocketPrimaryBlue,
+                                    color = PocketTextPrimary,
                                     fontSize = 11.5.sp,
                                     fontWeight = FontWeight.Medium
                                 )
@@ -669,8 +710,8 @@ fun PocketWebPreviewScreen(
                                     Box(
                                         modifier = Modifier
                                             .clip(RoundedCornerShape(6.dp))
-                                            .background(if (isSelected) PocketIndigo.copy(alpha = 0.3f) else PocketSurfaceElevated)
-                                            .border(1.dp, if (isAlive) PocketEmerald else PocketBorder, RoundedCornerShape(6.dp))
+                                            .background(if (isSelected) PocketTextPrimary else PocketSurfaceElevated)
+                                            .border(1.dp, if (isSelected) PocketTextPrimary else PocketBorder, RoundedCornerShape(6.dp))
                                             .clickable {
                                                 urlInput = target
                                                 currentUrl = target
@@ -681,7 +722,7 @@ fun PocketWebPreviewScreen(
                                     ) {
                                         Text(
                                             text = ":$port",
-                                            color = if (isAlive) PocketEmerald else PocketTextPrimary,
+                                            color = if (isSelected) PocketObsidian else if (isAlive) PocketEmerald else PocketTextPrimary,
                                             fontSize = 11.sp,
                                             fontFamily = FontFamily.Monospace,
                                             fontWeight = if (isAlive || isSelected) FontWeight.Bold else FontWeight.Normal
@@ -703,7 +744,7 @@ fun PocketWebPreviewScreen(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .clip(RoundedCornerShape(8.dp))
-                                        .background(PocketPrimaryBlue)
+                                        .background(PocketTextPrimary)
                                         .clickable {
                                             onStartDevServer(defaultDevCommand)
                                             retryConnection()
@@ -715,10 +756,10 @@ fun PocketWebPreviewScreen(
                                         verticalAlignment = Alignment.CenterVertically,
                                         horizontalArrangement = Arrangement.spacedBy(6.dp)
                                     ) {
-                                        Icon(Icons.Default.PlayArrow, contentDescription = null, tint = Color.White, modifier = Modifier.size(16.dp))
+                                        Icon(Icons.Default.PlayArrow, contentDescription = null, tint = PocketObsidian, modifier = Modifier.size(16.dp))
                                         Text(
                                             text = "Start Dev Server ($defaultDevCommand)",
-                                            color = Color.White,
+                                            color = PocketObsidian,
                                             fontSize = 12.sp,
                                             fontWeight = FontWeight.Bold
                                         )
@@ -770,10 +811,10 @@ fun PocketWebPreviewScreen(
                                         verticalAlignment = Alignment.CenterVertically,
                                         horizontalArrangement = Arrangement.spacedBy(6.dp)
                                     ) {
-                                        Icon(Icons.Default.Refresh, contentDescription = null, tint = PocketCyan, modifier = Modifier.size(14.dp))
+                                        Icon(Icons.Default.Refresh, contentDescription = null, tint = PocketTextPrimary, modifier = Modifier.size(14.dp))
                                         Text(
                                             text = "Retry",
-                                            color = PocketCyan,
+                                            color = PocketTextPrimary,
                                             fontSize = 12.sp,
                                             fontWeight = FontWeight.Medium
                                         )
@@ -810,7 +851,7 @@ fun PocketWebPreviewScreen(
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         Text(
                             text = "Clear",
-                            color = PocketCyan,
+                            color = PocketTextSecondary,
                             fontSize = 11.sp,
                             modifier = Modifier.clickable { consoleLogs.clear() }
                         )
