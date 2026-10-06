@@ -94,9 +94,9 @@ import kotlinx.coroutines.delay
 
 enum class DevicePreset(val label: String, val widthDp: Int?, val isDesktop: Boolean = false) {
     RESPONSIVE("Fluid", null, false),
-    MOBILE("Mobile (375px)", 375, false),
-    TABLET("Tablet (768px)", 768, false),
-    DESKTOP("Desktop (1280px)", 1280, true),
+    MOBILE("Mobile", 375, false),
+    TABLET("Tablet", 768, false),
+    DESKTOP("Desktop", 1280, true),
 }
 
 data class ConsoleLogItem(
@@ -313,20 +313,20 @@ fun PocketWebPreviewScreen(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(6.dp)
         ) {
-            // Viewport Presets (ChatGPT monochrome style)
+            // Viewport Presets
             DevicePreset.entries.forEach { preset ->
                 val active = selectedPreset == preset
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(6.dp))
-                        .background(if (active) PocketTextPrimary else PocketSurfaceElevated)
-                        .border(1.dp, if (active) PocketTextPrimary else PocketBorder, RoundedCornerShape(6.dp))
+                        .background(if (active) PocketPrimaryBlue else PocketSurfaceElevated)
+                        .border(1.dp, if (active) PocketPrimaryBlue else PocketBorder, RoundedCornerShape(6.dp))
                         .clickable { selectedPreset = preset }
                         .padding(horizontal = 10.dp, vertical = 4.dp)
                 ) {
                     Text(
                         text = preset.label,
-                        color = if (active) PocketObsidian else PocketTextSecondary,
+                        color = if (active) Color.White else PocketTextSecondary,
                         fontSize = 11.sp,
                         fontWeight = if (active) FontWeight.Bold else FontWeight.Medium
                     )
@@ -348,8 +348,8 @@ fun PocketWebPreviewScreen(
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(6.dp))
-                        .background(if (isSelected) PocketTextPrimary else PocketSurfaceElevated)
-                        .border(1.dp, if (isSelected) PocketTextPrimary else PocketBorder, RoundedCornerShape(6.dp))
+                        .background(if (isSelected) PocketPrimaryBlue else PocketSurfaceElevated)
+                        .border(1.dp, if (isSelected) PocketPrimaryBlue else PocketBorder, RoundedCornerShape(6.dp))
                         .clickable {
                             urlInput = target
                             currentUrl = target
@@ -367,12 +367,12 @@ fun PocketWebPreviewScreen(
                                 modifier = Modifier
                                     .size(5.dp)
                                     .clip(RoundedCornerShape(2.5.dp))
-                                    .background(if (isSelected) PocketObsidian else PocketEmerald)
+                                    .background(if (isSelected) Color.White else PocketEmerald)
                             )
                         }
                         Text(
                             text = ":$port ($name)",
-                            color = if (isSelected) PocketObsidian else PocketTextSecondary,
+                            color = if (isSelected) Color.White else PocketTextSecondary,
                             fontSize = 10.5.sp,
                             fontFamily = FontFamily.Monospace,
                             fontWeight = if (isSelected || isAlive) FontWeight.Bold else FontWeight.Normal
@@ -486,8 +486,15 @@ fun PocketWebPreviewScreen(
                         val targetUa = if (selectedPreset.isDesktop) desktopUa else null
                         val needsUaChange = view.settings.userAgentString != targetUa
 
+                        val lastAppliedPreset = view.getTag(com.pocketide.app.R.id.tag_preview_preset) as? DevicePreset
+                        val presetChanged = lastAppliedPreset != selectedPreset
+                        view.setTag(com.pocketide.app.R.id.tag_preview_preset, selectedPreset)
+
                         if (needsUaChange) {
                             view.settings.userAgentString = targetUa
+                            view.reload()
+                        } else if (presetChanged) {
+                            injectEmulationScript(view, selectedPreset, screenWidthDp)
                             view.reload()
                         } else {
                             injectEmulationScript(view, selectedPreset, screenWidthDp)
@@ -851,31 +858,34 @@ private fun injectEmulationScript(webView: WebView, preset: DevicePreset, screen
             try {
                 var targetW = ${if (targetWidth != null) targetWidth else "null"};
                 var screenW = $screenWidthDp || window.screen.width || 390;
+                
+                // Clear any intrusive root styles that break position:fixed navbars and stacking contexts
+                if (document.documentElement) {
+                    document.documentElement.style.zoom = '';
+                    document.documentElement.style.width = '';
+                    document.documentElement.style.minWidth = '';
+                }
+                if (document.body) {
+                    document.body.style.width = '';
+                    document.body.style.minWidth = '';
+                }
+
                 var meta = document.querySelector('meta[name="viewport"]');
                 if (!meta) {
                     meta = document.createElement('meta');
                     meta.name = 'viewport';
                     document.head.appendChild(meta);
                 }
+
                 if (!targetW) {
                     meta.setAttribute('content', 'width=device-width, initial-scale=1.0, user-scalable=yes');
-                    document.documentElement.style.zoom = '';
-                    document.documentElement.style.width = '';
-                    document.documentElement.style.minWidth = '';
-                    document.body.style.width = '';
-                    document.body.style.minWidth = '';
                 } else {
-                    meta.setAttribute('content', 'width=' + targetW + ', initial-scale=1.0, minimum-scale=0.1, maximum-scale=5.0, user-scalable=yes');
-                    document.documentElement.style.width = targetW + 'px';
-                    document.documentElement.style.minWidth = targetW + 'px';
-                    document.body.style.width = targetW + 'px';
-                    document.body.style.minWidth = targetW + 'px';
+                    var scale = 1.0;
                     if (screenW < targetW) {
-                        var scale = (screenW / targetW);
-                        document.documentElement.style.zoom = scale.toFixed(4);
-                    } else {
-                        document.documentElement.style.zoom = '';
+                        scale = (screenW / targetW);
                     }
+                    var scaleStr = scale.toFixed(4);
+                    meta.setAttribute('content', 'width=' + targetW + ', initial-scale=' + scaleStr + ', minimum-scale=0.1, maximum-scale=5.0, user-scalable=yes');
                 }
                 window.dispatchEvent(new Event('resize'));
             } catch (e) {

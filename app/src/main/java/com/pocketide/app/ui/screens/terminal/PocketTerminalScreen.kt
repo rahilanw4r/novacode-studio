@@ -317,7 +317,7 @@ fun PocketTerminalScreen(
                 Icon(
                     imageVector = Icons.Default.PlayArrow,
                     contentDescription = "Execute",
-                    tint = PocketCyan,
+                    tint = PocketPrimaryBlue,
                     modifier = Modifier.size(18.dp)
                 )
             }

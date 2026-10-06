@@ -102,6 +102,10 @@ class AppPreferences(private val context: Context) {
         get() = preferences.getBoolean("legacy_seeded_credential_removed", false)
         set(value) { preferences.edit().putBoolean("legacy_seeded_credential_removed", value).apply() }
 
+    var communityCardDismissed: Boolean
+        get() = preferences.getBoolean("community_card_dismissed", false)
+        set(value) { preferences.edit().putBoolean("community_card_dismissed", value).apply() }
+
     var testProviderDefaultsVersion: Int
         get() = preferences.getInt("test_provider_defaults_version", 0)
         set(value) { preferences.edit().putInt("test_provider_defaults_version", value).apply() }

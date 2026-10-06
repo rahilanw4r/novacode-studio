@@ -80,15 +80,15 @@ jobs:
           EOF
 
           cat << 'EOF' > release_notes.md
-          ### Pocket IDE v1.0.30
-          <!-- versionCode: 31 -->
+          ### Pocket IDE v1.0.31
+          <!-- versionCode: 32 -->
 
-          **Fixed Tablet and Laptop/Desktop preview visibility and responsive layout scaling.**
+          **Fixed Preview Navbar and Navigation Dock Refinements.**
 
           #### What's New:
-          - **Fixed Blank / Cropped Previews**: Removed broken GPU layer scaling that caused Desktop (1280px) to render blank black screens and Tablet (768px) to shrink into the corner.
-          - **Native Blink Layout & Zoom Emulation**: Laptop/Desktop and Tablet modes now use native Blink viewport meta tag injection with GPU CSS zoom, scaling full 1280px and 768px responsive layouts edge-to-edge on mobile screens with zero clipping.
-          - **Full Touch & Scroll Fidelity**: Native scrolling, touch events, and zoom remain 100% responsive and smooth.
+          - **Fixed Missing / Clipped Webpage Navbars**: Eliminated root-level zoom and document-width overrides that broke `position: fixed` stacking contexts in Chromium. Fixed headers, desktop navbars, and mobile drawer overlays now stay pinned at `top: 0` and align correctly across Fluid, Mobile, Tablet, and Desktop presets.
+          - **Clean Preset Pills & System Dock Padding**: Shortened preset labels to `Fluid`, `Mobile`, `Tablet`, `Desktop` so they never cut off on narrow screens, and added proper navigation bar padding so bottom dock tabs never collide with Android system navigation gestures.
+          - **Consistent Developer Palette**: Unified selection states to clean blue, running/success states to emerald, error states to red, and quiet neutral tones across preview and workspace navigation.
           EOF
 
           gh release create "$TAG" "$APK_NAME" pocket-ide-update.json \

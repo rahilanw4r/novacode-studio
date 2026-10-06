@@ -37,26 +37,26 @@ data class PocketColorPalette(
     val isDark: Boolean,
 )
 
-// Authentic ChatGPT Dark Palette (Clean, Neutral, Fast)
+// Professional Developer Dark Palette (Clean, Neutral, Fast)
 val PocketDarkPalette = PocketColorPalette(
-    background = Color(0xFF212121),       // ChatGPT main background
-    surface = Color(0xFF171717),          // ChatGPT deep surface / top bar
-    surfaceVariant = Color(0xFF2F2F2F),   // ChatGPT card / bubble surface
-    surfaceElevated = Color(0xFF2F2F2F),  // ChatGPT raised surface
+    background = Color(0xFF1E1E1E),       // Clean neutral dark background
+    surface = Color(0xFF181818),          // Deep surface / bars
+    surfaceVariant = Color(0xFF282828),   // Card / bubble surface
+    surfaceElevated = Color(0xFF2D2D2D),  // Raised surface
     border = Color(0xFF383838),           // Subtle crisp neutral border
     borderGlow = Color(0xFF383838),       // Neutral border (no decorative glow)
-    textPrimary = Color(0xFFECECEC),      // ChatGPT crisp high-contrast readable text
-    textSecondary = Color(0xFFB4B4B4),    // ChatGPT secondary metadata
-    textMuted = Color(0xFF8E8E8E),        // ChatGPT muted tertiary text
-    primaryBlue = Color(0xFF10A37F),      // OpenAI Green / accent
-    bluePressed = Color(0xFF0E8A6B),      // Deep action green
-    blueSurface = Color(0xFF2F2F2F),      // Subtle container
-    emerald = Color(0xFF10A37F),          // Green for success / running states
-    indigo = Color(0xFF10A37F),           // Mapped strictly to primary accent
-    cyan = Color(0xFF10A37F),             // Mapped strictly to primary accent
-    amber = Color(0xFFB4B4B4),            // Neutral secondary
+    textPrimary = Color(0xFFECECEC),      // Crisp high-contrast readable text
+    textSecondary = Color(0xFFB4B4B4),    // Secondary metadata
+    textMuted = Color(0xFF808080),        // Muted tertiary text
+    primaryBlue = Color(0xFF3B82F6),      // Blue for selection & primary interaction
+    bluePressed = Color(0xFF1D4ED8),      // Deep action blue
+    blueSurface = Color(0xFF252D3D),      // Subtle blue container
+    emerald = Color(0xFF10B981),          // Green ONLY for success / running states
+    indigo = Color(0xFF3B82F6),           // Neutralized to primary blue
+    cyan = Color(0xFF38BDF8),             // Subtle info cyan
+    amber = Color(0xFFF59E0B),            // Warning amber
     rose = Color(0xFFEF4444),             // Red ONLY for errors / destructive actions
-    purple = Color(0xFFB4B4B4),           // Neutralized to secondary text
+    purple = Color(0xFF8B5CF6),           // Accent purple
     isDark = true,
 )
 

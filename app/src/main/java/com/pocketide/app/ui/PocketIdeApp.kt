@@ -17,6 +17,7 @@ import com.pocketide.app.ui.theme.PocketBorder
 import com.pocketide.app.ui.theme.PocketBorderGlow
 import com.pocketide.app.ui.theme.PocketTextMuted
 import com.pocketide.app.ui.theme.PocketTextPrimary
+import com.pocketide.app.ui.theme.PocketPrimaryBlue
 import androidx.compose.foundation.Image
 import androidx.compose.ui.res.painterResource
 import com.pocketide.app.R
@@ -2082,12 +2083,12 @@ private fun RootScreenHost(
                                     Icon(
                                         imageVector = tab.icon,
                                         contentDescription = tab.label,
-                                        tint = if (selected) PocketEmerald else PocketTextMuted,
+                                        tint = if (selected) PocketPrimaryBlue else PocketTextMuted,
                                         modifier = Modifier.size(18.dp)
                                     )
                                     Text(
                                         text = tab.label,
-                                        color = if (selected) PocketEmerald else PocketTextMuted,
+                                        color = if (selected) PocketPrimaryBlue else PocketTextMuted,
                                         fontSize = 10.sp,
                                         fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Medium,
                                         maxLines = 1

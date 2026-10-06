@@ -359,7 +359,7 @@ fun PocketAgentChatScreen(
                 CircularProgressIndicator(
                     modifier = Modifier.size(12.dp),
                     strokeWidth = 2.dp,
-                    color = PocketPrimaryBlue
+                    color = PocketEmerald
                 )
                 Text(
                     text = when {

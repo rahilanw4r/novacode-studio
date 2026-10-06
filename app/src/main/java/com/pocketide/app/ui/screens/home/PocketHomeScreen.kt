@@ -96,8 +96,9 @@ fun PocketHomeScreen(
     var showCreateDialog by remember { mutableStateOf(false) }
     var newProjectName by remember { mutableStateOf("") }
     var copilotPrompt by remember { mutableStateOf("") }
-    var showCommunityCard by remember { mutableStateOf(true) }
     val context = androidx.compose.ui.platform.LocalContext.current
+    val appPrefs = remember { com.pocketide.app.data.AppPreferences(context) }
+    var showCommunityCard by remember { mutableStateOf(!appPrefs.communityCardDismissed) }
 
     val recentProjects = remember(state.projects) {
         state.projects.take(4)
@@ -470,7 +471,10 @@ fun PocketHomeScreen(
                                 fontSize = 11.5.sp,
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(4.dp))
-                                    .clickable { showCommunityCard = false }
+                                    .clickable {
+                                        showCommunityCard = false
+                                        appPrefs.communityCardDismissed = true
+                                    }
                                     .padding(horizontal = 6.dp, vertical = 2.dp)
                             )
                         }
