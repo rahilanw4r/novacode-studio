@@ -80,16 +80,16 @@ jobs:
           EOF
 
           cat << 'EOF' > release_notes.md
-          ### Pocket IDE v1.0.26
-          <!-- versionCode: 27 -->
+          ### Pocket IDE v1.0.27
+          <!-- versionCode: 28 -->
 
-          **Minimal, fast, and ChatGPT-styled mobile IDE workspace.**
+          **Refined developer home screen with rich project cards and hero context.**
 
           #### What's New:
-          - **Clean Minimal Home Screen**: Removed clutter, cards, and duplicate actions. Kept only New Project, Open Project, and Recent Projects.
-          - **ChatGPT Aesthetic**: Applied authentic ChatGPT dark theme (`#212121`, `#171717`, `#2F2F2F`, `#383838`) with OpenAI green accents across the whole app.
-          - **ChatGPT Style Chatbot**: Floating capsule input bar with circular action buttons, right-aligned sleek rounded user message bubbles, and full-width markdown responses.
-          - **Fast & Smooth Performance**: Optimized layouts and eliminated redundant shadow and draw overhead.
+          - **Refined Home Screen**: Added clear hero title ("Build from your phone") and description highlighting mobile developer capabilities.
+          - **Bring Existing Project**: Added quick import option for ZIP files, Git repositories, or existing workspaces.
+          - **Rich Project Cards**: Upgraded recent project cards with workspace paths, language tags, and clean empty state guidance.
+          - **ChatGPT Aesthetic**: Kept the fast, dark neutral ChatGPT theme (`#212121`, `#171717`, `#2F2F2F`) and OpenAI green accents.
           EOF
 
           gh release create "$TAG" "$APK_NAME" pocket-ide-update.json \
