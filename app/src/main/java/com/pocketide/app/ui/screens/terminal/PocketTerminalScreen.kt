@@ -190,7 +190,7 @@ fun PocketTerminalScreen(
                 }
             }
 
-            items(outputLines) { line ->
+            items(outputLines, key = { it.id }) { line ->
                 Column(modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp)) {
                     // Command prompt header
                     Row(

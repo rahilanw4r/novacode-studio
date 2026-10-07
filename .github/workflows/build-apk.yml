@@ -80,17 +80,18 @@ jobs:
           EOF
 
           cat << 'EOF' > release_notes.md
-          ### Pocket IDE v1.0.35
-          <!-- versionCode: 36 -->
+          ### Pocket IDE v1.0.36
+          <!-- versionCode: 37 -->
 
-          **Telegram Community Links, Clickable Creator Handle, Keyboard Newline Enter, and Network Error Classification.**
+          **Performance Optimization Pass, LazyColumn Stable Keys, Clean Final Polish.**
 
           #### What's New:
-          - **Home Screen Community Card**: Official Telegram Channel (`https://t.me/PocketIDE`) and Community Discussion (`https://t.me/PocketIDECommunity`) cards are restored on the home screen with graceful collapse/expand.
-          - **Creator & Developer Screen Links**: Added Official Telegram Channel and Community Discussion links under Official Channels & Contact.
-          - **Clickable Creator Telegram Handle**: Tapping `@RahilAnw4r` directly opens the Telegram chat.
-          - **Multiline Chat Keyboard**: Soft keyboard Enter key now switches lines (inserts newlines) instead of prematurely submitting, allowing natural multi-line prompting and code entry.
-          - **Network Error Classification**: Fixed false-positive 401 authentication errors caused by IPv6 addresses containing `401`; socket resets (`connection reset by peer`) are now accurately diagnosed as network reset issues.
+          - **Compose Performance & Scroll Speed**: Added stable keys to LazyColumn lists across Agent Chat, File Explorer, Git Diff View, and Terminal Output, preventing redundant recompositions and ensuring 60fps scrolling on mobile devices.
+          - **Home Screen Recent Projects**: Wrapped project cards with stable keys for instant updates and reordering.
+          - **Telegram Community Integration**: Fully integrated official channel and community discussion links on both the Home screen and the Creator & Developer screen.
+          - **Clickable Creator Telegram**: Direct redirection to `@RahilAnw4r` on Telegram.
+          - **Multiline Keyboard & Smooth Insets**: Soft keyboard Enter key switches lines for code and multi-line prompting, anchored cleanly above system navigation and IME.
+          - **Accurate Error Diagnosis**: Prioritized network socket reset detection to eliminate false 401 authentication warnings.
           EOF
 
           gh release create "$TAG" "$APK_NAME" pocket-ide-update.json \

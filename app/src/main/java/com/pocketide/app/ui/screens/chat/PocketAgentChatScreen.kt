@@ -196,7 +196,7 @@ fun PocketAgentChatScreen(
                 }
             }
 
-            items(visibleMessages) { message ->
+            items(visibleMessages, key = { it.id }) { message ->
                 ChatMessageItem(
                     message = message,
                     previewReady = previewReady,

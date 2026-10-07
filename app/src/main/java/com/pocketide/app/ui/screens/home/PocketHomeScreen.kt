@@ -47,6 +47,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -341,7 +342,8 @@ fun PocketHomeScreen(
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         recentProjects.forEach { project ->
-                            Surface(
+                            key(project.id) {
+                                Surface(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .clip(RoundedCornerShape(12.dp))
@@ -410,6 +412,7 @@ fun PocketHomeScreen(
                                     )
                                 }
                             }
+                        }
                         }
                     }
                 }

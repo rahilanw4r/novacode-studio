@@ -413,7 +413,7 @@ private fun FileBrowserView(
             }
         } else {
             LazyColumn(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                items(filtered) { entry ->
+                items(filtered, key = { it.path }) { entry ->
                     FileTreeItem(entry = entry, onOpen = { onOpenFile(entry) })
                 }
             }
@@ -507,7 +507,7 @@ private fun DiffInspectorView(
         }
 
         LazyColumn(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-            items(changes) { change ->
+            items(changes, key = { it.path }) { change ->
                 DiffFileCard(
                     change = change,
                     onKeep = { onKeepFile(change.path) },
