@@ -417,21 +417,7 @@ fun PocketAgentChatScreen(
                         lineHeight = 18.sp
                     ),
                     cursorBrush = SolidColor(PocketPrimaryBlue),
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
-                    keyboardActions = KeyboardActions(
-                        onSend = {
-                            if (canSend) {
-                                val text = promptInput.trim().ifBlank {
-                                    if (attachments.isNotEmpty()) "Please review the attached files." else ""
-                                }
-                                if (text.isNotEmpty()) {
-                                    onSend(text)
-                                    promptInput = ""
-                                    isEditingPrompt = false
-                                }
-                            }
-                        }
-                    ),
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Default),
                     modifier = Modifier
                         .weight(1f)
                         .padding(horizontal = 4.dp, vertical = 6.dp)

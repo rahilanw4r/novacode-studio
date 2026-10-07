@@ -78,6 +78,8 @@ import com.pocketide.app.ui.theme.PocketTextSecondary
 
 private const val DEVELOPER_TELEGRAM_HANDLE = "@RahilAnw4r"
 private const val DEVELOPER_TELEGRAM_URL = "https://t.me/RahilAnw4r"
+private const val OFFICIAL_TELEGRAM_CHANNEL_URL = "https://t.me/PocketIDE"
+private const val OFFICIAL_TELEGRAM_COMMUNITY_URL = "https://t.me/PocketIDECommunity"
 private const val PROJECT_GITHUB_URL = "https://github.com/rahilanw4r/pocket-ide"
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -170,7 +172,14 @@ fun PocketDeveloperScreen(
                                 color = PocketCyan,
                                 fontSize = 12.sp,
                                 fontFamily = FontFamily.Monospace,
-                                fontWeight = FontWeight.Medium
+                                fontWeight = FontWeight.Medium,
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(4.dp))
+                                    .clickable {
+                                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(DEVELOPER_TELEGRAM_URL))
+                                        context.startActivity(intent)
+                                    }
+                                    .padding(horizontal = 6.dp, vertical = 2.dp)
                             )
                         }
 
@@ -270,6 +279,84 @@ fun PocketDeveloperScreen(
                                         Text("Copy", color = PocketTextSecondary, fontSize = 11.sp, fontWeight = FontWeight.Medium)
                                     }
                                 }
+                            }
+
+                            HorizontalDivider(color = PocketBorder)
+
+                            // Official Telegram Channel
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable {
+                                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(OFFICIAL_TELEGRAM_CHANNEL_URL))
+                                        context.startActivity(intent)
+                                    },
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(34.dp)
+                                            .clip(RoundedCornerShape(8.dp))
+                                            .background(PocketSurfaceElevated),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Icon(
+                                            painter = painterResource(R.drawable.ic_telegram),
+                                            contentDescription = null,
+                                            tint = Color.Unspecified,
+                                            modifier = Modifier.size(20.dp)
+                                        )
+                                    }
+                                    Column {
+                                        Text("Official Telegram Channel", color = PocketTextPrimary, fontSize = 13.5.sp, fontWeight = FontWeight.SemiBold)
+                                        Text("Software updates & APK releases", color = PocketTextMuted, fontSize = 11.5.sp)
+                                    }
+                                }
+                                Icon(Icons.AutoMirrored.Filled.OpenInNew, contentDescription = null, tint = PocketTextSecondary, modifier = Modifier.size(17.dp))
+                            }
+
+                            HorizontalDivider(color = PocketBorder)
+
+                            // Community Discussion / Support
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable {
+                                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(OFFICIAL_TELEGRAM_COMMUNITY_URL))
+                                        context.startActivity(intent)
+                                    },
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(34.dp)
+                                            .clip(RoundedCornerShape(8.dp))
+                                            .background(PocketSurfaceElevated),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Icon(
+                                            painter = painterResource(R.drawable.ic_telegram),
+                                            contentDescription = null,
+                                            tint = Color.Unspecified,
+                                            modifier = Modifier.size(20.dp)
+                                        )
+                                    }
+                                    Column {
+                                        Text("Community Discussion", color = PocketTextPrimary, fontSize = 13.5.sp, fontWeight = FontWeight.SemiBold)
+                                        Text("Help, support & suggestions", color = PocketTextMuted, fontSize = 11.5.sp)
+                                    }
+                                }
+                                Icon(Icons.AutoMirrored.Filled.OpenInNew, contentDescription = null, tint = PocketTextSecondary, modifier = Modifier.size(17.dp))
                             }
 
                             HorizontalDivider(color = PocketBorder)

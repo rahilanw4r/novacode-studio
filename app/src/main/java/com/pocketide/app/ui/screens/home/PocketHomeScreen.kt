@@ -49,6 +49,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -97,8 +98,7 @@ fun PocketHomeScreen(
     var newProjectName by remember { mutableStateOf("") }
     var copilotPrompt by remember { mutableStateOf("") }
     val context = androidx.compose.ui.platform.LocalContext.current
-    val appPrefs = remember { com.pocketide.app.data.AppPreferences(context) }
-    var showCommunityCard by remember { mutableStateOf(!appPrefs.communityCardDismissed) }
+    var showCommunityCard by rememberSaveable { mutableStateOf(true) }
 
     val recentProjects = remember(state.projects) {
         state.projects.take(4)
@@ -476,10 +476,7 @@ fun PocketHomeScreen(
                                 fontSize = 11.5.sp,
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(4.dp))
-                                    .clickable {
-                                        showCommunityCard = false
-                                        appPrefs.communityCardDismissed = true
-                                    }
+                                    .clickable { showCommunityCard = false }
                                     .padding(horizontal = 6.dp, vertical = 2.dp)
                             )
                         }
@@ -537,6 +534,32 @@ fun PocketHomeScreen(
                             }
                         }
                     }
+                }
+            }
+        } else {
+            item {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(8.dp))
+                        .clickable { showCommunityCard = true }
+                        .padding(vertical = 6.dp),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_telegram),
+                        contentDescription = null,
+                        tint = Color.Unspecified,
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Spacer(Modifier.width(6.dp))
+                    Text(
+                        text = "Pocket IDE Telegram & Community",
+                        color = PocketTextSecondary,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Medium
+                    )
                 }
             }
         }

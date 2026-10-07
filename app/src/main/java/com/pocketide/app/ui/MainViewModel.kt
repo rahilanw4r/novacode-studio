@@ -280,6 +280,22 @@ data class ClassifiedRuntimeError(
 fun classifyRuntimeFailure(reason: String): ClassifiedRuntimeError {
     val lower = reason.lowercase()
     return when {
+        "stopped" in lower || "cancelled" in lower || "canceled" in lower ->
+            ClassifiedRuntimeError(
+                title = "Task stopped — user cancelled the task",
+                message = "Task execution was cancelled by the user.",
+                details = reason,
+            )
+        "connection reset" in lower || "reset by peer" in lower || "econnreset" in lower ||
+            "econnrefused" in lower || "network error" in lower || "connect timed out" in lower ||
+            "connection timed out" in lower || "failed to connect" in lower || "no address associated with hostname" in lower ||
+            "unable to resolve host" in lower || "broken pipe" in lower || "network is unreachable" in lower ||
+            "no route to host" in lower ->
+            ClassifiedRuntimeError(
+                title = "Task failed — network connection reset",
+                message = "Connection reset by peer or network lost. Check internet connection or VPN.",
+                details = reason,
+            )
         "402" in lower || "insufficient credit" in lower || "insufficient credits" in lower ||
             "insufficient_quota" in lower || "out of credits" in lower || "credit balance" in lower ||
             "payment required" in lower || "balance too low" in lower ->
@@ -296,11 +312,11 @@ fun classifyRuntimeFailure(reason: String): ClassifiedRuntimeError {
                 details = reason,
                 isAuthError = true,
             )
-        "401" in lower || "403" in lower || "authentication" in lower || "invalid api key" in lower ||
+        Regex("""\b(401|403)\b""").containsMatchIn(lower) || "authentication" in lower || "invalid api key" in lower ||
             "unauthorized" in lower || "autherror" in lower ->
             ClassifiedRuntimeError(
                 title = "Task failed — provider authentication required",
-                message = "The provider rejected the saved API key.",
+                message = "The provider rejected the saved API key or session expired.",
                 details = reason,
                 isAuthError = true,
             )
@@ -311,24 +327,10 @@ fun classifyRuntimeFailure(reason: String): ClassifiedRuntimeError {
                 message = "Build or compilation failed during execution.",
                 details = reason,
             )
-        "429" in lower || "rate limit" in lower || "too many requests" in lower ->
+        Regex("""\b429\b""").containsMatchIn(lower) || "rate limit" in lower || "too many requests" in lower ->
             ClassifiedRuntimeError(
                 title = "Task failed — provider rate limit reached",
                 message = "Provider rate limit reached. Please wait a moment.",
-                details = reason,
-            )
-        "econnrefused" in lower || "network error" in lower || "connect timed out" in lower ||
-            "connection timed out" in lower || "failed to connect" in lower || "no address associated with hostname" in lower ||
-            "unable to resolve host" in lower ->
-            ClassifiedRuntimeError(
-                title = "Task failed — network connection lost",
-                message = "Check your internet connection.",
-                details = reason,
-            )
-        "stopped" in lower || "cancelled" in lower || "canceled" in lower ->
-            ClassifiedRuntimeError(
-                title = "Task stopped — user cancelled the task",
-                message = "Task execution was cancelled by the user.",
                 details = reason,
             )
         else -> {

@@ -80,18 +80,17 @@ jobs:
           EOF
 
           cat << 'EOF' > release_notes.md
-          ### Pocket IDE v1.0.34
-          <!-- versionCode: 35 -->
+          ### Pocket IDE v1.0.35
+          <!-- versionCode: 36 -->
 
-          **Workspace UI/UX Polish: Compact Header, Single Task Status, Scannable Command Center, and In-Chat Attachment Chips.**
+          **Telegram Community Links, Clickable Creator Handle, Keyboard Newline Enter, and Network Error Classification.**
 
           #### What's New:
-          - **Compact Workspace Header**: Project title and model selector are now constrained and truncated gracefully, removing the wrapping "Running" badge next to the Run button.
-          - **Single Clear Task Status**: Live agent status strictly displays one active state (`Thinking…`, `Running · <tool>`, `Completed`, `Failed`, or `Stopped`) without duplicate indicators.
-          - **Stopped & Failed Error Details**: Failure or cancellation reason is reliably displayed with expandable error trace and actionable retry/model selection.
-          - **In-Chat Attachment History**: Sent attachments are now displayed cleanly as chips directly within user chat bubbles alongside prompt text.
-          - **Scannable Command Center**: Palette sheet reduced to 280dp max height with concise single-line action rows and sharp keyboard shortcuts.
-          - **Design System Consistency**: Maintained calm neutral dark surfaces, Blue for active selections/composer interactions, Green strictly for running/success, and Red for destructive actions.
+          - **Home Screen Community Card**: Official Telegram Channel (`https://t.me/PocketIDE`) and Community Discussion (`https://t.me/PocketIDECommunity`) cards are restored on the home screen with graceful collapse/expand.
+          - **Creator & Developer Screen Links**: Added Official Telegram Channel and Community Discussion links under Official Channels & Contact.
+          - **Clickable Creator Telegram Handle**: Tapping `@RahilAnw4r` directly opens the Telegram chat.
+          - **Multiline Chat Keyboard**: Soft keyboard Enter key now switches lines (inserts newlines) instead of prematurely submitting, allowing natural multi-line prompting and code entry.
+          - **Network Error Classification**: Fixed false-positive 401 authentication errors caused by IPv6 addresses containing `401`; socket resets (`connection reset by peer`) are now accurately diagnosed as network reset issues.
           EOF
 
           gh release create "$TAG" "$APK_NAME" pocket-ide-update.json \
