@@ -114,6 +114,7 @@ import com.pocketide.app.ui.theme.PocketCyan
 import com.pocketide.app.ui.theme.PocketEmerald
 import com.pocketide.app.ui.theme.PocketIndigo
 import com.pocketide.app.ui.theme.PocketObsidian
+import com.pocketide.app.ui.theme.PocketPrimaryBlue
 import com.pocketide.app.ui.theme.PocketSurface
 import com.pocketide.app.ui.theme.PocketSurfaceElevated
 import com.pocketide.app.ui.theme.PocketSurfaceVariant
@@ -869,7 +870,7 @@ fun AgentScreen(
                                     fontSize = 13.sp,
                                     lineHeight = 18.sp
                                 ),
-                                cursorBrush = SolidColor(PocketEmerald),
+                                cursorBrush = SolidColor(PocketPrimaryBlue),
                                 decorationBox = { innerTextField ->
                                     if (aiWorkspacePrompt.isEmpty()) {
                                         Text(
@@ -889,7 +890,7 @@ fun AgentScreen(
                                     .align(Alignment.BottomEnd)
                                     .size(32.dp)
                                     .clip(RoundedCornerShape(8.dp))
-                                    .background(if (aiWorkspacePrompt.isNotBlank()) PocketEmerald else PocketSurfaceVariant)
+                                    .background(if (aiWorkspacePrompt.isNotBlank()) PocketPrimaryBlue else PocketSurfaceVariant)
                                     .clickable(enabled = aiWorkspacePrompt.isNotBlank()) {
                                         val p = aiWorkspacePrompt.trim()
                                         if (p.isNotBlank()) {
@@ -902,7 +903,7 @@ fun AgentScreen(
                                 Icon(
                                     imageVector = Icons.AutoMirrored.Filled.Send,
                                     contentDescription = "Send",
-                                    tint = if (aiWorkspacePrompt.isNotBlank()) PocketObsidian else PocketTextMuted,
+                                    tint = if (aiWorkspacePrompt.isNotBlank()) Color.White else PocketTextMuted,
                                     modifier = Modifier.size(15.dp)
                                 )
                             }
@@ -1003,7 +1004,7 @@ fun AgentScreen(
                                     .background(PocketSurfaceElevated),
                                 contentAlignment = Alignment.Center
                             ) {
-                                Icon(Icons.Default.Settings, contentDescription = null, tint = PocketIndigo, modifier = Modifier.size(16.dp))
+                                Icon(Icons.Default.Settings, contentDescription = null, tint = PocketTextSecondary, modifier = Modifier.size(16.dp))
                             }
                             Column {
                                 Text("AI Configuration", color = PocketTextPrimary, fontSize = 13.5.sp, fontWeight = FontWeight.SemiBold)

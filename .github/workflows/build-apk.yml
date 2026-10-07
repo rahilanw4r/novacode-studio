@@ -80,19 +80,18 @@ jobs:
           EOF
 
           cat << 'EOF' > release_notes.md
-          ### Pocket IDE v1.0.33
-          <!-- versionCode: 34 -->
+          ### Pocket IDE v1.0.34
+          <!-- versionCode: 35 -->
 
-          **Fixed Bottom Navigation, Keyboard Inset Gap, Vertical Attachments, and Agent Failure Handling.**
+          **Workspace UI/UX Polish: Compact Header, Single Task Status, Scannable Command Center, and In-Chat Attachment Chips.**
 
           #### What's New:
-          - **Fixed Bottom Navigation**: Bottom dock is securely anchored above the system navigation bar when keyboard is hidden and hidden when keyboard is open.
-          - **Keyboard IME & Input Bar Insets**: Message input sits directly above the software keyboard with zero gap using proper window insets.
-          - **Compact Vertical Attachments**: Displays thumbnails, filename, and remove button in a clean vertical list above the input; supports adding attachments before or after typing text.
-          - **Refined Composer & Send Button**: Clean `[Attach] [Message Agent...] [Send/Stop]` composer with clear disabled/enabled states and stop support.
-          - **Clear Failure & Stopped Task Reasons**: Transparent error categories (Gradle build failed, user cancelled, insufficient credits, network lost, auth required) with expandable error details and recovery actions.
-          - **Unified Task Turn**: Single assistant response turn without duplicate ghost messages, with final result first, changed files second, preview third, and expandable tool activity fourth.
-          - **Redesigned Bottom Dock**: Minimal, balanced 4-tab bar (Agent, Files, Terminal, Preview) with unified icon size, subtle active tint, and no chunky oversized cards.
+          - **Compact Workspace Header**: Project title and model selector are now constrained and truncated gracefully, removing the wrapping "Running" badge next to the Run button.
+          - **Single Clear Task Status**: Live agent status strictly displays one active state (`Thinking…`, `Running · <tool>`, `Completed`, `Failed`, or `Stopped`) without duplicate indicators.
+          - **Stopped & Failed Error Details**: Failure or cancellation reason is reliably displayed with expandable error trace and actionable retry/model selection.
+          - **In-Chat Attachment History**: Sent attachments are now displayed cleanly as chips directly within user chat bubbles alongside prompt text.
+          - **Scannable Command Center**: Palette sheet reduced to 280dp max height with concise single-line action rows and sharp keyboard shortcuts.
+          - **Design System Consistency**: Maintained calm neutral dark surfaces, Blue for active selections/composer interactions, Green strictly for running/success, and Red for destructive actions.
           EOF
 
           gh release create "$TAG" "$APK_NAME" pocket-ide-update.json \

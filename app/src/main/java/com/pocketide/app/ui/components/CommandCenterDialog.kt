@@ -52,6 +52,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -275,8 +276,8 @@ fun CommandCenterDialog(
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .heightIn(max = 380.dp)
-                        .padding(vertical = 6.dp)
+                        .heightIn(max = 280.dp)
+                        .padding(vertical = 4.dp)
                 ) {
                     if (filteredActions.isEmpty()) {
                         item {
@@ -299,58 +300,45 @@ fun CommandCenterDialog(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .clickable { action.action() }
-                                    .padding(horizontal = 14.dp, vertical = 9.dp),
+                                    .padding(horizontal = 12.dp, vertical = 7.dp),
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
                                 Row(
                                     verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp),
                                     modifier = Modifier.weight(1f)
                                 ) {
-                                    Box(
-                                        modifier = Modifier
-                                            .size(28.dp)
-                                            .clip(RoundedCornerShape(4.dp))
-                                            .background(PocketSurfaceElevated),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        Icon(
-                                            imageVector = action.icon,
-                                            contentDescription = null,
-                                            tint = if (action.id == "sandbox" || action.id == "run") PocketEmerald else PocketTextSecondary,
-                                            modifier = Modifier.size(16.dp)
-                                        )
-                                    }
-                                    Column {
-                                        Text(
-                                            text = action.title,
-                                            color = PocketTextPrimary,
-                                            fontSize = 13.sp,
-                                            fontWeight = FontWeight.SemiBold
-                                        )
-                                        Text(
-                                            text = action.subtitle,
-                                            color = PocketTextMuted,
-                                            fontSize = 11.sp
-                                        )
-                                    }
+                                    Icon(
+                                        imageVector = action.icon,
+                                        contentDescription = null,
+                                        tint = if (action.id == "sandbox" || action.id == "run") PocketEmerald else PocketTextSecondary,
+                                        modifier = Modifier.size(17.dp)
+                                    )
+                                    Text(
+                                        text = action.title,
+                                        color = PocketTextPrimary,
+                                        fontSize = 12.5.sp,
+                                        fontWeight = FontWeight.Medium,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
                                 }
 
                                 if (action.tag != null) {
                                     Box(
                                         modifier = Modifier
-                                            .clip(RoundedCornerShape(4.dp))
+                                            .clip(RoundedCornerShape(3.dp))
                                             .background(PocketSurfaceElevated)
-                                            .border(1.dp, PocketBorder, RoundedCornerShape(4.dp))
-                                            .padding(horizontal = 6.dp, vertical = 2.dp)
+                                            .border(1.dp, PocketBorder, RoundedCornerShape(3.dp))
+                                            .padding(horizontal = 5.dp, vertical = 1.dp)
                                     ) {
                                         Text(
                                             text = action.tag,
                                             color = PocketPrimaryBlue,
-                                            fontSize = 10.sp,
+                                            fontSize = 9.5.sp,
                                             fontFamily = FontFamily.Monospace,
-                                            fontWeight = FontWeight.Bold
+                                            fontWeight = FontWeight.SemiBold
                                         )
                                     }
                                 }

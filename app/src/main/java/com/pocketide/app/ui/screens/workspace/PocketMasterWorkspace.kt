@@ -196,7 +196,7 @@ fun PocketMasterWorkspace(
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.weight(1f, fill = false)
+                modifier = Modifier.weight(1f)
             ) {
                 IconButton(onClick = onBack, modifier = Modifier.size(30.dp)) {
                     Icon(
@@ -206,7 +206,7 @@ fun PocketMasterWorkspace(
                         modifier = Modifier.size(18.dp)
                     )
                 }
-                Column {
+                Column(modifier = Modifier.weight(1f)) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(6.dp)
@@ -240,7 +240,7 @@ fun PocketMasterWorkspace(
                     }
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        horizontalArrangement = Arrangement.spacedBy(5.dp),
                         modifier = Modifier
                             .clip(RoundedCornerShape(4.dp))
                             .clickable {
@@ -258,7 +258,9 @@ fun PocketMasterWorkspace(
                             text = "${state.agentKind.title} · $currentModelName",
                             color = PocketTextSecondary,
                             fontSize = 10.5.sp,
-                            maxLines = 1
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.weight(1f, fill = false)
                         )
                         Icon(
                             imageVector = Icons.Default.KeyboardArrowDown,
@@ -266,20 +268,6 @@ fun PocketMasterWorkspace(
                             tint = PocketTextMuted,
                             modifier = Modifier.size(12.dp)
                         )
-                        if (state.isRunning) {
-                            Box(
-                                modifier = Modifier
-                                    .size(5.dp)
-                                    .clip(CircleShape)
-                                    .background(PocketEmerald)
-                            )
-                            Text(
-                                text = "Running",
-                                color = PocketEmerald,
-                                fontSize = 10.sp,
-                                fontWeight = FontWeight.SemiBold
-                            )
-                        }
                     }
                 }
             }

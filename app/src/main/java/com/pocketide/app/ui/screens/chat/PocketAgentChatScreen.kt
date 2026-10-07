@@ -236,9 +236,9 @@ fun PocketAgentChatScreen(
                 }
             }
 
-            // Live task failure recovery card (when task failed and not already rendered by a failed message)
+            // Live task failure/stopped recovery card (when task failed/stopped and not already rendered by a failed message)
             val lastIsFailed = visibleMessages.lastOrNull()?.isTaskFailed == true
-            if (taskLifecycle == AgentTaskLifecycle.FAILED && taskFailureReason != null && !lastIsFailed) {
+            if ((taskLifecycle == AgentTaskLifecycle.FAILED || taskLifecycle == AgentTaskLifecycle.STOPPED) && taskFailureReason != null && !lastIsFailed) {
                 item {
                     TaskFailureCard(
                         title = taskFailureReason,
@@ -343,7 +343,7 @@ fun PocketAgentChatScreen(
             }
         }
 
-        // Live Agent Working Indicator
+        // Single Clear Live Task Status: Thinking or Running
         if (isRunning || liveThinking) {
             Row(
                 modifier = Modifier
@@ -357,15 +357,16 @@ fun PocketAgentChatScreen(
                     strokeWidth = 2.dp,
                     color = PocketEmerald
                 )
+                val statusText = when {
+                    liveThinking || taskLifecycle == AgentTaskLifecycle.THINKING -> "Thinking…"
+                    liveProcess.isNotEmpty() -> {
+                        val last = liveProcess.lastOrNull()
+                        if (last != null && last.title.isNotBlank()) "Running · ${last.title}" else "Running…"
+                    }
+                    else -> "Running…"
+                }
                 Text(
-                    text = when {
-                        liveThinking -> "Thinking & planning…"
-                        liveProcess.isNotEmpty() -> {
-                            val last = liveProcess.lastOrNull()
-                            if (last != null && last.title.isNotBlank()) "${last.title} · ${last.detail.take(35)}" else "Agent is executing code…"
-                        }
-                        else -> "Working on your request…"
-                    },
+                    text = statusText,
                     color = PocketTextSecondary,
                     fontSize = 11.5.sp,
                     fontFamily = FontFamily.Monospace,
@@ -448,7 +449,7 @@ fun PocketAgentChatScreen(
                 )
 
                 // [ Send / Stop ]
-                if (isRunning && onStop != null) {
+                if (isRunning) {
                     IconButton(
                         onClick = onStop,
                         modifier = Modifier
@@ -679,12 +680,47 @@ private fun ChatMessageItem(
                     .padding(horizontal = 16.dp, vertical = 12.dp)
             ) {
                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                    Text(
-                        text = message.text,
-                        color = PocketTextPrimary,
-                        fontSize = 14.sp,
-                        lineHeight = 20.sp
-                    )
+                    if (message.attachments.isNotEmpty()) {
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(4.dp),
+                            modifier = Modifier.padding(bottom = 2.dp)
+                        ) {
+                            message.attachments.forEach { att ->
+                                val isImg = att.mimeType.startsWith("image/")
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(6.dp))
+                                        .background(PocketSurface)
+                                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = if (isImg) Icons.Default.Image else Icons.Default.Description,
+                                        contentDescription = null,
+                                        tint = PocketPrimaryBlue,
+                                        modifier = Modifier.size(13.dp)
+                                    )
+                                    Text(
+                                        text = att.displayName,
+                                        color = PocketTextPrimary,
+                                        fontSize = 11.sp,
+                                        fontFamily = FontFamily.Monospace,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                }
+                            }
+                        }
+                    }
+                    if (message.text.isNotBlank()) {
+                        Text(
+                            text = message.text,
+                            color = PocketTextPrimary,
+                            fontSize = 14.sp,
+                            lineHeight = 20.sp
+                        )
+                    }
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.End,
