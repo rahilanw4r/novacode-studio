@@ -57,44 +57,22 @@ jobs:
           echo "Publishing release $TAG with $APK_NAME from $APK_FILE"
           cp "$APK_FILE" "$APK_NAME"
 
-          SHA256=$(sha256sum "$APK_NAME" | awk '{print $1}')
-          SIZE_BYTES=$(stat -c%s "$APK_NAME" 2>/dev/null || stat -f%z "$APK_NAME")
-          APK_DOWNLOAD_URL="https://github.com/rahilanw4r/pocket-ide/releases/download/${TAG}/${APK_NAME}"
-
-          cat << EOF > pocket-ide-update.json
-          {
-            "versionCode": ${VERSION_CODE},
-            "versionName": "${VERSION_NAME}",
-            "notes": "Pocket IDE ${TAG} — Clean minimal developer UI, fixed duplicate cards and ghost messages, auto-updates.",
-            "artifacts": {
-              "online": {
-                "url": "${APK_DOWNLOAD_URL}",
-                "sha256": "${SHA256}",
-                "sizeBytes": ${SIZE_BYTES}
-              }
-            },
-            "url": "${APK_DOWNLOAD_URL}",
-            "sha256": "${SHA256}",
-            "sizeBytes": ${SIZE_BYTES}
-          }
-          EOF
-
-          cat << 'EOF' > release_notes.md
-          ### Pocket IDE v1.0.37
-          <!-- versionCode: 38 -->
+          cat << EOF > release_notes.md
+          ### Pocket IDE ${TAG}
+          <!-- versionCode: ${VERSION_CODE} -->
 
           **Fault-Tolerant Runtime Setup, Low-Memory Package Recovery, and Staged PHP Installation.**
 
           #### What's New:
           - **Resilient Toolchain Setup**: Optional dev stacks (C/C++, PHP, Android) now gracefully catch system interruptions, process kills, or network drops without aborting the entire Pocket IDE startup.
-          - **Staged PHP Installation**: Split PHP tools installation into lightweight batches (`unzip` + `php-cli` first, then extensions) to drastically lower peak RAM and prevent Android Low Memory Killer (LMK / SIGKILL) terminations under PRoot.
-          - **Automatic DPKG Lock & Unpack Recovery**: Automatically clears stale apt locks left by killed processes and runs lightweight `dpkg --configure -a` recovery to finish configuring packages with minimal memory.
+          - **Staged PHP Installation**: Split PHP tools installation into lightweight batches (\`unzip\` + \`php-cli\` first, then extensions) to drastically lower peak RAM and prevent Android Low Memory Killer (LMK / SIGKILL) terminations under PRoot.
+          - **Automatic DPKG Lock & Unpack Recovery**: Automatically clears stale apt locks left by killed processes and runs lightweight \`dpkg --configure -a\` recovery to finish configuring packages with minimal memory.
           - **Instant Retry Recovery**: Tapping "Try again" after any interrupted package installation self-heals the package database and boots straight into the workspace without getting stuck.
           EOF
 
-          gh release create "$TAG" "$APK_NAME" pocket-ide-update.json \
+          gh release create "$TAG" "$APK_NAME" \
             --title "Pocket IDE $TAG — Your AI-powered development workspace, anywhere" \
             --notes-file release_notes.md || (
             gh release edit "$TAG" --title "Pocket IDE $TAG — Your AI-powered development workspace, anywhere" --notes-file release_notes.md && \
-            gh release upload "$TAG" "$APK_NAME" pocket-ide-update.json --clobber
+            gh release upload "$TAG" "$APK_NAME" --clobber
           )

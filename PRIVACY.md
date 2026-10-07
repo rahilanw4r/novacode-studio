@@ -58,4 +58,4 @@ This policy may be updated as Pocket IDE changes. Material changes will be refle
 
 ## Contact
 
-For privacy questions or requests, open an issue at [github.com/rahilanw4r/pocket-ide/issues](https://github.com/rahilanw4r/pocket-ide/issues).
+For privacy questions or requests, contact [@RahilAnw4r on Telegram](https://t.me/RahilAnw4r) or open an issue at [github.com/rahilanw4r/pocket-ide/issues](https://github.com/rahilanw4r/pocket-ide/issues).

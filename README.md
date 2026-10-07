@@ -12,6 +12,8 @@
 
 <p align="center">
   <a href="https://github.com/rahilanw4r/pocket-ide/releases">Releases</a> ·
+  <a href="https://t.me/PocketIDE">Telegram Channel</a> ·
+  <a href="https://t.me/PocketIDECommunity">Discussion Group</a> ·
   <a href="https://github.com/rahilanw4r/pocket-ide/issues">Issues</a> ·
   <a href="PRIVACY.md">Privacy</a>
 </p>
@@ -19,8 +21,8 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Android-9%2B-3DDC84?style=flat-square" alt="Android 9+">
   <img src="https://img.shields.io/badge/ARM64-only-555555?style=flat-square" alt="ARM64">
-  <img src="https://img.shields.io/badge/Version-1.0.16-555555?style=flat-square" alt="Version 1.0.16">
-  <img src="https://img.shields.io/badge/Status-Alpha-555555?style=flat-square" alt="Alpha">
+  <img src="https://img.shields.io/badge/Version-1.0.37-2563EB?style=flat-square" alt="Version 1.0.37">
+  <img src="https://img.shields.io/badge/Telegram-@PocketIDE-229ED9?style=flat-square&logo=telegram" alt="Telegram">
   <img src="https://img.shields.io/badge/License-MIT-555555?style=flat-square" alt="MIT License">
 </p>
 
@@ -28,16 +30,7 @@ Pocket IDE is a mobile-first Android development environment with an isolated Li
 
 It is designed around one idea: **your phone should be able to do real development work, not just edit a few lines of code.**
 
-> **Current status:** Pocket IDE is experimental alpha software. Runtime compatibility, AI integrations, toolchains, and device behavior can change between releases.
-
----
-
-## Screenshots
-
-<p align="center">
-  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/1.png" width="31%" alt="Pocket IDE">
-  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/2.png" width="31%" alt="Pocket IDE">
-</p>
+> **Status:** Pocket IDE v1.0.37 brings a resilient PRoot Linux runtime, complete developer toolchains, and background AI coding agents directly to ARM64 Android devices.
 
 ---
 
@@ -802,10 +795,13 @@ Third-party components may use different licenses. Their license notices are inc
 
 ---
 
-## Maintainer
+## Community & Creator
 
 **Rahil Anwar**
 
+- Telegram: [@RahilAnw4r](https://t.me/RahilAnw4r)
+- Official Channel: [Pocket IDE on Telegram](https://t.me/PocketIDE)
+- Community Group: [Pocket IDE Community](https://t.me/PocketIDECommunity)
 - GitHub: [@rahilanw4r](https://github.com/rahilanw4r)
 - Project: [Pocket IDE](https://github.com/rahilanw4r/pocket-ide)
 - Issues: [GitHub Issues](https://github.com/rahilanw4r/pocket-ide/issues)

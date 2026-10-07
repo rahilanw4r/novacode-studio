@@ -27,8 +27,7 @@ val hasUploadSigning = listOf(
 ).all { !it.isNullOrBlank() }
 val runtimeReleaseBaseUrl =
     "https://github.com/rahilanw4r/pocket-ide/releases/download/runtime-2026.09.4"
-val appUpdateManifestUrl =
-    "https://github.com/rahilanw4r/pocket-ide/releases/latest/download/pocket-ide-update.json"
+val appUpdateManifestUrl = providers.gradleProperty("appUpdateManifestUrl").orNull ?: ""
 val runtimeBundleDir = rootProject.layout.projectDirectory.dir("dist/runtime-bundles")
 val generatedRuntimeAssets = layout.buildDirectory.dir("generated/runtime-assets")
 

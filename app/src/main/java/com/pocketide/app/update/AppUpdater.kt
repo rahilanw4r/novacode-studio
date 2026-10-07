@@ -31,14 +31,15 @@ class AppUpdater(
     private val manifestUrlOverride: String = "",
 ) {
     fun check(): AppUpdateInfo? {
-        val manifestUrl = manifestUrlOverride.ifBlank { BuildConfig.APP_UPDATE_MANIFEST_URL }
-        val info = runCatching { fetchManifest(manifestUrl) }.getOrNull()
-        if (info != null) return info
-
-        if (manifestUrlOverride.isBlank()) {
-            return runCatching { fetchFromGitHubReleases() }.getOrNull()
+        if (manifestUrlOverride.isNotBlank()) {
+            return runCatching { fetchManifest(manifestUrlOverride) }.getOrNull()
         }
-        return null
+        val customManifest = BuildConfig.APP_UPDATE_MANIFEST_URL
+        if (customManifest.isNotBlank()) {
+            val info = runCatching { fetchManifest(customManifest) }.getOrNull()
+            if (info != null) return info
+        }
+        return runCatching { fetchFromGitHubReleases() }.getOrNull()
     }
 
     private fun fetchManifest(manifestUrl: String): AppUpdateInfo? {
@@ -93,19 +94,7 @@ class AppUpdater(
             val release = JSONObject(body)
             val assets = release.optJSONArray("assets") ?: return null
 
-            // 1. Try finding pocket-ide-update.json asset directly
-            for (i in 0 until assets.length()) {
-                val asset = assets.getJSONObject(i)
-                if (asset.optString("name").equals("pocket-ide-update.json", ignoreCase = true)) {
-                    val downloadUrl = asset.optString("browser_download_url")
-                    if (downloadUrl.startsWith("https://")) {
-                        val manifestInfo = fetchManifest(downloadUrl)
-                        if (manifestInfo != null) return manifestInfo
-                    }
-                }
-            }
-
-            // 2. Direct APK asset fallback
+            // Direct APK asset search
             var apkUrl: String? = null
             var apkSize = -1L
             var apkSha256 = ""
