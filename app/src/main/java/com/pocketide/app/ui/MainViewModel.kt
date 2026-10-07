@@ -1291,6 +1291,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             // Keep the successful loading state visible long enough to be understandable.
             val remaining = MINIMUM_INITIALIZATION_SCREEN_MS - (SystemClock.elapsedRealtime() - startedAt)
             if (remaining > 0) delay(remaining)
+            preferences.runtimeSetupComplete = true
             _state.update {
                 it.copy(
                     startupStage = StartupStage.READY,

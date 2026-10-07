@@ -80,18 +80,16 @@ jobs:
           EOF
 
           cat << 'EOF' > release_notes.md
-          ### Pocket IDE v1.0.36
-          <!-- versionCode: 37 -->
+          ### Pocket IDE v1.0.37
+          <!-- versionCode: 38 -->
 
-          **Performance Optimization Pass, LazyColumn Stable Keys, Clean Final Polish.**
+          **Fault-Tolerant Runtime Setup, Low-Memory Package Recovery, and Staged PHP Installation.**
 
           #### What's New:
-          - **Compose Performance & Scroll Speed**: Added stable keys to LazyColumn lists across Agent Chat, File Explorer, Git Diff View, and Terminal Output, preventing redundant recompositions and ensuring 60fps scrolling on mobile devices.
-          - **Home Screen Recent Projects**: Wrapped project cards with stable keys for instant updates and reordering.
-          - **Telegram Community Integration**: Fully integrated official channel and community discussion links on both the Home screen and the Creator & Developer screen.
-          - **Clickable Creator Telegram**: Direct redirection to `@RahilAnw4r` on Telegram.
-          - **Multiline Keyboard & Smooth Insets**: Soft keyboard Enter key switches lines for code and multi-line prompting, anchored cleanly above system navigation and IME.
-          - **Accurate Error Diagnosis**: Prioritized network socket reset detection to eliminate false 401 authentication warnings.
+          - **Resilient Toolchain Setup**: Optional dev stacks (C/C++, PHP, Android) now gracefully catch system interruptions, process kills, or network drops without aborting the entire Pocket IDE startup.
+          - **Staged PHP Installation**: Split PHP tools installation into lightweight batches (`unzip` + `php-cli` first, then extensions) to drastically lower peak RAM and prevent Android Low Memory Killer (LMK / SIGKILL) terminations under PRoot.
+          - **Automatic DPKG Lock & Unpack Recovery**: Automatically clears stale apt locks left by killed processes and runs lightweight `dpkg --configure -a` recovery to finish configuring packages with minimal memory.
+          - **Instant Retry Recovery**: Tapping "Try again" after any interrupted package installation self-heals the package database and boots straight into the workspace without getting stuck.
           EOF
 
           gh release create "$TAG" "$APK_NAME" pocket-ide-update.json \

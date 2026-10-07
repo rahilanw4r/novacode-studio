@@ -817,29 +817,82 @@ class RuntimeInstaller(private val context: Context) {
                 }
             }
             DevStack.CPP -> {
-                aptInstall(
-                    proot,
-                    listOf("build-essential", "cmake", "gdb"),
-                    "Installing C/C++ compilers and build tools",
-                    from,
-                    onProgress,
-                )
-                verifyGuest(
-                    proot,
-                    "gcc --version && g++ --version && make --version && cmake --version",
-                    "C/C++ tools could not be verified",
-                )
+                runCatching {
+                    aptInstall(
+                        proot,
+                        listOf("build-essential", "cmake", "gdb"),
+                        "Installing C/C++ compilers and build tools",
+                        from,
+                        onProgress,
+                    )
+                    verifyGuest(
+                        proot,
+                        "gcc --version && g++ --version && make --version && cmake --version",
+                        "C/C++ tools could not be verified",
+                    )
+                }.onFailure { error ->
+                    verified = false
+                    android.util.Log.w("RuntimeInstaller", "C/C++ toolchain install warning: ${error.message}", error)
+                    runCatching {
+                        runGuestCommand(
+                            proot = proot,
+                            command = "export DEBIAN_FRONTEND=noninteractive; dpkg --configure --force-confdef --force-confold -a && apt-get -f install -y",
+                            displayCommand = "dpkg --configure -a",
+                            fraction = from,
+                            timeoutMs = 5 * 60 * 1_000L,
+                            onProgress = onProgress,
+                            failureMessage = "dpkg configure cleanup",
+                        )
+                    }
+                    onProgress(
+                        RuntimeInstallProgress(
+                            "C/C++ tools can be installed later from Settings or Terminal: ${error.message?.take(100)}",
+                            to,
+                        ),
+                    )
+                }
             }
             DevStack.PHP -> {
-                aptInstall(
-                    proot,
-                    listOf("php-cli", "php-mbstring", "php-xml", "php-curl", "php-zip", "unzip"),
-                    "Installing PHP and common extensions",
-                    from,
-                    onProgress,
-                )
-                installComposer(proot, from, onProgress)
-                verifyGuest(proot, "php --version && composer --version", "PHP tools could not be verified")
+                runCatching {
+                    // Staged installation: install unzip and php-cli first, then extensions to reduce peak RAM under PRoot
+                    aptInstall(
+                        proot,
+                        listOf("unzip", "php-cli"),
+                        "Installing PHP CLI",
+                        from,
+                        onProgress,
+                    )
+                    aptInstall(
+                        proot,
+                        listOf("php-mbstring", "php-xml", "php-curl", "php-zip"),
+                        "Installing PHP extensions",
+                        from + (to - from) * 0.45f,
+                        onProgress,
+                    )
+                    installComposer(proot, from + (to - from) * 0.8f, onProgress)
+                    verifyGuest(proot, "php --version", "PHP tools could not be verified")
+                }.onFailure { error ->
+                    verified = false
+                    android.util.Log.w("RuntimeInstaller", "PHP toolchain install warning: ${error.message}", error)
+                    // Repair interrupted dpkg so the system isn't left in a locked/unconfigured state
+                    runCatching {
+                        runGuestCommand(
+                            proot = proot,
+                            command = "export DEBIAN_FRONTEND=noninteractive; dpkg --configure --force-confdef --force-confold -a && apt-get -f install -y",
+                            displayCommand = "dpkg --configure -a",
+                            fraction = from,
+                            timeoutMs = 5 * 60 * 1_000L,
+                            onProgress = onProgress,
+                            failureMessage = "dpkg configure cleanup",
+                        )
+                    }
+                    onProgress(
+                        RuntimeInstallProgress(
+                            "PHP tools can be installed later from Settings or Terminal: ${error.message?.take(100)}",
+                            to,
+                        ),
+                    )
+                }
             }
         }
         if (!verified) return
@@ -1315,6 +1368,20 @@ class RuntimeInstaller(private val context: Context) {
         nodeArchive.delete()
     }
 
+    private fun cleanStaleAptLocks() {
+        listOf(
+            "var/lib/dpkg/lock",
+            "var/lib/dpkg/lock-frontend",
+            "var/cache/apt/archives/lock",
+            "var/lib/apt/lists/lock",
+        ).forEach { path ->
+            val lockFile = File(rootfs, path)
+            if (lockFile.exists()) {
+                runCatching { lockFile.delete() }
+            }
+        }
+    }
+
     private suspend fun aptInstall(
         proot: File,
         packages: List<String>,
@@ -1322,6 +1389,7 @@ class RuntimeInstaller(private val context: Context) {
         fraction: Float,
         onProgress: suspend (RuntimeInstallProgress) -> Unit,
     ) {
+        cleanStaleAptLocks()
         onProgress(RuntimeInstallProgress(message, fraction))
         aptInstallInternal(proot, packages, fraction, onProgress)
     }
@@ -1369,15 +1437,38 @@ class RuntimeInstaller(private val context: Context) {
             "apt-get -o DPkg::Lock::Timeout=120 update && " +
             "apt-get -o DPkg::Lock::Timeout=120 -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confold install -y --no-install-recommends $packageNames && " +
             "apt-get clean && rm -rf /var/lib/apt/lists/*"
-        runGuestCommand(
-            proot = proot,
-            command = command,
-            displayCommand = "dpkg --configure -a && apt-get -f install -y && apt-get install -y $packageNames",
-            fraction = fraction,
-            timeoutMs = 30 * 60 * 1_000L,
-            onProgress = onProgress,
-            failureMessage = "Could not install: $packageNames",
-        )
+        try {
+            runGuestCommand(
+                proot = proot,
+                command = command,
+                displayCommand = "dpkg --configure -a && apt-get -f install -y && apt-get install -y $packageNames",
+                fraction = fraction,
+                timeoutMs = 30 * 60 * 1_000L,
+                onProgress = onProgress,
+                failureMessage = "Could not install: $packageNames",
+            )
+        } catch (firstError: Throwable) {
+            val err = firstError.message.orEmpty()
+            if (err.contains("Killed", ignoreCase = true) || err.contains("137")) {
+                // If apt-get was killed by Android LMK during unpacking, finish configuring downloaded packages
+                android.util.Log.w("RuntimeInstaller", "apt-get was killed by system LMK, attempting lightweight dpkg recovery: $err")
+                val recoveryCommand = "export DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical APT_LISTCHANGES_FRONTEND=none UCF_FORCE_CONFFOLD=1 NEEDRESTART_MODE=a TZ=Etc/UTC; " +
+                    "dpkg --configure --force-confdef --force-confold -a && " +
+                    "apt-get -o DPkg::Lock::Timeout=120 -o DPkg::Options::=--force-confdef -o DPkg::Options::=--force-confold -f install -y && " +
+                    "apt-get clean && rm -rf /var/lib/apt/lists/*"
+                runGuestCommand(
+                    proot = proot,
+                    command = recoveryCommand,
+                    displayCommand = "dpkg --configure -a && apt-get -f install -y",
+                    fraction = fraction,
+                    timeoutMs = 10 * 60 * 1_000L,
+                    onProgress = onProgress,
+                    failureMessage = "Recovery failed for: $packageNames",
+                )
+            } else {
+                throw firstError
+            }
+        }
     }
 
     private suspend fun aptRemove(
@@ -1583,6 +1674,7 @@ class RuntimeInstaller(private val context: Context) {
 
     suspend fun initializeExisting(onProgress: suspend (RuntimeInstallProgress) -> Unit): InstalledRuntime {
         val installed = installedRuntime()
+        cleanStaleAptLocks()
         onProgress(RuntimeInstallProgress("Checking private runtime files", 0.15f))
         writeResolver()
         ensureSettingsAndHooks()
